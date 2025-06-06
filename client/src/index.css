@@ -99,14 +99,55 @@
   }
 }
 
+@keyframes attack-right {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(15px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes attack-left {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-15px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes hit-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes heal-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); 
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); 
+  }
+}
+
 .animate-damage-flash {
   animation: flash 0.3s ease-in-out;
 }
 
 .animate-heal-glow {
-  animation: glow 0.5s ease-in-out;
+  animation: heal-pulse 0.5s ease-in-out;
 }
 
 .animate-dice-roll {
   animation: spin 0.5s ease-in-out;
+}
+
+.animate-attack-right {
+  animation: attack-right 0.4s ease-in-out;
+}
+
+.animate-attack-left {
+  animation: attack-left 0.4s ease-in-out;
+}
+
+.animate-hit-shake {
+  animation: hit-shake 0.3s ease-in-out;
 }

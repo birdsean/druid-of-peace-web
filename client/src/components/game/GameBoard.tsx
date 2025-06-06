@@ -1,5 +1,5 @@
 import { useGameState } from "@/hooks/useGameState";
-import NPCCharacter from "./NPCCharacter";
+import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
 import TurnIndicator from "./TurnIndicator";
 import DruidActionPanel from "./DruidActionPanel";
@@ -54,6 +54,19 @@ export default function GameBoard() {
         
         {/* Turn Indicator */}
         <TurnIndicator currentTurn={gameState.currentTurn} turnCounter={gameState.turnCounter} />
+        
+        {/* Character Stats at Top */}
+        <NPCStatsDisplay
+          name="Gareth"
+          npc={gameState.npc1}
+          position="left"
+        />
+        
+        <NPCStatsDisplay
+          name="Lyra"
+          npc={gameState.npc2}
+          position="right"
+        />
         
         {/* NPC Characters */}
         <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
