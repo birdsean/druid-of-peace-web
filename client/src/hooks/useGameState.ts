@@ -99,11 +99,12 @@ export function useGameState() {
     });
   }, []);
 
-  const checkGameEnd = useCallback(() => {
-    const { npc1, npc2 } = gameState;
+  const checkGameEnd = useCallback((currentState?: typeof gameState) => {
+    const stateToCheck = currentState || gameState;
+    const { npc1, npc2 } = stateToCheck;
     
-    // Check if druid is revealed
-    if (npc1.awareness >= 80 || npc2.awareness >= 80) {
+    // Check if druid is revealed (awareness reaches 100%)
+    if (npc1.awareness >= 100 || npc2.awareness >= 100) {
       setGameState(prev => ({
         ...prev,
         gameOver: true,
@@ -116,26 +117,34 @@ export function useGameState() {
       return true;
     }
     
-    // Check if both NPCs have lost will to fight
-    if (npc1.willToFight <= 0 && npc2.willToFight <= 0) {
+    // Check if any NPC died (health reaches 0)
+    if (npc1.health <= 0 || npc2.health <= 0) {
+      const deadNPC = npc1.health <= 0 ? 'Gareth' : 'Lyra';
       setGameState(prev => ({
         ...prev,
         gameOver: true,
         gameOverState: {
-          title: 'PEACE ACHIEVED',
-          message: 'Both NPCs have lost their will to fight!',
-          icon: '✌️'
+          title: 'COMBAT ENDED',
+          message: `${deadNPC} has been defeated!`,
+          icon: '⚔️'
         }
       }));
       return true;
     }
     
-    // Check if individual NPCs fled
-    if (npc1.willToFight <= 0) {
-      addLogEntry('Gareth flees the battle');
-    }
-    if (npc2.willToFight <= 0) {
-      addLogEntry('Lyra flees the battle');
+    // Check if any NPC lost will to fight
+    if (npc1.willToFight <= 0 || npc2.willToFight <= 0) {
+      const fleeingNPC = npc1.willToFight <= 0 ? 'Gareth' : 'Lyra';
+      setGameState(prev => ({
+        ...prev,
+        gameOver: true,
+        gameOverState: {
+          title: 'PEACE ACHIEVED',
+          message: `${fleeingNPC} has lost the will to fight!`,
+          icon: '🕊️'
+        }
+      }));
+      return true;
     }
     
     return false;
@@ -175,12 +184,35 @@ export function useGameState() {
       return newState;
     });
 
+    // Check for game end conditions after state update
     setTimeout(() => {
-      if (!checkGameEnd()) {
-        nextTurn();
-      }
+      setGameState(prev => {
+        // Check game end with the updated state
+        const gameEnded = checkGameEnd(prev);
+        if (!gameEnded) {
+          // Only advance turn if game hasn't ended
+          let newTurn: 'npc1' | 'npc2' | 'druid';
+          let newTurnCounter = prev.turnCounter;
+          
+          if (prev.currentTurn === 'npc1') {
+            newTurn = 'npc2';
+          } else if (prev.currentTurn === 'npc2') {
+            newTurn = 'druid';
+          } else {
+            newTurn = 'npc1';
+            newTurnCounter++;
+          }
+          
+          return {
+            ...prev,
+            currentTurn: newTurn,
+            turnCounter: newTurnCounter
+          };
+        }
+        return prev;
+      });
     }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd, nextTurn]);
+  }, [rollDice, addLogEntry, checkGameEnd, nextTurn, gameState]);
 
   const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
     const roll = await rollDice(1, 6);
@@ -204,9 +236,12 @@ export function useGameState() {
     
     addLogEntry(`Druid uses Peace Aura on ${targetId === 'npc1' ? 'Gareth' : 'Lyra'} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`);
     
-    // Don't auto-advance druid turn
+    // Check for game end after druid action
     setTimeout(() => {
-      checkGameEnd();
+      setGameState(prev => {
+        checkGameEnd(prev);
+        return prev;
+      });
     }, 1500);
   }, [rollDice, addLogEntry, checkGameEnd]);
 

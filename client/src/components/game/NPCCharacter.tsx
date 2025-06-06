@@ -88,34 +88,34 @@ export function NPCStatsDisplay({
 
   return (
     <div className={cn(
-      "absolute top-4 w-64 z-30",
+      "absolute top-4 w-48 z-30",
       position === 'left' ? 'left-4' : 'right-4'
     )}>
-      <div className="bg-gray-900 bg-opacity-90 rounded-lg p-3 border-2 border-gray-600">
+      <div className="bg-gray-900 bg-opacity-90 rounded-lg p-2 border border-gray-600">
         {/* Character Name */}
-        <div className="text-center mb-3">
-          <div className="text-lg font-mono text-white font-bold">{name}</div>
+        <div className="text-center mb-2">
+          <div className="text-sm font-mono text-white font-bold">{name}</div>
         </div>
 
         {/* Health Bar */}
-        <div className="mb-2">
-          <div className="text-xs font-mono text-gray-400 mb-1">HEALTH</div>
+        <div className="mb-1">
+          <div className="text-xs font-mono text-gray-400 mb-1">HP</div>
           <div className="bg-gray-700 rounded-full p-1">
-            <div className="relative h-3 bg-gray-600 rounded-full overflow-hidden">
+            <div className="relative h-2 bg-gray-600 rounded-full overflow-hidden">
               <div 
                 className="bar-fill h-full bg-red-500 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${healthPercent}%` }}
               />
             </div>
-            <div className="text-xs font-mono text-white text-center mt-1">
+            <div className="text-xs font-mono text-white text-center">
               {npc.health}/{npc.maxHealth}
             </div>
           </div>
         </div>
 
         {/* Will-to-Fight Bar */}
-        <div className="mb-2">
-          <div className="text-xs font-mono text-gray-400 mb-1">WILL TO FIGHT</div>
+        <div className="mb-1">
+          <div className="text-xs font-mono text-gray-400 mb-1">WILL</div>
           <div className="bg-gray-700 rounded-full p-1">
             <div className="relative h-2 bg-gray-600 rounded-full overflow-hidden">
               <div 
@@ -124,14 +124,14 @@ export function NPCStatsDisplay({
               />
             </div>
             <div className="text-xs font-mono text-white text-center">
-              {npc.willToFight > 0 ? 'FIGHTING' : 'FLED'}
+              {npc.willToFight > 0 ? 'FIGHT' : 'FLED'}
             </div>
           </div>
         </div>
 
         {/* Awareness Bar */}
         <div>
-          <div className="text-xs font-mono text-gray-400 mb-1">AWARENESS</div>
+          <div className="text-xs font-mono text-gray-400 mb-1">AWARE</div>
           <div className="bg-gray-700 rounded-full p-1">
             <div className="relative h-2 bg-gray-600 rounded-full overflow-hidden">
               <div 
