@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  
+  /* Game specific colors */
+  --forest-primary: 45 28% 29%; /* #2D4A3A */
+  --forest-light: 140 38% 41%; /* #4A7C59 */
+  --forest-dark: 140 31% 16%; /* #1A2F23 */
+  --battleground: 35 29% 44%; /* #8B7355 */
+  --awareness-low: 159 100% 36%; /* #10B981 */
+  --awareness-medium: 38 92% 50%; /* #F59E0B */
+  --awareness-high: 0 84% 48%; /* #DC2626 */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bar-fill {
+    transition: width 0.5s ease-out;
+  }
+  
+  .dice-face {
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  .cursor-crosshair {
+    cursor: crosshair;
+  }
+}
+
+@keyframes flash {
+  0%, 100% { 
+    background-color: transparent; 
+  }
+  50% { 
+    background-color: rgba(220, 38, 38, 0.3); 
+  }
+}
+
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); 
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); 
+  }
+}
+
+.animate-damage-flash {
+  animation: flash 0.3s ease-in-out;
+}
+
+.animate-heal-glow {
+  animation: glow 0.5s ease-in-out;
+}
+
+.animate-dice-roll {
+  animation: spin 0.5s ease-in-out;
+}
