@@ -1,0 +1,29 @@
+Create a 2D turn-based encounter screen for the "Druid of Peace" RPG with the following specifications:
+
+1. **Screen Layout:**
+    - **Background:** A forest scene with a clear, flat battleground area in the center.
+    - **NPCs:** Two NPCs placed on opposite sides of the screen, facing each other.
+    - **Druid:** The druid character is hidden along the bottom edge of the screen, observing the NPCs.
+2. **Bars and UI Elements:**
+    - **Health Bars:** Positioned above each NPC, displayed as horizontal red bars.
+    - **Will-to-Fight Bars:** Positioned directly below the health bars, displayed as horizontal blue bars.
+    - **Awareness Threshold Indicator:** Each NPC has a small eye icon near them that changes color as their awareness increases.
+    - **Turn Indicator:** A simple icon or text at the top of the screen indicating whose turn it is (NPC1, NPC2, or the druid).
+3. **Turn Cycle:**
+    - The encounter follows a strict turn cycle: NPC1 acts first, followed by NPC2, and then the druid. This cycle repeats until the encounter ends.
+4. **Druid’s Action:**
+    - The druid has one ability that reduces the will-to-fight bar of a selected NPC.
+    - The ability can be represented by a button or icon that the player can click during the druid's turn to select an NPC and reduce their will-to-fight.
+5. **Ending Conditions:**
+    - If an NPC’s will-to-fight bar reaches zero, they flee or cease fighting, reducing the conflict.
+    - If the druid is revealed (an NPC’s awareness threshold is crossed), the encounter fails immediately.
+6. **Stealth Mechanic:**
+    - Each NPC’s awareness increases based on the druid’s actions and proximity.
+    - If an NPC’s awareness reaches a certain level, the druid is revealed, and the encounter ends in failure.
+7. **Randomness in Actions:**
+    - Each NPC action is influenced by a random dice roll or probability factor that determines the specific move they make on their turn (e.g., attack, defend, raise awareness).
+    - Whenever the PC acts, a dice is rolled to determine the amount of awareness they create and the effectiveness of their action on the NPC’s will to fight
+8. **Visual Feedback:**
+    - Clear visual feedback for every action taken, including animations or color changes to indicate changes in the bars.
+
+Implement these mechanics, layout, and visual elements precisely to create a clear, functional prototype.
