@@ -229,15 +229,7 @@ export function useGameState() {
     });
   }, []);
 
-  // Auto-execute NPC turns
-  useEffect(() => {
-    if (!gameState.gameOver && (gameState.currentTurn === 'npc1' || gameState.currentTurn === 'npc2')) {
-      const timer = setTimeout(() => {
-        executeNPCTurn(gameState.currentTurn as 'npc1' | 'npc2');
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameState.currentTurn, gameState.gameOver, executeNPCTurn]);
+
 
   return {
     gameState,

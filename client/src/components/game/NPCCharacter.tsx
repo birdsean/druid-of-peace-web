@@ -11,6 +11,7 @@ interface NPCStats {
 
 interface NPCCharacterProps {
   id: string;
+  name: string;
   npc: NPCStats;
   position: 'left' | 'right';
   targetingMode: boolean;
@@ -21,6 +22,7 @@ interface NPCCharacterProps {
 
 export default function NPCCharacter({ 
   id, 
+  name,
   npc, 
   position, 
   targetingMode, 
@@ -30,10 +32,11 @@ export default function NPCCharacter({
 }: NPCCharacterProps) {
   const healthPercent = (npc.health / npc.maxHealth) * 100;
   const willPercent = (npc.willToFight / npc.maxWill) * 100;
+  const awarenessPercent = (npc.awareness / npc.maxAwareness) * 100;
   
-  const getAwarenessColor = (awareness: number) => {
-    if (awareness < 33) return 'bg-green-500';
-    if (awareness < 66) return 'bg-yellow-500';
+  const getAwarenessColor = (awarenessPercent: number) => {
+    if (awarenessPercent < 33) return 'bg-green-500';
+    if (awarenessPercent < 66) return 'bg-yellow-500';
     return 'bg-red-500';
   };
 
@@ -41,6 +44,13 @@ export default function NPCCharacter({
 
   return (
     <div className="relative">
+      {/* NPC Name */}
+      <div className={cn("absolute -top-24 w-32", barDirection)}>
+        <div className="text-sm font-mono text-white text-center font-bold bg-gray-800 bg-opacity-80 rounded px-2 py-1">
+          {name}
+        </div>
+      </div>
+
       {/* NPC Character */}
       <div 
         className={cn(
@@ -83,18 +93,21 @@ export default function NPCCharacter({
         </div>
       </div>
       
-      {/* Awareness Eye */}
-      <div className={cn(
-        "absolute -top-2 w-6 h-6",
-        position === 'left' ? '-right-2' : '-left-2'
-      )}>
-        <div 
-          className={cn(
-            "w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-300",
-            getAwarenessColor(npc.awareness)
-          )}
-        >
-          <span className="text-white text-xs">👁</span>
+      {/* Awareness Bar */}
+      <div className={cn("absolute top-0 w-28", barDirection)}>
+        <div className="bg-gray-800 bg-opacity-80 rounded-full p-1">
+          <div className="relative h-2 bg-gray-600 rounded-full overflow-hidden">
+            <div 
+              className={cn(
+                "bar-fill h-full rounded-full transition-all duration-500 ease-out",
+                getAwarenessColor(awarenessPercent)
+              )}
+              style={{ width: `${awarenessPercent}%` }}
+            />
+          </div>
+          <div className="text-xs font-mono text-white text-center">
+            AWARENESS
+          </div>
         </div>
       </div>
     </div>
