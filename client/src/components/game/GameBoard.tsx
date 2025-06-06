@@ -31,6 +31,12 @@ export default function GameBoard() {
     }
   };
 
+  const handleEndTurn = () => {
+    if (gameState.currentTurn === 'druid' && !gameState.targetingMode) {
+      nextTurn();
+    }
+  };
+
   return (
     <div className="relative w-screen h-screen flex items-center justify-center">
       <div className="relative w-full max-w-6xl h-full max-h-[600px] bg-gradient-to-b from-sky-400 via-green-300 to-green-600 overflow-hidden rounded-lg shadow-2xl">
@@ -97,6 +103,7 @@ export default function GameBoard() {
         <DruidActionPanel
           visible={gameState.currentTurn === 'druid' && !gameState.gameOver}
           onPeaceAbility={handlePeaceAbilityClick}
+          onEndTurn={handleEndTurn}
           targetingMode={gameState.targetingMode}
         />
         

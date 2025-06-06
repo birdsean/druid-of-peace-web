@@ -204,12 +204,11 @@ export function useGameState() {
     
     addLogEntry(`Druid uses Peace Aura on ${targetId === 'npc1' ? 'Gareth' : 'Lyra'} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`);
     
+    // Don't auto-advance druid turn
     setTimeout(() => {
-      if (!checkGameEnd()) {
-        nextTurn();
-      }
+      checkGameEnd();
     }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd, nextTurn]);
+  }, [rollDice, addLogEntry, checkGameEnd]);
 
   const setTargetingMode = useCallback((targeting: boolean) => {
     setGameState(prev => ({ ...prev, targetingMode: targeting }));
