@@ -77,6 +77,28 @@ export function useGameState() {
     });
   }, []);
 
+  const nextTurn = useCallback(() => {
+    setGameState(prev => {
+      let newTurn: 'npc1' | 'npc2' | 'druid';
+      let newTurnCounter = prev.turnCounter;
+      
+      if (prev.currentTurn === 'npc1') {
+        newTurn = 'npc2';
+      } else if (prev.currentTurn === 'npc2') {
+        newTurn = 'druid';
+      } else {
+        newTurn = 'npc1';
+        newTurnCounter++;
+      }
+      
+      return {
+        ...prev,
+        currentTurn: newTurn,
+        turnCounter: newTurnCounter
+      };
+    });
+  }, []);
+
   const checkGameEnd = useCallback(() => {
     const { npc1, npc2 } = gameState;
     
@@ -110,10 +132,10 @@ export function useGameState() {
     
     // Check if individual NPCs fled
     if (npc1.willToFight <= 0) {
-      addLogEntry('NPC1 flees the battle');
+      addLogEntry('Gareth flees the battle');
     }
     if (npc2.willToFight <= 0) {
-      addLogEntry('NPC2 flees the battle');
+      addLogEntry('Lyra flees the battle');
     }
     
     return false;
@@ -132,17 +154,21 @@ export function useGameState() {
       switch (action.type) {
         case 'attack':
           const damage = Math.floor(Math.random() * 20) + 10;
+          const oldHealth = target.health;
           target.health = Math.max(0, target.health - damage);
-          addLogEntry(`${npcId.toUpperCase()} attacks ${targetId.toUpperCase()} for ${damage} damage`);
+          // Each point of health lost removes half a point of will to fight
+          const healthLost = oldHealth - target.health;
+          const willLost = healthLost * 0.5;
+          target.willToFight = Math.max(0, target.willToFight - willLost);
+          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} attacks for ${damage} damage (${willLost.toFixed(1)} will lost)`);
           break;
         case 'defend':
           npc.health = Math.min(npc.maxHealth, npc.health + 5);
-          addLogEntry(`${npcId.toUpperCase()} defends and recovers`);
+          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} defends and recovers`);
           break;
         case 'investigate':
-          const awarenessIncrease = Math.floor(Math.random() * 15) + 5;
-          npc.awareness = Math.min(npc.maxAwareness, npc.awareness + awarenessIncrease);
-          addLogEntry(`${npcId.toUpperCase()} becomes more aware (+${awarenessIncrease})`);
+          // NPCs investigating no longer affects awareness - only druid actions do
+          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} investigates but finds nothing`);
           break;
       }
 
@@ -154,7 +180,7 @@ export function useGameState() {
         nextTurn();
       }
     }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd]);
+  }, [rollDice, addLogEntry, checkGameEnd, nextTurn]);
 
   const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
     const roll = await rollDice(1, 6);
@@ -167,7 +193,7 @@ export function useGameState() {
       // Reduce target's will to fight
       target.willToFight = Math.max(0, target.willToFight - effect.willReduction);
       
-      // Increase awareness for both NPCs
+      // Increase awareness for both NPCs (only druid actions affect awareness)
       newState.npc1.awareness = Math.min(newState.npc1.maxAwareness, newState.npc1.awareness + effect.awarenessIncrease);
       newState.npc2.awareness = Math.min(newState.npc2.maxAwareness, newState.npc2.awareness + effect.awarenessIncrease);
       
@@ -176,36 +202,14 @@ export function useGameState() {
       return newState;
     });
     
-    addLogEntry(`Druid uses Peace Aura on ${targetId.toUpperCase()} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`);
+    addLogEntry(`Druid uses Peace Aura on ${targetId === 'npc1' ? 'Gareth' : 'Lyra'} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`);
     
     setTimeout(() => {
       if (!checkGameEnd()) {
         nextTurn();
       }
     }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd]);
-
-  const nextTurn = useCallback(() => {
-    setGameState(prev => {
-      let newTurn: 'npc1' | 'npc2' | 'druid';
-      let newTurnCounter = prev.turnCounter;
-      
-      if (prev.currentTurn === 'npc1') {
-        newTurn = 'npc2';
-      } else if (prev.currentTurn === 'npc2') {
-        newTurn = 'druid';
-      } else {
-        newTurn = 'npc1';
-        newTurnCounter++;
-      }
-      
-      return {
-        ...prev,
-        currentTurn: newTurn,
-        turnCounter: newTurnCounter
-      };
-    });
-  }, []);
+  }, [rollDice, addLogEntry, checkGameEnd, nextTurn]);
 
   const setTargetingMode = useCallback((targeting: boolean) => {
     setGameState(prev => ({ ...prev, targetingMode: targeting }));
@@ -229,7 +233,15 @@ export function useGameState() {
     });
   }, []);
 
-
+  // Auto-execute NPC turns
+  useEffect(() => {
+    if (!gameState.gameOver && (gameState.currentTurn === 'npc1' || gameState.currentTurn === 'npc2')) {
+      const timer = setTimeout(() => {
+        executeNPCTurn(gameState.currentTurn as 'npc1' | 'npc2');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.currentTurn, gameState.gameOver, executeNPCTurn]);
 
   return {
     gameState,

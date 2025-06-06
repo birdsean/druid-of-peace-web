@@ -50,7 +50,7 @@ export default function GameBoard() {
         <TurnIndicator currentTurn={gameState.currentTurn} turnCounter={gameState.turnCounter} />
         
         {/* NPC Characters */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 -translate-x-32 bottom-32 z-20">
+        <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
           <NPCCharacter
             id="npc1"
             name="Gareth"
@@ -63,7 +63,7 @@ export default function GameBoard() {
           />
         </div>
         
-        <div className="absolute left-1/2 transform -translate-x-1/2 translate-x-32 bottom-32 z-20">
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
           <NPCCharacter
             id="npc2"
             name="Lyra"
@@ -79,21 +79,15 @@ export default function GameBoard() {
         {/* Druid Character */}
         <DruidCharacter hidden={gameState.druid.hidden} />
         
-        {/* NPC Action Panel */}
+        {/* NPC Turn Status */}
         {(gameState.currentTurn === 'npc1' || gameState.currentTurn === 'npc2') && !gameState.gameOver && (
           <div className="absolute bottom-4 left-4 z-30">
             <div className="bg-gray-900 bg-opacity-90 rounded-lg p-4 border-2 border-blue-400">
               <h3 className="font-mono text-blue-400 text-sm mb-3">
                 {gameState.currentTurn === 'npc1' ? 'GARETH\'S TURN' : 'LYRA\'S TURN'}
               </h3>
-              <button 
-                onClick={() => executeNPCTurn(gameState.currentTurn as 'npc1' | 'npc2')}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs py-3 px-4 rounded transition-colors duration-200"
-              >
-                ⚡ TAKE ACTION
-              </button>
-              <div className="text-xs text-gray-400 mt-2">
-                Click to roll dice and act
+              <div className="text-xs text-gray-400">
+                NPCs act automatically
               </div>
             </div>
           </div>
