@@ -24,7 +24,7 @@ export default function CombatLog({ entries, mode }: CombatLogProps) {
     <div className={
       isLarge 
         ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 max-w-4xl h-3/4 bg-black bg-opacity-95 rounded-lg p-6 overflow-y-auto border-2 border-amber-400 z-50"
-        : "absolute bottom-4 right-4 z-30 w-56"
+        : "absolute bottom-20 right-4 z-30 w-56"
     }>
       <div className={
         isLarge 

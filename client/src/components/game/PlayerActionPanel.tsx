@@ -41,12 +41,19 @@ export default function PlayerActionPanel({
     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
       <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-lg p-4 shadow-lg border-2 border-orange-400">
         <div className="flex items-center justify-between">
-          {/* Left side - Action Points */}
+          {/* Left side - Druid Character and Action Points */}
           <div className="flex items-center space-x-4">
-            <div className="text-white font-mono">
-              <div className="text-xs text-orange-200">ACTION POINTS</div>
-              <div className="text-lg font-bold">
-                {actionPoints}/{maxActionPoints}
+            {/* Druid Character Icon */}
+            <div className="relative">
+              <div className="w-16 h-16 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-2xl shadow-lg">
+                🌿
+              </div>
+              {/* Action Points above character */}
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-center">
+                <div className="text-xs text-orange-200">AP</div>
+                <div className="text-sm font-bold bg-orange-800 rounded px-2 py-1">
+                  {actionPoints}/{maxActionPoints}
+                </div>
               </div>
             </div>
             
@@ -67,20 +74,20 @@ export default function PlayerActionPanel({
           </div>
 
           {/* Center - Action Buttons */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-3 ml-8">
             {/* Peace Aura Action */}
             <Button
               onClick={onPeaceAbility}
               disabled={!canUseActions || !hasActionPoints}
               className={cn(
-                "w-12 h-12 p-0 rounded-lg transition-all duration-200",
+                "w-14 h-14 p-0 rounded-lg transition-all duration-200",
                 canUseActions && hasActionPoints
                   ? "bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 shadow-lg hover:shadow-xl"
                   : "bg-gray-600 border-2 border-gray-500 opacity-50 cursor-not-allowed"
               )}
               title="Peace Aura - Reduce target's will to fight"
             >
-              <Shield className="w-6 h-6 text-white" />
+              <Shield className="w-7 h-7 text-white" />
             </Button>
 
             {/* End Turn Action */}
@@ -88,14 +95,14 @@ export default function PlayerActionPanel({
               onClick={onEndTurn}
               disabled={!isPlayerTurn || targetingMode}
               className={cn(
-                "w-12 h-12 p-0 rounded-lg transition-all duration-200",
+                "w-14 h-14 p-0 rounded-lg transition-all duration-200",
                 isPlayerTurn && !targetingMode
                   ? "bg-green-600 hover:bg-green-700 border-2 border-green-400 shadow-lg hover:shadow-xl"
                   : "bg-gray-600 border-2 border-gray-500 opacity-50 cursor-not-allowed"
               )}
               title="End Turn"
             >
-              <Users className="w-6 h-6 text-white" />
+              <Users className="w-7 h-7 text-white" />
             </Button>
           </div>
 

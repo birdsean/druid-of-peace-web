@@ -49,8 +49,7 @@ export default function GameBoard() {
           }}
         />
 
-        {/* Battleground Area */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4/5 h-32 bg-amber-700 rounded-t-full opacity-90 shadow-inner" />
+
 
         {/* Turn Indicator */}
         <TurnIndicator
@@ -90,8 +89,7 @@ export default function GameBoard() {
           />
         </div>
 
-        {/* Druid Character */}
-        <DruidCharacter hidden={gameState.druid.hidden} />
+
 
         {/* NPC Action Panel */}
         {(gameState.currentTurn === "npc1" ||
