@@ -227,6 +227,13 @@ export default function Map() {
         >
           {resolutionMode === 'fail' ? 'CLICK ZONE (FAIL)' : 'RESOLVE FAIL'}
         </button>
+        
+        <button
+          onClick={() => handleNarrativeStart('introduction')}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-sm font-mono"
+        >
+          STORY INTRO
+        </button>
       </div>
 
       {/* Turn Counter */}
@@ -276,6 +283,15 @@ export default function Map() {
           <div className="text-red-300">91-100: Critical</div>
         </div>
       </div>
+
+      {/* Narrative Screen Overlay */}
+      {narrativeScript && (
+        <NarrativeScreen
+          script={narrativeScript}
+          onComplete={handleNarrativeComplete}
+          onChoice={handleNarrativeChoice}
+        />
+      )}
     </div>
   );
 }
