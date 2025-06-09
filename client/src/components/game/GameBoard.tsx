@@ -17,7 +17,8 @@ export default function GameBoard() {
     setTargetingMode,
     diceState,
     combatLogMode,
-    toggleCombatLog
+    toggleCombatLog,
+    triggerGameOver
   } = useGameState();
 
   // Load character data
@@ -45,7 +46,14 @@ export default function GameBoard() {
   const handleAbilityUse = (abilityKey: string) => {
     if (abilityKey === "peaceAura") {
       handlePeaceAbilityClick();
+    } else if (abilityKey === "flee") {
+      handleFleeAbility();
     }
+  };
+
+  const handleFleeAbility = () => {
+    // Trigger immediate game over with failure state
+    triggerGameOver('FLED ENCOUNTER', 'The druid escaped, but the conflict remains...', '🏃');
   };
 
   return (

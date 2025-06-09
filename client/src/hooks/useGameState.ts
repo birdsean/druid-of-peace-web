@@ -235,6 +235,18 @@ export function useGameState() {
     });
   }, []);
 
+  const triggerGameOver = useCallback((title: string, message: string, icon: string) => {
+    setGameState(prev => ({
+      ...prev,
+      gameOver: true,
+      gameOverState: {
+        title,
+        message,
+        icon
+      }
+    }));
+  }, []);
+
   return {
     gameState,
     diceState,
@@ -244,6 +256,7 @@ export function useGameState() {
     setTargetingMode,
     combatLogMode,
     toggleCombatLog,
-    completeEncounter
+    completeEncounter,
+    triggerGameOver
   };
 }

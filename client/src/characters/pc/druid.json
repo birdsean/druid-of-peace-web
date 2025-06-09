@@ -15,6 +15,13 @@
       "description": "Reduce target's will to fight",
       "icon": "🕊️",
       "cost": 1
+    },
+    {
+      "key": "flee",
+      "name": "Flee",
+      "description": "Escape from the encounter",
+      "icon": "🏃",
+      "cost": 0
     }
   ]
 }

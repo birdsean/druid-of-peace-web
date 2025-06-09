@@ -18,11 +18,13 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
   const handleReturnToMap = () => {
     // Determine if encounter was successful based on game outcome
     const isSuccess = title === "PEACE ACHIEVED";
+    const isFlee = title === "FLED ENCOUNTER";
     
     // Resolve the encounter with the appropriate result
     const mapState = getGlobalMapState();
     if (mapState.resolveEncounter && mapState.currentEncounterZone) {
-      mapState.resolveEncounter(mapState.currentEncounterZone, isSuccess);
+      // Flee counts as failure for heat calculation
+      mapState.resolveEncounter(mapState.currentEncounterZone, isSuccess && !isFlee);
     }
     
     setLocation('/');
