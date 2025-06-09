@@ -7,7 +7,7 @@ import { setGlobalMapState } from "@/lib/mapState";
 import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 import { IS_DEBUG } from "@/lib/debug";
-import { Settings, LogOut, Package } from "lucide-react";
+import { Settings, LogOut, Package, TreePine } from "lucide-react";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
 import { globalTimeManager, type TimePhase } from "@/lib/timeSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
@@ -275,6 +275,10 @@ export default function Map() {
     setLocation('/inventory');
   }, [setLocation]);
 
+  const handleOpenSkills = useCallback(() => {
+    setLocation('/skills');
+  }, [setLocation]);
+
   return (
     <div className="relative w-screen h-screen bg-gradient-to-b from-green-800 via-green-600 to-green-400 overflow-hidden">
       {/* Background Gradient */}
@@ -430,6 +434,15 @@ export default function Map() {
       <div className="absolute bottom-0 right-0 z-30">
         <div className="p-4">
           <div className="flex items-center space-x-2">
+            {/* Skills Button */}
+            <Button
+              onClick={handleOpenSkills}
+              className="w-12 h-12 bg-purple-600 hover:bg-purple-700 border-2 border-purple-400 text-white"
+              title="Open Skills"
+            >
+              <TreePine className="w-5 h-5" />
+            </Button>
+
             {/* Inventory Button */}
             <Button
               onClick={handleOpenInventory}
