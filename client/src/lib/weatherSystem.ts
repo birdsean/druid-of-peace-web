@@ -85,6 +85,8 @@ class WeatherManager {
         this.notifyListeners();
         return true; // Weather changed (ended)
       }
+      // Weather is still active but turn counter changed, notify listeners
+      this.notifyListeners();
       return false;
     }
 

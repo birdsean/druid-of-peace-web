@@ -276,9 +276,34 @@ export default function Map() {
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
+    const previousPhase = currentTimePhase;
+    
+    // Advance turn (this also advances time phase internally)
     nextTurn();
+    
+    // Get the updated phase from global time manager
+    const nextTimePhase = globalTimeManager.getState();
+    
+    // Check for weather events with the new turn number
+    const weatherChanged = globalWeatherManager.checkForWeatherTrigger(newTurn);
+    
     logTurnAdvance(newTurn);
-  }, [nextTurn, turnCounter, logTurnAdvance]);
+
+    // Log day cycle change event if phase changed
+    if (previousPhase !== nextTimePhase.currentPhase) {
+      console.log(`Day cycle changed from ${previousPhase} to ${nextTimePhase.currentPhase}`);
+    }
+
+    // Log weather event if weather changed
+    if (weatherChanged) {
+      const activeWeather = globalWeatherManager.getWeatherState().activeWeather;
+      if (activeWeather) {
+        console.log(`Weather event started: ${activeWeather.effect.name} (${activeWeather.remainingTurns} turns)`);
+      } else {
+        console.log('Weather event ended');
+      }
+    }
+  }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase]);
 
   const handleNarrativeStart = useCallback((scriptId: string) => {
     const script = loadNarrativeScript(scriptId);
