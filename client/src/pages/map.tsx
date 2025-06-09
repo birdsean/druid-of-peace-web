@@ -137,7 +137,11 @@ function ForestZone({ zone, isCurrentZone, onClick, environmentEffect }: {
   );
 }
 
-function TurnCounter({ turn, timePhase }: { turn: number; timePhase: TimePhase }) {
+function TurnCounter({ turn, timePhase, weatherState }: { 
+  turn: number; 
+  timePhase: TimePhase; 
+  weatherState: any;
+}) {
   const phaseInfo = globalTimeManager.getPhaseInfo(timePhase);
   
   return (
@@ -161,6 +165,24 @@ function TurnCounter({ turn, timePhase }: { turn: number; timePhase: TimePhase }
             {phaseInfo.name}
           </div>
         </div>
+
+        {/* Weather Display */}
+        {weatherState?.activeWeather && (
+          <div className="text-center border-t border-amber-400/30 pt-2">
+            <div 
+              className="text-2xl mb-1"
+              title={weatherState.activeWeather.effect.description}
+            >
+              {weatherState.activeWeather.effect.icon}
+            </div>
+            <div className="text-xs text-cyan-300 font-mono font-bold">
+              {weatherState.activeWeather.effect.name}
+            </div>
+            <div className="text-xs text-cyan-400 font-mono">
+              {weatherState.activeWeather.remainingTurns} turns left
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -172,6 +194,7 @@ export default function Map() {
   const [narrativeScript, setNarrativeScript] = useState<NarrativeScript | null>(null);
   const [showDebugPanel, setShowDebugPanel] = useState(true);
   const [environmentalEffects, setEnvironmentalEffects] = useState<Record<string, EnvironmentalEffect>>({});
+  const weatherState = useWeatherState();
   const {
     zones,
     currentZone,
@@ -192,7 +215,7 @@ export default function Map() {
     getEventLog
   } = useMapEvents();
 
-  // Load environmental effects data
+  // Load environmental effects and weather data
   useEffect(() => {
     const loadEffects = async () => {
       try {
@@ -204,7 +227,13 @@ export default function Map() {
         console.error('Failed to load environmental effects:', error);
       }
     };
+    
+    const loadWeather = async () => {
+      await globalWeatherManager.loadWeatherData();
+    };
+    
     loadEffects();
+    loadWeather();
   }, []);
 
   // Set global map state for encounter resolution
@@ -281,9 +310,7 @@ export default function Map() {
   }, [setLocation]);
 
   return (
-    <div className="relative w-screen h-screen bg-gradient-to-b from-green-800 via-green-600 to-green-400 overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-emerald-800 to-amber-900" />
+    <div className={`relative w-screen h-screen ${getTimeBasedGradient(currentTimePhase)} overflow-hidden`}>
       
       {/* Debug Panel - Map Screen */}
       {IS_DEBUG && (
