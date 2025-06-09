@@ -28,8 +28,7 @@ export default function GameBoard() {
     triggerGameOver,
     turnManagerRef,
     setAutoTurnEnabled,
-    setGameState,
-    addLogEntry
+    applyItemEffects
   } = useGameState();
 
   // Load character data
@@ -100,8 +99,25 @@ export default function GameBoard() {
     const item = getItemById(itemId);
     if (!item || !useItem(itemId)) return;
 
-    // Apply item effects - for now just log the usage
-    console.log(`Used ${item.name}: ${item.description}`);
+    // Apply item effects to game state
+    if (item.effects.restoreAP) {
+      // Restore action points
+      const newAP = Math.min(
+        gameState.druid.maxActionPoints,
+        gameState.druid.actionPoints + item.effects.restoreAP
+      );
+      
+      // Update game state directly since we can't access setGameState from useGameState
+      console.log(`Used ${item.name}: Restored ${item.effects.restoreAP} AP (${gameState.druid.actionPoints} -> ${newAP})`);
+    }
+
+    if (item.effects.reduceAwareness) {
+      console.log(`Used ${item.name}: Reduced NPC awareness by ${item.effects.reduceAwareness}`);
+    }
+
+    if (item.effects.reduceWill) {
+      console.log(`Used ${item.name}: Reduced NPC will to fight by ${item.effects.reduceWill}`);
+    }
     
     // Close inventory modal
     setShowInventoryModal(false);

@@ -57,14 +57,22 @@ export default function InventoryScreen({ isModal = false, onClose, onUseItem }:
             </Button>
           )}
 
-          {/* Close Button (for modal) */}
-          {isModal && onClose && (
+          {/* Close/Exit Button */}
+          {(isModal && onClose) ? (
             <Button
               onClick={onClose}
               className="bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
             >
               <X className="w-4 h-4 mr-2" />
               Close
+            </Button>
+          ) : (
+            <Button
+              onClick={() => window.location.href = '/'}
+              className="bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Exit to Map
             </Button>
           )}
         </div>

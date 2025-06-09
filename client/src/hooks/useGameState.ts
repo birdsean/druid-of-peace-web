@@ -4,6 +4,7 @@ import { rollDice as rollDiceLogic, calculatePeaceEffect } from "@/lib/gameLogic
 import { TurnManager } from "@/lib/turnManager";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 import { getGlobalMapState } from "@/lib/mapState";
+import { BattleEvent, createBattleEvent, formatBattleEventForLog } from "@/lib/events";
 
 // Load character data from JSON
 const npcData = loadNPCData();
@@ -33,8 +34,20 @@ export function useGameState() {
     effect: ''
   });
   const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
+  const [battleEvents, setBattleEvents] = useState<BattleEvent[]>([
+    createBattleEvent(1, 'game_start', 'druid')
+  ]);
   
   const turnManagerRef = useRef<TurnManager | null>(null);
+
+  const addBattleEvent = useCallback((event: BattleEvent) => {
+    setBattleEvents(prev => [...prev, event]);
+    // Update combat log from events
+    setGameState(prev => ({
+      ...prev,
+      combatLog: [...battleEvents, event].map(e => `Turn ${e.turn}: ${formatBattleEventForLog(e)}`)
+    }));
+  }, [battleEvents]);
 
   const addLogEntry = useCallback((message: string) => {
     setGameState(prev => ({
@@ -254,6 +267,38 @@ export function useGameState() {
     }
   }, []);
 
+  const applyItemEffects = useCallback((itemEffects: any, itemName: string) => {
+    setGameState(prev => {
+      const newState = { ...prev };
+      
+      if (itemEffects.restoreAP) {
+        newState.druid.actionPoints = Math.min(
+          newState.druid.maxActionPoints,
+          newState.druid.actionPoints + itemEffects.restoreAP
+        );
+      }
+
+      if (itemEffects.reduceAwareness) {
+        if (itemEffects.targetAll) {
+          newState.npc1.awareness = Math.max(0, newState.npc1.awareness - itemEffects.reduceAwareness);
+          newState.npc2.awareness = Math.max(0, newState.npc2.awareness - itemEffects.reduceAwareness);
+        } else {
+          newState.npc1.awareness = Math.max(0, newState.npc1.awareness - itemEffects.reduceAwareness);
+          newState.npc2.awareness = Math.max(0, newState.npc2.awareness - itemEffects.reduceAwareness);
+        }
+      }
+
+      if (itemEffects.reduceWill && itemEffects.targetAll) {
+        newState.npc1.willToFight = Math.max(0, newState.npc1.willToFight - itemEffects.reduceWill);
+        newState.npc2.willToFight = Math.max(0, newState.npc2.willToFight - itemEffects.reduceWill);
+      }
+
+      return newState;
+    });
+
+    addLogEntry(`Used ${itemName}`);
+  }, [addLogEntry]);
+
   return {
     gameState,
     diceState,
@@ -268,6 +313,7 @@ export function useGameState() {
     turnManagerRef,
     setAutoTurnEnabled,
     setGameState,
-    addLogEntry
+    addLogEntry,
+    applyItemEffects
   };
 }
