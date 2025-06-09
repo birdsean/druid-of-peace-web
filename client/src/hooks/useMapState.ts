@@ -107,11 +107,13 @@ export function useMapState() {
   }, []);
 
   const resolveEncounter = useCallback((zoneId: string, success: boolean) => {
+    console.log(`Resolving encounter for zone ${zoneId} with success: ${success}`)  
     setMapState(prev => ({
       ...prev,
       zones: prev.zones.map(zone => {
         if (zone.id === zoneId) {
           const heatChange = success ? -15 : 10;
+          console.log(`Heat change for ${zoneId}: ${heatChange}`);
           return {
             ...zone,
             heat: Math.max(0, Math.min(100, zone.heat + heatChange)),

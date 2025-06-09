@@ -26,9 +26,7 @@ export default function ForestZone({ zone, isCurrentZone, onClick }: ForestZoneP
         "relative w-20 h-20 rounded-full border-4 flex items-center justify-center text-3xl shadow-lg transition-all duration-300",
         isCurrentZone 
           ? "border-yellow-400 bg-yellow-100 shadow-yellow-400/50" 
-          : zone.explored
-            ? "border-green-400 bg-green-100 hover:border-green-300"
-            : "border-gray-400 bg-gray-100 hover:border-gray-300"
+          : "border-green-400 bg-green-100 hover:border-green-300"
       )}>
         {zone.icon}
         

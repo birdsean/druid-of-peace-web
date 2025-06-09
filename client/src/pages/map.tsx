@@ -117,6 +117,7 @@ function TurnCounter({ turn }: { turn: number }) {
 
 export default function Map() {
   const [, setLocation] = useLocation();
+  const [resolutionMode, setResolutionMode] = useState<'none' | 'success' | 'fail'>('none');
   const {
     zones,
     currentZone,
@@ -137,6 +138,14 @@ export default function Map() {
   }, [resolveEncounter, activeEncounterZone]);
 
   const handleZoneClick = useCallback((zoneId: string) => {
+    // Handle debug resolution modes
+    if (resolutionMode !== 'none') {
+      const isSuccess = resolutionMode === 'success';
+      resolveEncounter(zoneId, isSuccess);
+      setResolutionMode('none');
+      return;
+    }
+
     if (currentZone === zoneId) return; // Re-clicking current zone does nothing
     
     const zone = zones.find(z => z.id === zoneId);
@@ -154,7 +163,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode]);
 
   const handleNextTurn = useCallback(() => {
     nextTurn();
@@ -170,6 +179,38 @@ export default function Map() {
         }}
       />
       
+      {/* Debug Controls */}
+      <div className="absolute top-4 left-4 z-30 flex flex-col gap-2">
+        <button
+          onClick={handleNextTurn}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-mono"
+        >
+          PROGRESS TURN
+        </button>
+        
+        <button
+          onClick={() => setResolutionMode(resolutionMode === 'success' ? 'none' : 'success')}
+          className={`px-3 py-2 rounded text-sm font-mono ${
+            resolutionMode === 'success' 
+              ? 'bg-green-700 text-white' 
+              : 'bg-green-600 hover:bg-green-700 text-white'
+          }`}
+        >
+          {resolutionMode === 'success' ? 'CLICK ZONE (SUCCESS)' : 'RESOLVE SUCCESS'}
+        </button>
+        
+        <button
+          onClick={() => setResolutionMode(resolutionMode === 'fail' ? 'none' : 'fail')}
+          className={`px-3 py-2 rounded text-sm font-mono ${
+            resolutionMode === 'fail' 
+              ? 'bg-red-700 text-white' 
+              : 'bg-red-600 hover:bg-red-700 text-white'
+          }`}
+        >
+          {resolutionMode === 'fail' ? 'CLICK ZONE (FAIL)' : 'RESOLVE FAIL'}
+        </button>
+      </div>
+
       {/* Turn Counter */}
       <TurnCounter turn={turnCounter} />
       
