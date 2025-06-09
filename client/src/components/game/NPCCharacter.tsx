@@ -97,18 +97,26 @@ export function NPCStatsDisplay({
           <div className="text-sm font-mono text-white font-bold">{name}</div>
         </div>
 
-        {/* Health Bar */}
+        {/* Health Bar with Armor Overlay */}
         <div className="mb-1">
           <div className="text-xs font-mono text-gray-400 mb-1">HP</div>
           <div className="bg-gray-700 rounded-full p-1">
             <div className="relative h-2 bg-gray-600 rounded-full overflow-hidden">
+              {/* Health bar */}
               <div 
                 className="bar-fill h-full bg-red-500 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${healthPercent}%` }}
               />
+              {/* Armor overlay */}
+              {npc.armor > 0 && (
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gray-400 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${Math.min(healthPercent, (npc.armor / npc.maxHealth) * 100)}%` }}
+                />
+              )}
             </div>
             <div className="text-xs font-mono text-white text-center">
-              {npc.health}/{npc.maxHealth}
+              {npc.health}/{npc.maxHealth}{npc.armor > 0 ? ` (+${npc.armor})` : ''}
             </div>
           </div>
         </div>

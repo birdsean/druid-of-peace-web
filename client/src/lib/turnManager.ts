@@ -51,12 +51,36 @@ export class TurnManager {
       switch (action.type) {
         case 'attack':
           const damage = Math.floor(Math.random() * 20) + 10;
-          const oldHealth = target.health;
-          target.health = Math.max(0, target.health - damage);
-          const healthLost = oldHealth - target.health;
-          const willLost = healthLost * 0.5;
+          let remainingDamage = damage;
+          let armorDamage = 0;
+          let healthDamage = 0;
+          
+          // Apply damage to armor first
+          if (target.armor > 0) {
+            armorDamage = Math.min(target.armor, remainingDamage);
+            target.armor = Math.max(0, target.armor - armorDamage);
+            remainingDamage -= armorDamage;
+          }
+          
+          // Apply remaining damage to health
+          if (remainingDamage > 0) {
+            const oldHealth = target.health;
+            target.health = Math.max(0, target.health - remainingDamage);
+            healthDamage = oldHealth - target.health;
+          }
+          
+          // Will to fight decreases based on health damage only
+          const willLost = healthDamage * 0.5;
           target.willToFight = Math.max(0, target.willToFight - willLost);
-          this.addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} attacks for ${damage} damage (${willLost.toFixed(1)} will lost)`);
+          
+          let damageText = `${damage} damage`;
+          if (armorDamage > 0 && healthDamage > 0) {
+            damageText += ` (${armorDamage} to armor, ${healthDamage} to health)`;
+          } else if (armorDamage > 0) {
+            damageText += ` (blocked by armor)`;
+          }
+          
+          this.addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} attacks for ${damageText}${willLost > 0 ? ` (${willLost.toFixed(1)} will lost)` : ''}`);
           break;
         case 'defend':
           npc.health = Math.min(npc.maxHealth, npc.health + 5);

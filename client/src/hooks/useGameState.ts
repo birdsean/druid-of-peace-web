@@ -6,6 +6,8 @@ import { TurnManager } from "@/lib/turnManager";
 const initialNPC1: NPCStats = {
   health: 100,
   maxHealth: 100,
+  armor: 25,
+  maxArmor: 25,
   willToFight: 75,
   maxWill: 100,
   awareness: 25,
@@ -15,6 +17,8 @@ const initialNPC1: NPCStats = {
 const initialNPC2: NPCStats = {
   health: 85,
   maxHealth: 100,
+  armor: 15,
+  maxArmor: 15,
   willToFight: 60,
   maxWill: 100,
   awareness: 45,
@@ -28,7 +32,8 @@ const initialGameState: GameState = {
   npc2: initialNPC2,
   druid: {
     hidden: true,
-    actionsRemaining: 1
+    actionPoints: 1,
+    maxActionPoints: 1
   },
   gameOver: false,
   targetingMode: false,
@@ -133,6 +138,9 @@ export function useGameState() {
   const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
     if (!turnManagerRef.current) return;
     
+    // Check if druid has action points
+    if (gameState.druid.actionPoints <= 0) return;
+    
     const roll = await new Promise<number>((resolve) => {
       setDiceState({
         visible: true,
@@ -169,6 +177,9 @@ export function useGameState() {
       newState.npc1.awareness = Math.min(newState.npc1.maxAwareness, newState.npc1.awareness + effect.awarenessIncrease);
       newState.npc2.awareness = Math.min(newState.npc2.maxAwareness, newState.npc2.awareness + effect.awarenessIncrease);
       
+      // Consume action point
+      newState.druid.actionPoints = Math.max(0, newState.druid.actionPoints - 1);
+      
       newState.targetingMode = false;
       
       return newState;
@@ -183,10 +194,18 @@ export function useGameState() {
         return prev;
       });
     }, 1500);
-  }, [addLogEntry, checkGameEnd]);
+  }, [addLogEntry, checkGameEnd, gameState.druid.actionPoints]);
 
   const endTurn = useCallback(() => {
     if (turnManagerRef.current) {
+      // Reset action points when ending turn
+      setGameState(prev => ({
+        ...prev,
+        druid: {
+          ...prev.druid,
+          actionPoints: prev.druid.maxActionPoints
+        }
+      }));
       turnManagerRef.current.manualAdvanceTurn();
     }
   }, []);

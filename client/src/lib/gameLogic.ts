@@ -1,6 +1,8 @@
 export interface NPCStats {
   health: number;
   maxHealth: number;
+  armor: number;
+  maxArmor: number;
   willToFight: number;
   maxWill: number;
   awareness: number;
@@ -9,7 +11,8 @@ export interface NPCStats {
 
 export interface DruidStats {
   hidden: boolean;
-  actionsRemaining: number;
+  actionPoints: number;
+  maxActionPoints: number;
 }
 
 export interface GameOverState {
