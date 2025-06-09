@@ -9,6 +9,7 @@ export interface Zone {
   position: { x: number; y: number };
   icon: string;
   description: string;
+  environmentEffect?: string;
 }
 
 interface MapState {
@@ -18,61 +19,10 @@ interface MapState {
   activeEncounterZone: string | null;
 }
 
-const initialZones: Zone[] = [
-  // Top row
-  {
-    id: "grove",
-    name: "Sacred Grove",
-    heat: 25,
-    hasEncounter: false,
-    position: { x: 20, y: 35 },
-    icon: "🌳"
-  },
-  {
-    id: "lake",
-    name: "Moonlit Lake",
-    heat: 15,
-    hasEncounter: false,
-    position: { x: 50, y: 35 },
-    icon: "🌊"
-  },
-  {
-    id: "thicket",
-    name: "Deep Thicket",
-    heat: 45,
-    hasEncounter: true,
-    position: { x: 80, y: 35 },
-    icon: "🌿"
-  },
-  // Bottom row
-  {
-    id: "clearing",
-    name: "Sunlit Clearing",
-    heat: 8,
-    hasEncounter: false,
-    position: { x: 20, y: 65 },
-    icon: "☀️"
-  },
-  {
-    id: "ruins",
-    name: "Ancient Ruins",
-    heat: 75,
-    hasEncounter: false,
-    position: { x: 50, y: 65 },
-    icon: "🏛️"
-  },
-  {
-    id: "cavern",
-    name: "Hidden Cavern",
-    heat: 90,
-    hasEncounter: true,
-    position: { x: 80, y: 65 },
-    icon: "🕳️"
-  }
-];
+const defaultZones: Zone[] = [];
 
 const initialMapState: MapState = {
-  zones: initialZones,
+  zones: defaultZones,
   currentZone: "grove",
   turnCounter: 1,
   activeEncounterZone: null
