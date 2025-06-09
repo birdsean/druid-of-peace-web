@@ -107,13 +107,16 @@ export function useMapState() {
   }, []);
 
   const resolveEncounter = useCallback((zoneId: string, success: boolean) => {
-    console.log(`Resolving encounter for zone ${zoneId} with success: ${success}`)  
+    const zone = mapState.zones.find(z => z.id === zoneId);
+    const zoneName = zone?.name || zoneId;
+    const heatChange = success ? -15 : 10;
+    
+    console.log(`Encounter resolved in zone ${zoneId} (${zoneName}) - Success: ${success}, Heat change: ${heatChange}`);
+    
     setMapState(prev => ({
       ...prev,
       zones: prev.zones.map(zone => {
         if (zone.id === zoneId) {
-          const heatChange = success ? -15 : 10;
-          console.log(`Heat change for ${zoneId}: ${heatChange}`);
           return {
             ...zone,
             heat: Math.max(0, Math.min(100, zone.heat + heatChange)),
@@ -124,7 +127,7 @@ export function useMapState() {
       }),
       activeEncounterZone: null
     }));
-  }, []);
+  }, [mapState.zones]);
 
   // Global state for encounter resolution
   const getEncounterResolution = useCallback(() => {
@@ -183,6 +186,7 @@ export function useMapState() {
         // Apply encounter bonus heat if encounter generated
         if (hasNewEncounter) {
           heatChange += rollDice(2, 4);
+          console.log(`New encounter created in zone ${zone.id} (${zone.name}) - Heat: ${zone.heat}, Roll: ${roll}, Chance: ${encounterChance}%`);
         }
 
         const newHeat = Math.max(0, Math.min(100, zone.heat + heatChange));

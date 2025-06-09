@@ -268,36 +268,57 @@ export function useGameState() {
   }, []);
 
   const applyItemEffects = useCallback((itemEffects: any, itemName: string) => {
+    let effectsDescription = [];
+    
     setGameState(prev => {
       const newState = { ...prev };
       
       if (itemEffects.restoreAP) {
+        const apRestored = Math.min(itemEffects.restoreAP, newState.druid.maxActionPoints - newState.druid.actionPoints);
         newState.druid.actionPoints = Math.min(
           newState.druid.maxActionPoints,
           newState.druid.actionPoints + itemEffects.restoreAP
         );
+        effectsDescription.push(`AP +${apRestored}`);
       }
 
       if (itemEffects.reduceAwareness) {
         if (itemEffects.targetAll) {
+          const npc1AwarenessReduced = Math.min(itemEffects.reduceAwareness, newState.npc1.awareness);
+          const npc2AwarenessReduced = Math.min(itemEffects.reduceAwareness, newState.npc2.awareness);
           newState.npc1.awareness = Math.max(0, newState.npc1.awareness - itemEffects.reduceAwareness);
           newState.npc2.awareness = Math.max(0, newState.npc2.awareness - itemEffects.reduceAwareness);
-        } else {
-          newState.npc1.awareness = Math.max(0, newState.npc1.awareness - itemEffects.reduceAwareness);
-          newState.npc2.awareness = Math.max(0, newState.npc2.awareness - itemEffects.reduceAwareness);
+          effectsDescription.push(`Awareness -${npc1AwarenessReduced}/-${npc2AwarenessReduced}`);
         }
       }
 
       if (itemEffects.reduceWill && itemEffects.targetAll) {
+        const npc1WillReduced = Math.min(itemEffects.reduceWill, newState.npc1.willToFight);
+        const npc2WillReduced = Math.min(itemEffects.reduceWill, newState.npc2.willToFight);
         newState.npc1.willToFight = Math.max(0, newState.npc1.willToFight - itemEffects.reduceWill);
         newState.npc2.willToFight = Math.max(0, newState.npc2.willToFight - itemEffects.reduceWill);
+        effectsDescription.push(`Will -${npc1WillReduced}/-${npc2WillReduced}`);
       }
 
       return newState;
     });
 
-    addLogEntry(`Used ${itemName}`);
-  }, [addLogEntry]);
+    // Create battle event for item use
+    const event = createBattleEvent(
+      gameState.turnCounter,
+      'item_use',
+      'druid',
+      'use_item',
+      undefined,
+      effectsDescription.join(', '),
+      0,
+      effectsDescription.join(', '),
+      itemName
+    );
+    addBattleEvent(event);
+
+    addLogEntry(`Used ${itemName}: ${effectsDescription.join(', ')}`);
+  }, [addLogEntry, addBattleEvent, gameState.turnCounter]);
 
   return {
     gameState,
