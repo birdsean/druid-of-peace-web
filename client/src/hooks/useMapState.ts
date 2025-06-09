@@ -142,9 +142,50 @@ export function useMapState() {
         const encounterChance = calculateEncounterChance(zone.heat);
         const hasNewEncounter = roll <= encounterChance;
 
-        // Slight heat decay over time if no encounter
-        const heatDecay = hasNewEncounter ? 0 : -2;
-        const newHeat = Math.max(0, Math.min(100, zone.heat + heatDecay));
+        // Heat jitter calculation with weighted randomness
+        let heatChange = 0;
+        if (zone.heat === 0) {
+          // 5% chance to reignite to 1 when heat is zero
+          if (rollDice(1, 100) <= 5) {
+            heatChange = 1;
+          }
+        } else {
+          // Dynamic heat changes based on current heat level
+          const jitterRoll = rollDice(1, 20);
+          
+          if (jitterRoll <= 2) {
+            // 10% chance to decrease heat (peaceful influence spreads)
+            heatChange = rollDice(1, 3) * -1;
+          } else if (jitterRoll <= 5) {
+            // 15% chance for no change (stability)
+            heatChange = 0;
+          } else if (jitterRoll <= 12) {
+            // 35% chance for small increase (natural tension buildup)
+            heatChange = rollDice(1, 2);
+          } else if (jitterRoll <= 17) {
+            // 25% chance for moderate increase
+            heatChange = rollDice(2, 4);
+          } else {
+            // 15% chance for larger increase (conflicts spread)
+            heatChange = rollDice(3, 6);
+          }
+          
+          // Modifier based on current heat level
+          if (zone.heat > 70) {
+            // High heat zones are more volatile
+            heatChange += rollDice(1, 2);
+          } else if (zone.heat < 20) {
+            // Low heat zones are more stable
+            heatChange = Math.max(-1, heatChange - 1);
+          }
+        }
+
+        // Apply encounter bonus heat if encounter generated
+        if (hasNewEncounter) {
+          heatChange += rollDice(2, 4);
+        }
+
+        const newHeat = Math.max(0, Math.min(100, zone.heat + heatChange));
 
         return {
           ...zone,
