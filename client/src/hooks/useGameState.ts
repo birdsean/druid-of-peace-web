@@ -3,6 +3,7 @@ import { GameState, NPCStats, DiceState, GameOverState } from "@/lib/gameLogic";
 import { rollDice as rollDiceLogic, calculatePeaceEffect } from "@/lib/gameLogic";
 import { TurnManager } from "@/lib/turnManager";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
+import { getGlobalMapState } from "@/lib/mapState";
 
 // Load character data from JSON
 const npcData = loadNPCData();
@@ -215,6 +216,16 @@ export function useGameState() {
     });
   }, []);
 
+  // Handle encounter completion and heat updates
+  const completeEncounter = useCallback((success: boolean) => {
+    const mapState = getGlobalMapState();
+    if (mapState.resolveEncounter) {
+      // Use a default zone ID if none is available
+      const zoneId = 'grove'; // This should be passed from the map when starting encounter
+      mapState.resolveEncounter(zoneId, success);
+    }
+  }, []);
+
   const toggleCombatLog = useCallback(() => {
     setCombatLogMode(prev => {
       switch (prev) {
@@ -234,6 +245,7 @@ export function useGameState() {
     restartGame,
     setTargetingMode,
     combatLogMode,
-    toggleCombatLog
+    toggleCombatLog,
+    completeEncounter
   };
 }
