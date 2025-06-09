@@ -49,6 +49,7 @@ export function useGameState() {
     result: null,
     effect: ''
   });
+  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('small');
   
   const turnManagerRef = useRef<TurnManager | null>(null);
 
@@ -232,12 +233,25 @@ export function useGameState() {
     });
   }, []);
 
+  const toggleCombatLog = useCallback(() => {
+    setCombatLogMode(prev => {
+      switch (prev) {
+        case 'hidden': return 'small';
+        case 'small': return 'large';
+        case 'large': return 'hidden';
+        default: return 'small';
+      }
+    });
+  }, []);
+
   return {
     gameState,
     diceState,
     usePeaceAbility,
     endTurn,
     restartGame,
-    setTargetingMode
+    setTargetingMode,
+    combatLogMode,
+    toggleCombatLog
   };
 }

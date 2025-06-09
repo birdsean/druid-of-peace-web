@@ -2,7 +2,7 @@ import { useGameState } from "@/hooks/useGameState";
 import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
 import TurnIndicator from "./TurnIndicator";
-import DruidActionPanel from "./DruidActionPanel";
+import PlayerActionPanel from "./PlayerActionPanel";
 import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
@@ -15,6 +15,8 @@ export default function GameBoard() {
     restartGame,
     setTargetingMode,
     diceState,
+    combatLogMode,
+    toggleCombatLog
   } = useGameState();
 
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
@@ -112,12 +114,16 @@ export default function GameBoard() {
             </div>
           )}
 
-        {/* Druid Action Panel */}
-        <DruidActionPanel
-          visible={gameState.currentTurn === "druid" && !gameState.gameOver}
+        {/* Player Action Panel */}
+        <PlayerActionPanel
+          actionPoints={gameState.druid.actionPoints}
+          maxActionPoints={gameState.druid.maxActionPoints}
+          targetingMode={gameState.targetingMode}
           onPeaceAbility={handlePeaceAbilityClick}
           onEndTurn={handleEndTurn}
-          targetingMode={gameState.targetingMode}
+          onToggleCombatLog={toggleCombatLog}
+          combatLogMode={combatLogMode}
+          isPlayerTurn={gameState.currentTurn === "druid" && !gameState.gameOver}
         />
 
         {/* Dice Display */}

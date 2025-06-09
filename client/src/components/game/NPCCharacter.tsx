@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 interface NPCStats {
   health: number;
   maxHealth: number;
+  armor: number;
+  maxArmor: number;
   willToFight: number;
   maxWill: number;
   awareness: number;
