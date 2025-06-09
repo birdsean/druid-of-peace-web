@@ -101,7 +101,8 @@ export default function GameBoard() {
   };
 
   const handleFleeAbility = () => {
-    triggerGameOver('FLED ENCOUNTER', 'The druid escaped, but the conflict remains...', '🏃');
+    // Flee should return to map, not trigger game over
+    window.location.hash = '/map';
   };
 
   // Debug functions

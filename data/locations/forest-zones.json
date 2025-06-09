@@ -6,7 +6,8 @@
     "hasEncounter": false,
     "position": { "x": 50, "y": 30 },
     "icon": "🌳",
-    "description": "A peaceful glade where ancient trees form a natural circle"
+    "description": "A peaceful glade where ancient trees form a natural circle",
+    "environmentEffect": "open_clearing"
   },
   {
     "id": "ruins",
@@ -15,7 +16,8 @@
     "hasEncounter": false,
     "position": { "x": 80, "y": 50 },
     "icon": "🏛️",
-    "description": "Crumbling stone structures overgrown with moss and vines"
+    "description": "Crumbling stone structures overgrown with moss and vines",
+    "environmentEffect": "ancient_ruins"
   },
   {
     "id": "grove",
@@ -24,7 +26,8 @@
     "hasEncounter": false,
     "position": { "x": 20, "y": 60 },
     "icon": "🌲",
-    "description": "A hallowed space where druids once gathered for ceremonies"
+    "description": "A hallowed space where druids once gathered for ceremonies",
+    "environmentEffect": "moonlit_grove"
   },
   {
     "id": "thicket",
@@ -33,7 +36,8 @@
     "hasEncounter": false,
     "position": { "x": 70, "y": 20 },
     "icon": "🌿",
-    "description": "Dense undergrowth that conceals many secrets"
+    "description": "Dense undergrowth that conceals many secrets",
+    "environmentEffect": "thorny_thicket"
   },
   {
     "id": "pool",
@@ -42,7 +46,8 @@
     "hasEncounter": false,
     "position": { "x": 40, "y": 80 },
     "icon": "💧",
-    "description": "A still pool that reflects more than just the sky"
+    "description": "A still pool that reflects more than just the sky",
+    "environmentEffect": "dense_forest"
   },
   {
     "id": "hollow",
@@ -51,6 +56,7 @@
     "hasEncounter": false,
     "position": { "x": 60, "y": 70 },
     "icon": "🕳️",
-    "description": "A mysterious depression where shadows gather"
+    "description": "A mysterious depression where shadows gather",
+    "environmentEffect": "misty_hollow"
   }
 ]

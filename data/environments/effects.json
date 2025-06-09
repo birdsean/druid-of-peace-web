@@ -1,0 +1,110 @@
+{
+  "environmentalEffects": {
+    "dense_forest": {
+      "id": "dense_forest",
+      "name": "Dense Forest",
+      "description": "Thick canopy provides cover but limits visibility",
+      "icon": "🌲",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 15,
+          "peaceAuraBonus": 10
+        },
+        "npcEffects": {
+          "awarenessReduction": 10,
+          "investigateEffectiveness": -20
+        }
+      },
+      "color": "#1a5f1a"
+    },
+    "open_clearing": {
+      "id": "open_clearing",
+      "name": "Open Clearing",
+      "description": "Clear view in all directions, nowhere to hide",
+      "icon": "☀️",
+      "effects": {
+        "druidAdvantage": {
+          "stealthPenalty": 20,
+          "peaceAuraBonus": 5
+        },
+        "npcEffects": {
+          "awarenessBonus": 15,
+          "investigateEffectiveness": 30
+        }
+      },
+      "color": "#87ceeb"
+    },
+    "misty_hollow": {
+      "id": "misty_hollow",
+      "name": "Misty Hollow",
+      "description": "Swirling mists obscure vision and muffle sounds",
+      "icon": "🌫️",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 25,
+          "peaceAuraBonus": -5
+        },
+        "npcEffects": {
+          "awarenessReduction": 20,
+          "investigateEffectiveness": -30,
+          "attackAccuracy": -15
+        }
+      },
+      "color": "#708090"
+    },
+    "ancient_ruins": {
+      "id": "ancient_ruins",
+      "name": "Ancient Ruins",
+      "description": "Crumbling stone structures create hiding spots and echoes",
+      "icon": "🏛️",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 10,
+          "peaceAuraBonus": 15
+        },
+        "npcEffects": {
+          "awarenessReduction": 5,
+          "investigateEffectiveness": 10,
+          "defenseBonus": 10
+        }
+      },
+      "color": "#8b7355"
+    },
+    "thorny_thicket": {
+      "id": "thorny_thicket",
+      "name": "Thorny Thicket",
+      "description": "Dense brambles slow movement and provide natural barriers",
+      "icon": "🌿",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 20,
+          "peaceAuraBonus": 5
+        },
+        "npcEffects": {
+          "awarenessReduction": 15,
+          "attackDamage": -10,
+          "movementPenalty": 25
+        }
+      },
+      "color": "#228b22"
+    },
+    "moonlit_grove": {
+      "id": "moonlit_grove",
+      "name": "Moonlit Grove",
+      "description": "Ethereal moonlight enhances magical energies",
+      "icon": "🌙",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 5,
+          "peaceAuraBonus": 25
+        },
+        "npcEffects": {
+          "awarenessBonus": 5,
+          "willCalming": 10,
+          "magicResistance": -15
+        }
+      },
+      "color": "#4b0082"
+    }
+  }
+}

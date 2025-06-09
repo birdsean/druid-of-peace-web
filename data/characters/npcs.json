@@ -2,9 +2,12 @@
   {
     "id": "npc1",
     "name": "Gareth",
+    "type": "warrior",
     "icon": "🗡️",
     "color": "red",
     "position": "left",
+    "description": "A fierce warrior with a quick temper and strong combat instincts",
+    "actions": ["attack", "defend"],
     "stats": {
       "health": 80,
       "maxHealth": 80,
@@ -19,9 +22,12 @@
   {
     "id": "npc2",
     "name": "Lyra",
+    "type": "ranger",
     "icon": "🏹",
     "color": "blue",
     "position": "right",
+    "description": "A skilled ranger with keen senses and tracking abilities",
+    "actions": ["attack", "defend", "investigate"],
     "stats": {
       "health": 70,
       "maxHealth": 70,

@@ -1,0 +1,48 @@
+{
+  "npcActions": {
+    "attack": {
+      "id": "attack",
+      "name": "Attack",
+      "description": "Launch a direct assault on the opponent",
+      "icon": "⚔️",
+      "effects": {
+        "damage": { "min": 10, "max": 25 },
+        "armorDamage": { "min": 5, "max": 15 },
+        "awarenessIncrease": 10
+      },
+      "requirements": {
+        "minWillToFight": 30
+      },
+      "weight": 60
+    },
+    "defend": {
+      "id": "defend",
+      "name": "Defend",
+      "description": "Take a defensive stance to protect against attacks",
+      "icon": "🛡️",
+      "effects": {
+        "armorRestore": { "min": 8, "max": 20 },
+        "willIncrease": { "min": 5, "max": 10 },
+        "awarenessIncrease": 5
+      },
+      "requirements": {
+        "maxWillToFight": 70
+      },
+      "weight": 30
+    },
+    "investigate": {
+      "id": "investigate",
+      "name": "Investigate",
+      "description": "Search the area for signs of the hidden druid",
+      "icon": "🔍",
+      "effects": {
+        "awarenessIncrease": { "min": 15, "max": 30 },
+        "willDecrease": { "min": 2, "max": 5 }
+      },
+      "requirements": {
+        "minAwareness": 20
+      },
+      "weight": 40
+    }
+  }
+}
