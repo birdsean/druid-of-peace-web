@@ -105,6 +105,80 @@
         }
       },
       "color": "#4b0082"
+    },
+    "daylight": {
+      "id": "daylight",
+      "name": "Daylight",
+      "description": "Bright sunlight provides clear visibility but makes hiding difficult",
+      "icon": "☀️",
+      "effects": {
+        "druidAdvantage": {
+          "stealthPenalty": 10,
+          "peaceAuraBonus": 5
+        },
+        "npcEffects": {
+          "awarenessBonus": 15,
+          "investigateEffectiveness": 20,
+          "attackAccuracy": 10
+        }
+      },
+      "color": "#fbbf24"
+    },
+    "dusk": {
+      "id": "dusk",
+      "name": "Dusk",
+      "description": "Twilight creates shadows and uncertainty, affecting perception",
+      "icon": "🌆",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 15,
+          "peaceAuraBonus": 10
+        },
+        "npcEffects": {
+          "awarenessReduction": 10,
+          "investigateEffectiveness": -15,
+          "willCalming": 5
+        }
+      },
+      "color": "#f97316"
+    },
+    "night": {
+      "id": "night",
+      "name": "Night",
+      "description": "Darkness provides excellent cover but limits all visibility",
+      "icon": "🌙",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 25,
+          "peaceAuraBonus": 15
+        },
+        "npcEffects": {
+          "awarenessReduction": 20,
+          "investigateEffectiveness": -25,
+          "attackAccuracy": -15,
+          "willCalming": 10
+        }
+      },
+      "color": "#1e293b"
+    },
+    "dawn": {
+      "id": "dawn",
+      "name": "Dawn",
+      "description": "Early morning light brings renewed energy and clarity",
+      "icon": "🌄",
+      "effects": {
+        "druidAdvantage": {
+          "stealthBonus": 5,
+          "peaceAuraBonus": 20
+        },
+        "npcEffects": {
+          "awarenessBonus": 5,
+          "investigateEffectiveness": 10,
+          "willCalming": 15,
+          "magicResistance": -10
+        }
+      },
+      "color": "#ec4899"
     }
   }
 }

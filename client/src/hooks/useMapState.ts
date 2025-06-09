@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { loadLocationData } from "../lib/locationLoader";
+import { globalTimeManager, type TimePhase, applyPhaseColorPalette } from "@/lib/timeSystem";
 
 export interface Zone {
   id: string;
@@ -17,6 +18,7 @@ interface MapState {
   currentZone: string;
   turnCounter: number;
   activeEncounterZone: string | null;
+  currentTimePhase: TimePhase;
 }
 
 const defaultZones: Zone[] = [];
@@ -25,7 +27,8 @@ const initialMapState: MapState = {
   zones: defaultZones,
   currentZone: "grove",
   turnCounter: 1,
-  activeEncounterZone: null
+  activeEncounterZone: null,
+  currentTimePhase: 'day1' as TimePhase
 };
 
 function rollDice(min = 1, max = 6): number {
@@ -58,6 +61,31 @@ export function useMapState() {
       }
     };
     loadZones();
+  }, []);
+
+  // Initialize time system and sync with map state
+  useEffect(() => {
+    const timeState = globalTimeManager.getState();
+    setMapState(prev => ({
+      ...prev,
+      currentTimePhase: timeState.currentPhase,
+      turnCounter: timeState.turnCounter
+    }));
+
+    // Apply initial color palette
+    applyPhaseColorPalette(timeState.currentPhase);
+
+    // Subscribe to time changes
+    const unsubscribe = globalTimeManager.subscribe((timeState) => {
+      setMapState(prev => ({
+        ...prev,
+        currentTimePhase: timeState.currentPhase,
+        turnCounter: timeState.turnCounter
+      }));
+      applyPhaseColorPalette(timeState.currentPhase);
+    });
+
+    return unsubscribe;
   }, []);
 
   const setCurrentZone = useCallback((zoneId: string) => {
