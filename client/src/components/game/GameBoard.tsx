@@ -28,7 +28,8 @@ export default function GameBoard() {
     triggerGameOver,
     turnManagerRef,
     setAutoTurnEnabled,
-    applyItemEffects
+    applyItemEffects,
+    executeAction
   } = useGameState();
 
   // Load character data

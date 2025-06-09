@@ -378,6 +378,7 @@ export function useGameState() {
     setAutoTurnEnabled,
     setGameState,
     addLogEntry,
-    applyItemEffects
+    applyItemEffects,
+    executeAction
   };
 }
