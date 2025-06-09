@@ -1,6 +1,4 @@
-import garethData from '../characters/npc/gareth.json';
-import lyraData from '../characters/npc/lyra.json';
-import druidData from '../characters/pc/druid.json';
+// Character data now loaded from parent-level data directory
 
 export interface NPCCharacterData {
   id: string;
@@ -41,15 +39,29 @@ export interface PCCharacterData {
   abilities: PCAbility[];
 }
 
-export function loadNPCData(): NPCCharacterData[] {
-  return [garethData, lyraData] as NPCCharacterData[];
+export async function loadNPCData(): Promise<NPCCharacterData[]> {
+  try {
+    const response = await fetch('/data/characters/npcs.json');
+    if (!response.ok) throw new Error('Failed to load NPC data');
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading NPC data:', error);
+    return [];
+  }
 }
 
-export function loadPCData(): PCCharacterData {
-  return druidData as PCCharacterData;
+export async function loadPCData(): Promise<PCCharacterData | null> {
+  try {
+    const response = await fetch('/data/characters/pc.json');
+    if (!response.ok) throw new Error('Failed to load PC data');
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading PC data:', error);
+    return null;
+  }
 }
 
-export function getNPCById(id: string): NPCCharacterData | undefined {
-  const npcs = loadNPCData();
+export async function getNPCById(id: string): Promise<NPCCharacterData | undefined> {
+  const npcs = await loadNPCData();
   return npcs.find(npc => npc.id === id);
 }

@@ -10,27 +10,27 @@ interface NarrativeItem {
 }
 
 interface NarrativePage {
-  id: string;
+  key: string;
+  prev: string | null;
+  next: string | null;
   items: NarrativeItem[];
-  next?: string;
 }
 
 export interface NarrativeScript {
   id: string;
   title: string;
+  startPage: string;
   pages: NarrativePage[];
 }
 
-// Import narrative scripts
-import introductionScript from '@/data/narratives/introduction.json';
-
-export function loadNarrativeScript(scriptId: string): NarrativeScript | null {
-  switch (scriptId) {
-    case 'introduction':
-      return introductionScript as NarrativeScript;
-    default:
-      console.warn(`Narrative script '${scriptId}' not found`);
-      return null;
+export async function loadNarrativeScript(scriptId: string): Promise<NarrativeScript | null> {
+  try {
+    const response = await fetch(`/data/narratives/${scriptId}.json`);
+    if (!response.ok) throw new Error(`Failed to load narrative script: ${scriptId}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading narrative script:', error);
+    return null;
   }
 }
 
