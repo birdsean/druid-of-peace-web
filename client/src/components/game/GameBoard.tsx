@@ -144,7 +144,7 @@ export default function GameBoard() {
         />
 
         {/* Combat Log */}
-        <CombatLog entries={gameState.combatLog} />
+        <CombatLog entries={gameState.combatLog} mode={combatLogMode} />
       </div>
     </div>
   );
