@@ -1,0 +1,70 @@
+{
+  "id": "introduction",
+  "title": "The Druid's Awakening",
+  "startPage": "page1",
+  "pages": [
+    {
+      "key": "page1",
+      "prev": null,
+      "next": "page2",
+      "items": [
+        {
+          "type": "text",
+          "content": "Deep within the ancient Forest of Echoes, where sunlight filters through emerald canopies and whispers of old magic linger in the air..."
+        },
+        {
+          "type": "text",
+          "content": "You are a Druid of Peace, one of the last guardians trained in the sacred art of conflict resolution through understanding and empathy."
+        }
+      ]
+    },
+    {
+      "key": "page2",
+      "prev": "page1",
+      "next": "page3",
+      "items": [
+        {
+          "type": "text",
+          "content": "The forest grows restless. Ancient disputes between its inhabitants have escalated into violence, disrupting the natural harmony you've sworn to protect."
+        },
+        {
+          "type": "text",
+          "content": "Your sacred duty calls: restore peace not through force, but through wisdom, patience, and the gentle art of de-escalation."
+        }
+      ]
+    },
+    {
+      "key": "page3",
+      "prev": "page2",
+      "next": "page4",
+      "items": [
+        {
+          "type": "text",
+          "content": "Armed with ancient knowledge and a deep understanding of nature's balance, you must navigate heated conflicts between forest dwellers."
+        },
+        {
+          "type": "text",
+          "content": "Remember: every action has consequences. Violence begets violence, but peace... peace can heal even the deepest wounds."
+        }
+      ]
+    },
+    {
+      "key": "page4",
+      "prev": "page3",
+      "next": "map",
+      "items": [
+        {
+          "type": "text",
+          "content": "The Forest of Echoes awaits your guidance. Step forward, Druid of Peace, and let your journey begin."
+        },
+        {
+          "type": "choice",
+          "text": "Begin Your Journey",
+          "next": "map",
+          "color": "emerald",
+          "tooltip": "Enter the Forest of Echoes"
+        }
+      ]
+    }
+  ]
+}

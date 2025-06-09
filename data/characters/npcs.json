@@ -1,0 +1,36 @@
+[
+  {
+    "id": "npc1",
+    "name": "Gareth",
+    "icon": "🗡️",
+    "color": "red",
+    "position": "left",
+    "stats": {
+      "health": 80,
+      "maxHealth": 80,
+      "armor": 30,
+      "maxArmor": 30,
+      "willToFight": 60,
+      "maxWill": 60,
+      "awareness": 20,
+      "maxAwareness": 100
+    }
+  },
+  {
+    "id": "npc2",
+    "name": "Lyra",
+    "icon": "🏹",
+    "color": "blue",
+    "position": "right",
+    "stats": {
+      "health": 70,
+      "maxHealth": 70,
+      "armor": 20,
+      "maxArmor": 20,
+      "willToFight": 50,
+      "maxWill": 50,
+      "awareness": 30,
+      "maxAwareness": 100
+    }
+  }
+]
