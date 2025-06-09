@@ -1,16 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NarrativeScreen from "@/components/narrative/NarrativeScreen";
-import { loadNarrativeScript } from "@/lib/narrativeLoader";
+import { loadNarrativeScript, NarrativeScript } from "@/lib/narrativeLoader";
 
 export default function MainMenu() {
   const [, setLocation] = useLocation();
   const [showIntro, setShowIntro] = useState(false);
+  const [introScript, setIntroScript] = useState<NarrativeScript | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleNewGame = () => {
-    // Start with story intro narrative
-    setShowIntro(true);
+  const handleNewGame = async () => {
+    setLoading(true);
+    try {
+      const script = await loadNarrativeScript('introduction');
+      if (script) {
+        setIntroScript(script);
+        setShowIntro(true);
+      } else {
+        // If no intro script, go directly to map
+        setLocation('/map');
+      }
+    } catch (error) {
+      console.error('Failed to load intro script:', error);
+      setLocation('/map');
+    }
+    setLoading(false);
   };
 
   const handleContinueGame = () => {
@@ -22,8 +37,6 @@ export default function MainMenu() {
     setShowIntro(false);
     setLocation('/map');
   };
-
-  const introScript = loadNarrativeScript('introduction');
 
   if (showIntro && introScript) {
     return (
@@ -65,9 +78,10 @@ export default function MainMenu() {
         <div className="space-y-4 max-w-md mx-auto">
           <Button
             onClick={handleNewGame}
-            className="w-full h-14 text-xl font-mono bg-emerald-600 hover:bg-emerald-700 border-2 border-emerald-400 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            disabled={loading}
+            className="w-full h-14 text-xl font-mono bg-emerald-600 hover:bg-emerald-700 border-2 border-emerald-400 text-white shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50"
           >
-            🌱 NEW GAME
+            {loading ? "🌱 LOADING..." : "🌱 NEW GAME"}
           </Button>
           
           <Button
