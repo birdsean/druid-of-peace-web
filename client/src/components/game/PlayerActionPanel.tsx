@@ -63,7 +63,7 @@ export default function PlayerActionPanel({
 
           {/* Center - Action Buttons */}
           <div className="flex space-x-3 ml-8">
-            {abilities.map((ability) => (
+            {(abilities || []).map((ability) => (
               <Button
                 key={ability.key}
                 onClick={() => onAbilityUse(ability.key)}

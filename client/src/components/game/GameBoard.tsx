@@ -20,6 +20,10 @@ export default function GameBoard() {
     toggleCombatLog
   } = useGameState();
 
+  // Load character data
+  const npcData = loadNPCData();
+  const pcData = loadPCData();
+
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (gameState.targetingMode && gameState.currentTurn === "druid") {
       usePeaceAbility(npcId);
@@ -35,6 +39,12 @@ export default function GameBoard() {
   const handleEndTurn = () => {
     if (gameState.currentTurn === "druid" && !gameState.targetingMode) {
       endTurn();
+    }
+  };
+
+  const handleAbilityUse = (abilityKey: string) => {
+    if (abilityKey === "peaceAura") {
+      handlePeaceAbilityClick();
     }
   };
 
@@ -118,7 +128,8 @@ export default function GameBoard() {
           actionPoints={gameState.druid.actionPoints}
           maxActionPoints={gameState.druid.maxActionPoints}
           targetingMode={gameState.targetingMode}
-          onPeaceAbility={handlePeaceAbilityClick}
+          abilities={pcData.abilities}
+          onAbilityUse={handleAbilityUse}
           onEndTurn={handleEndTurn}
           onToggleCombatLog={toggleCombatLog}
           combatLogMode={combatLogMode}
