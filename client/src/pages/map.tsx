@@ -398,6 +398,50 @@ export default function Map() {
                   </div>
                 </div>
 
+                {/* Weather Debug Controls */}
+                <div className="mt-2 p-2 bg-black/50 rounded border border-gray-600">
+                  <p className="text-xs text-cyan-300 mb-2 font-mono">WEATHER CONTROLS:</p>
+                  <div className="space-y-2">
+                    <div className="flex gap-1 flex-wrap">
+                      <Button
+                        onClick={() => globalWeatherManager.debugTriggerWeather('gentle_rain', turnCounter)}
+                        className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-700"
+                      >
+                        🌧️ Rain
+                      </Button>
+                      <Button
+                        onClick={() => globalWeatherManager.debugTriggerWeather('morning_mist', turnCounter)}
+                        className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700"
+                      >
+                        🌫️ Mist
+                      </Button>
+                      <Button
+                        onClick={() => globalWeatherManager.debugTriggerWeather('forest_wind', turnCounter)}
+                        className="text-xs px-2 py-1 bg-green-600 hover:bg-green-700"
+                      >
+                        💨 Wind
+                      </Button>
+                      <Button
+                        onClick={() => globalWeatherManager.debugTriggerWeather('sunbeam_clearing', turnCounter)}
+                        className="text-xs px-2 py-1 bg-yellow-600 hover:bg-yellow-700"
+                      >
+                        ☀️ Sun
+                      </Button>
+                      <Button
+                        onClick={() => globalWeatherManager.debugClearWeather(turnCounter)}
+                        className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                    {weatherState?.activeWeather && (
+                      <div className="text-xs text-cyan-400 font-mono">
+                        Active: {weatherState.activeWeather.effect.name} ({weatherState.activeWeather.remainingTurns} turns)
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Map Event Log */}
                 <div className="mt-2 p-2 bg-black/50 rounded border border-gray-600">
                   <p className="text-xs text-gray-300 mb-1 font-mono">MAP EVENT LOG:</p>
@@ -420,7 +464,7 @@ export default function Map() {
       )}
 
       {/* Turn Counter */}
-      <TurnCounter turn={turnCounter} timePhase={currentTimePhase} />
+      <TurnCounter turn={turnCounter} timePhase={currentTimePhase} weatherState={weatherState} />
       
       {/* Map Title */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
