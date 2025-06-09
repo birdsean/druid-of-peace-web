@@ -167,10 +167,12 @@ export default function Map() {
     if (!zone) return;
 
     setCurrentZone(zoneId);
+    logZoneChange(turnCounter, zoneId, zone.name);
     
     // If zone has active encounter, launch battle
     if (zone.hasEncounter) {
       startEncounter(zoneId);
+      logEncounterStart(turnCounter, zoneId, zone.name);
       // Store the encounter zone in global state
       setGlobalMapState({ 
         resolveEncounter,
@@ -178,7 +180,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter]);
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
@@ -279,6 +281,22 @@ export default function Map() {
                 >
                   STORY INTRO
                 </Button>
+
+                {/* Map Event Log */}
+                <div className="mt-2 p-2 bg-black/50 rounded border border-gray-600">
+                  <p className="text-xs text-gray-300 mb-1 font-mono">MAP EVENT LOG:</p>
+                  <div className="h-24 overflow-y-auto">
+                    <div className="text-xs text-gray-300 space-y-1 font-mono">
+                      {getEventLog().length === 0 ? (
+                        <p className="text-gray-500">No events yet</p>
+                      ) : (
+                        getEventLog().slice(-8).map((log, index) => (
+                          <div key={index} className="text-xs">{log}</div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
