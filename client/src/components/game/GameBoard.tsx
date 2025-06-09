@@ -122,8 +122,8 @@ export default function GameBoard() {
       {/* Druid Character (Hidden) */}
       <DruidCharacter hidden={gameState.druid.hidden} />
 
-      {/* Player Utils Panel - Left Side */}
-      <div className="absolute bottom-4 left-4 z-30">
+      {/* Player Utils Panel - Right Side */}
+      <div className="absolute bottom-4 right-4 z-30">
         <div className="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-3 shadow-lg border-2 border-gray-400">
           <div className="flex flex-col gap-3">
             {/* Flee Button */}
@@ -131,13 +131,14 @@ export default function GameBoard() {
               onClick={() => handleAbilityUse("flee")}
               disabled={!canUseActions}
               className={cn(
-                "w-24 h-10 text-sm font-mono border-2 transition-all duration-200",
+                "w-12 h-12 text-lg border-2 transition-all duration-200",
                 canUseActions 
                   ? "bg-red-600 hover:bg-red-700 border-red-400 text-white" 
                   : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
               )}
+              title="Flee from encounter"
             >
-              🏃 FLEE
+              🏃
             </Button>
 
             {/* End Turn Button */}
@@ -145,19 +146,21 @@ export default function GameBoard() {
               onClick={handleEndTurn}
               disabled={!canUseActions}
               className={cn(
-                "w-24 h-10 text-sm font-mono border-2 transition-all duration-200",
+                "w-12 h-12 text-lg border-2 transition-all duration-200",
                 canUseActions
                   ? "bg-orange-600 hover:bg-orange-700 border-orange-400 text-white"
                   : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
               )}
+              title="End turn"
             >
-              ⏰ END
+              ⏰
             </Button>
 
             {/* Combat Log Toggle */}
             <Button
               onClick={toggleCombatLog}
-              className="w-24 h-10 text-sm font-mono border-2 bg-blue-600 hover:bg-blue-700 border-blue-400 text-white transition-all duration-200"
+              className="w-12 h-12 text-lg border-2 bg-blue-600 hover:bg-blue-700 border-blue-400 text-white transition-all duration-200"
+              title="Toggle combat log"
             >
               <CombatLogIcon size={16} />
             </Button>
@@ -165,41 +168,30 @@ export default function GameBoard() {
         </div>
       </div>
 
-      {/* Player Actions Panel - Bottom Center */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
-        <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-lg p-4 shadow-lg border-2 border-orange-400">
-          <div className="flex items-center justify-between">
-            {/* Left side - Druid Character and Action Points */}
-            <div className="flex items-center space-x-4">
-              {/* Druid Character Icon */}
-              <div className="relative">
-                <div className="w-16 h-16 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-2xl shadow-lg">
-                  🌿
-                </div>
-                {gameState.druid.hidden && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-600 rounded-full border-2 border-purple-400 flex items-center justify-center text-xs text-white">
-                    👁️
-                  </div>
-                )}
-              </div>
+      {/* PC Character Token - Above Actions Panel */}
+      <div className="absolute bottom-20 left-4 z-30">
+        <div className="relative">
+          <div className="w-16 h-16 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-2xl shadow-lg">
+            🌿
+          </div>
+          {gameState.druid.hidden && (
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-600 rounded-full border-2 border-purple-400 flex items-center justify-center text-xs text-white">
+              👁️
+            </div>
+          )}
+        </div>
+      </div>
 
-              {/* Action Points */}
+      {/* Player Actions Panel - Bottom Left */}
+      <div className="absolute bottom-0 left-0 right-20 z-30">
+        <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-tr-lg p-4 shadow-lg border-2 border-orange-400">
+          <div className="flex items-center justify-between">
+            {/* Left side - Action Points */}
+            <div className="flex items-center space-x-4">
               <div className="text-center">
-                <div className="text-xs font-mono text-orange-200 mb-1">ACTION POINTS</div>
-                <div className="flex space-x-1">
-                  {Array.from({ length: gameState.druid.maxActionPoints }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "w-8 h-8 rounded border-2 flex items-center justify-center text-lg font-bold",
-                        i < gameState.druid.actionPoints
-                          ? "bg-yellow-400 border-yellow-300 text-yellow-800"
-                          : "bg-gray-600 border-gray-500 text-gray-400"
-                      )}
-                    >
-                      ⚡
-                    </div>
-                  ))}
+                <div className="text-xs font-mono text-orange-200 mb-1">AP</div>
+                <div className="text-lg font-mono text-white font-bold">
+                  {gameState.druid.actionPoints}/{gameState.druid.maxActionPoints}
                 </div>
               </div>
             </div>
@@ -213,18 +205,16 @@ export default function GameBoard() {
                     onClick={() => handleAbilityUse(ability.key)}
                     disabled={!canUseActions || !hasActionPoints || ability.cost > gameState.druid.actionPoints}
                     className={cn(
-                      "h-12 px-6 text-lg font-mono border-2 transition-all duration-200",
+                      "w-12 h-12 text-2xl border-2 transition-all duration-200",
                       canUseActions && hasActionPoints && ability.cost <= gameState.druid.actionPoints
                         ? gameState.targetingMode && ability.key === "peaceAura"
                           ? "bg-green-700 border-green-500 text-white"
                           : "bg-green-600 hover:bg-green-700 border-green-400 text-white"
                         : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
                     )}
-                    title={ability.description}
+                    title={`${ability.name}: ${ability.description} (Cost: ${ability.cost})`}
                   >
-                    <span className="mr-2">{ability.icon}</span>
-                    {ability.name}
-                    <span className="ml-2 text-sm">({ability.cost})</span>
+                    {ability.icon}
                   </Button>
                 ))}
               </div>

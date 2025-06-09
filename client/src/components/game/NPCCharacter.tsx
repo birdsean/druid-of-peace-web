@@ -134,7 +134,7 @@ export function NPCStatsDisplay({
               />
             </div>
             <div className="text-xs font-mono text-white text-center">
-              {npc.willToFight > 0 ? 'FIGHT' : 'FLED'}
+              {npc.willToFight}/{npc.maxWill}
             </div>
           </div>
         </div>
