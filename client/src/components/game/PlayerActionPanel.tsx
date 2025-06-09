@@ -56,21 +56,6 @@ export default function PlayerActionPanel({
                 </div>
               </div>
             </div>
-            
-            {/* Action point dots */}
-            <div className="flex space-x-1">
-              {Array.from({ length: maxActionPoints }, (_, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "w-3 h-3 rounded-full border-2 border-orange-200",
-                    i < actionPoints 
-                      ? "bg-yellow-300 shadow-lg" 
-                      : "bg-orange-800"
-                  )}
-                />
-              ))}
-            </div>
           </div>
 
           {/* Center - Action Buttons */}

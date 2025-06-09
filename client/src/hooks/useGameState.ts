@@ -2,39 +2,21 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { GameState, NPCStats, DiceState, GameOverState } from "@/lib/gameLogic";
 import { rollDice as rollDiceLogic, calculatePeaceEffect } from "@/lib/gameLogic";
 import { TurnManager } from "@/lib/turnManager";
+import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 
-const initialNPC1: NPCStats = {
-  health: 100,
-  maxHealth: 100,
-  armor: 25,
-  maxArmor: 25,
-  willToFight: 75,
-  maxWill: 100,
-  awareness: 25,
-  maxAwareness: 100
-};
+// Load character data from JSON
+const npcData = loadNPCData();
+const pcData = loadPCData();
 
-const initialNPC2: NPCStats = {
-  health: 85,
-  maxHealth: 100,
-  armor: 15,
-  maxArmor: 15,
-  willToFight: 60,
-  maxWill: 100,
-  awareness: 45,
-  maxAwareness: 100
-};
+const initialNPC1: NPCStats = npcData[0].stats;
+const initialNPC2: NPCStats = npcData[1].stats;
 
 const initialGameState: GameState = {
   currentTurn: 'npc1',
   turnCounter: 1,
   npc1: initialNPC1,
   npc2: initialNPC2,
-  druid: {
-    hidden: true,
-    actionPoints: 1,
-    maxActionPoints: 1
-  },
+  druid: pcData.stats,
   gameOver: false,
   targetingMode: false,
   combatLog: ['Turn 1: Combat begins'],

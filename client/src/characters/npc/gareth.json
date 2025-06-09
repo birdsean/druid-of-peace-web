@@ -1,0 +1,17 @@
+{
+  "id": "npc1",
+  "name": "Gareth",
+  "icon": "⚔️",
+  "color": "bg-red-700",
+  "position": "left",
+  "stats": {
+    "health": 100,
+    "maxHealth": 100,
+    "armor": 50,
+    "maxArmor": 50,
+    "willToFight": 80,
+    "maxWill": 80,
+    "awareness": 30,
+    "maxAwareness": 100
+  }
+}
