@@ -63,12 +63,7 @@ export default function ForestZone({ zone, isCurrentZone, onClick }: ForestZoneP
           <HeatBar heat={zone.heat} />
         </div>
         
-        {/* Exploration Status */}
-        {!zone.explored && (
-          <div className="text-xs text-gray-300 mt-1 font-mono">
-            Unexplored
-          </div>
-        )}
+
       </div>
     </div>
   );

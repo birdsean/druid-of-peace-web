@@ -1,9 +1,119 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import ForestZone from "@/components/map/ForestZone";
-import TurnCounter from "@/components/map/TurnCounter";
-import { useMapState } from "@/hooks/useMapState";
+import { cn } from "@/lib/utils";
+import { useMapState, Zone } from "@/hooks/useMapState";
+import { setGlobalMapState } from "@/lib/mapState";
+
+// Inline components to avoid import issues
+function HeatBar({ heat }: { heat: number }) {
+  const getHeatLevel = (heat: number): string => {
+    if (heat <= 10) return "None";
+    if (heat <= 30) return "Cold";
+    if (heat <= 50) return "Cool";
+    if (heat <= 70) return "Warm";
+    if (heat <= 90) return "Hot";
+    return "Critical";
+  };
+
+  const getHeatColor = (heat: number): string => {
+    if (heat <= 10) return "bg-blue-500";
+    if (heat <= 30) return "bg-cyan-500";
+    if (heat <= 50) return "bg-green-500";
+    if (heat <= 70) return "bg-yellow-500";
+    if (heat <= 90) return "bg-orange-500";
+    return "bg-red-500";
+  };
+
+  const level = getHeatLevel(heat);
+  const colorClass = getHeatColor(heat);
+  
+  return (
+    <div 
+      className="relative group"
+      title={`Heat: ${heat} – ${level}. Higher heat makes conflict more likely.`}
+    >
+      <div className="w-16 h-2 bg-gray-300 rounded-full border border-gray-400">
+        <div 
+          className={cn(
+            "h-full rounded-full transition-all duration-500",
+            colorClass,
+            heat >= 90 && "animate-pulse"
+          )}
+          style={{ width: `${heat}%` }}
+        />
+      </div>
+      <div className="text-xs text-white font-mono text-center mt-1 bg-black bg-opacity-70 rounded px-1">
+        {heat}
+      </div>
+    </div>
+  );
+}
+
+function ForestZone({ zone, isCurrentZone, onClick }: { zone: Zone; isCurrentZone: boolean; onClick: () => void }) {
+  return (
+    <div
+      className={cn(
+        "absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-20",
+        isCurrentZone ? "scale-110" : "hover:scale-105"
+      )}
+      style={{
+        left: `${zone.position.x}%`,
+        top: `${zone.position.y}%`
+      }}
+      onClick={onClick}
+    >
+      <div className={cn(
+        "relative w-20 h-20 rounded-full border-4 flex items-center justify-center text-3xl shadow-lg transition-all duration-300",
+        isCurrentZone 
+          ? "border-yellow-400 bg-yellow-100 shadow-yellow-400/50" 
+          : "border-green-400 bg-green-100 hover:border-green-300"
+      )}>
+        {zone.icon}
+        
+        {isCurrentZone && (
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full border-2 border-white flex items-center justify-center text-xs animate-pulse">
+            📍
+          </div>
+        )}
+        
+        {zone.hasEncounter && (
+          <div className="absolute -top-3 -left-3 w-8 h-8 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-lg animate-bounce">
+            ⚠️
+          </div>
+        )}
+      </div>
+
+      <div className="mt-2 text-center">
+        <h3 className={cn(
+          "font-mono font-bold text-sm shadow-lg px-2 py-1 rounded",
+          isCurrentZone 
+            ? "text-yellow-900 bg-yellow-200" 
+            : "text-white bg-black bg-opacity-70"
+        )}>
+          {zone.name}
+        </h3>
+        
+        <div className="mt-1">
+          <HeatBar heat={zone.heat} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TurnCounter({ turn }: { turn: number }) {
+  return (
+    <div className="absolute top-4 right-4 z-30">
+      <div className="bg-black bg-opacity-80 rounded-lg p-4 border-2 border-amber-400">
+        <div className="text-amber-400 font-mono text-center">
+          <div className="text-xs">TURN</div>
+          <div className="text-2xl font-bold">{turn}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Map() {
   const [, setLocation] = useLocation();
@@ -13,8 +123,14 @@ export default function Map() {
     turnCounter,
     setCurrentZone,
     nextTurn,
-    startEncounter
+    startEncounter,
+    resolveEncounter
   } = useMapState();
+
+  // Set global map state for encounter resolution
+  useEffect(() => {
+    setGlobalMapState({ resolveEncounter });
+  }, [resolveEncounter]);
 
   const handleZoneClick = useCallback((zoneId: string) => {
     if (currentZone === zoneId) return; // Re-clicking current zone does nothing

@@ -18,12 +18,13 @@ interface MapState {
 }
 
 const initialZones: Zone[] = [
+  // Top row
   {
     id: "grove",
     name: "Sacred Grove",
     heat: 25,
     hasEncounter: false,
-    position: { x: 20, y: 30 },
+    position: { x: 20, y: 35 },
     icon: "🌳",
     explored: true
   },
@@ -32,45 +33,46 @@ const initialZones: Zone[] = [
     name: "Moonlit Lake",
     heat: 15,
     hasEncounter: false,
-    position: { x: 60, y: 20 },
+    position: { x: 50, y: 35 },
     icon: "🌊",
-    explored: false
+    explored: true
   },
   {
     id: "thicket",
     name: "Deep Thicket",
     heat: 45,
     hasEncounter: true,
-    position: { x: 80, y: 60 },
+    position: { x: 80, y: 35 },
     icon: "🌿",
-    explored: false
+    explored: true
   },
+  // Bottom row
   {
     id: "clearing",
     name: "Sunlit Clearing",
     heat: 8,
     hasEncounter: false,
-    position: { x: 15, y: 70 },
+    position: { x: 20, y: 65 },
     icon: "☀️",
-    explored: false
+    explored: true
   },
   {
     id: "ruins",
     name: "Ancient Ruins",
     heat: 75,
     hasEncounter: false,
-    position: { x: 75, y: 25 },
+    position: { x: 50, y: 65 },
     icon: "🏛️",
-    explored: false
+    explored: true
   },
   {
     id: "cavern",
     name: "Hidden Cavern",
     heat: 90,
     hasEncounter: true,
-    position: { x: 40, y: 80 },
+    position: { x: 80, y: 65 },
     icon: "🕳️",
-    explored: false
+    explored: true
   }
 ];
 
@@ -100,12 +102,7 @@ export function useMapState() {
   const setCurrentZone = useCallback((zoneId: string) => {
     setMapState(prev => ({
       ...prev,
-      currentZone: zoneId,
-      zones: prev.zones.map(zone => 
-        zone.id === zoneId 
-          ? { ...zone, explored: true }
-          : zone
-      )
+      currentZone: zoneId
     }));
   }, []);
 
@@ -133,6 +130,11 @@ export function useMapState() {
       activeEncounterZone: null
     }));
   }, []);
+
+  // Global state for encounter resolution
+  const getEncounterResolution = useCallback(() => {
+    return { resolveEncounter };
+  }, [resolveEncounter]);
 
   const nextTurn = useCallback(() => {
     setMapState(prev => {
@@ -192,6 +194,7 @@ export function useMapState() {
     resolveEncounter,
     nextTurn,
     getHeatLevel,
-    getHeatColor
+    getHeatColor,
+    getEncounterResolution
   };
 }
