@@ -1,12 +1,14 @@
-import { Shield, Users, Eye, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
+import { Eye, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { PCAbility } from '@/lib/characterLoader';
 
 interface PlayerActionPanelProps {
   actionPoints: number;
   maxActionPoints: number;
   targetingMode: boolean;
-  onPeaceAbility: () => void;
+  abilities: PCAbility[];
+  onAbilityUse: (abilityKey: string) => void;
   onEndTurn: () => void;
   onToggleCombatLog: () => void;
   combatLogMode: 'hidden' | 'small' | 'large';
@@ -17,7 +19,8 @@ export default function PlayerActionPanel({
   actionPoints,
   maxActionPoints,
   targetingMode,
-  onPeaceAbility,
+  abilities,
+  onAbilityUse,
   onEndTurn,
   onToggleCombatLog,
   combatLogMode,
@@ -60,50 +63,47 @@ export default function PlayerActionPanel({
 
           {/* Center - Action Buttons */}
           <div className="flex space-x-3 ml-8">
-            {/* Peace Aura Action */}
-            <Button
-              onClick={onPeaceAbility}
-              disabled={!canUseActions || !hasActionPoints}
-              className={cn(
-                "w-14 h-14 p-0 rounded-lg transition-all duration-200",
-                canUseActions && hasActionPoints
-                  ? "bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 shadow-lg hover:shadow-xl"
-                  : "bg-gray-600 border-2 border-gray-500 opacity-50 cursor-not-allowed"
-              )}
-              title="Peace Aura - Reduce target's will to fight"
-            >
-              <Shield className="w-7 h-7 text-white" />
-            </Button>
+            {abilities.map((ability) => (
+              <Button
+                key={ability.key}
+                onClick={() => onAbilityUse(ability.key)}
+                disabled={!canUseActions || actionPoints < ability.cost}
+                className={cn(
+                  "w-14 h-14 p-0 rounded-lg transition-all duration-200 text-2xl",
+                  canUseActions && actionPoints >= ability.cost
+                    ? "bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 shadow-lg hover:shadow-xl"
+                    : "bg-gray-600 border-2 border-gray-500 opacity-50 cursor-not-allowed"
+                )}
+                title={`${ability.name} - ${ability.description}`}
+              >
+                {ability.icon}
+              </Button>
+            ))}
+          </div>
 
-            {/* End Turn Action */}
+          {/* Right side - End Turn and Combat Log Controls */}
+          <div className="flex items-center space-x-2">
             <Button
               onClick={onEndTurn}
               disabled={!isPlayerTurn || targetingMode}
               className={cn(
-                "w-14 h-14 p-0 rounded-lg transition-all duration-200",
+                "w-14 h-14 p-0 rounded-lg transition-all duration-200 text-xl",
                 isPlayerTurn && !targetingMode
                   ? "bg-green-600 hover:bg-green-700 border-2 border-green-400 shadow-lg hover:shadow-xl"
                   : "bg-gray-600 border-2 border-gray-500 opacity-50 cursor-not-allowed"
               )}
               title="End Turn"
             >
-              <Users className="w-7 h-7 text-white" />
+              ⏭️
             </Button>
-          </div>
-
-          {/* Right side - Combat Log Control */}
-          <div className="flex items-center space-x-2">
+            
             <Button
               onClick={onToggleCombatLog}
-              className="w-10 h-10 p-0 rounded-lg bg-amber-700 hover:bg-amber-800 border-2 border-amber-500"
+              className="w-14 h-14 p-0 rounded-lg bg-amber-600 hover:bg-amber-700 border-2 border-amber-400 transition-all duration-200"
               title={`Combat Log: ${combatLogMode}`}
             >
               <CombatLogIcon className="w-5 h-5 text-white" />
             </Button>
-            <div className="text-white font-mono text-xs">
-              <div className="text-orange-200">LOG</div>
-              <div className="capitalize">{combatLogMode}</div>
-            </div>
           </div>
         </div>
 

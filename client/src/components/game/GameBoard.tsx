@@ -6,6 +6,7 @@ import PlayerActionPanel from "./PlayerActionPanel";
 import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
+import { loadNPCData, loadPCData, getNPCById } from "@/lib/characterLoader";
 
 export default function GameBoard() {
   const {

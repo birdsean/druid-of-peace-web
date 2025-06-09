@@ -31,7 +31,7 @@ export function useGameState() {
     result: null,
     effect: ''
   });
-  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('small');
+  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
   
   const turnManagerRef = useRef<TurnManager | null>(null);
 
