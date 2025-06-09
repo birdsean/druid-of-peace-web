@@ -8,6 +8,7 @@ import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 import { IS_DEBUG } from "@/lib/debug";
 import { Settings, LogOut, Package } from "lucide-react";
+import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
 import { useMapEvents } from "@/hooks/useMapEvents";
 
 // Inline components to avoid import issues
@@ -55,7 +56,12 @@ function HeatBar({ heat }: { heat: number }) {
   );
 }
 
-function ForestZone({ zone, isCurrentZone, onClick }: { zone: Zone; isCurrentZone: boolean; onClick: () => void }) {
+function ForestZone({ zone, isCurrentZone, onClick, environmentEffect }: { 
+  zone: Zone; 
+  isCurrentZone: boolean; 
+  onClick: () => void;
+  environmentEffect?: EnvironmentalEffect;
+}) {
   return (
     <div
       className={cn(
@@ -102,6 +108,28 @@ function ForestZone({ zone, isCurrentZone, onClick }: { zone: Zone; isCurrentZon
         <div className="mt-1">
           <HeatBar heat={zone.heat} />
         </div>
+        
+        {/* Environmental Effect Indicator */}
+        {environmentEffect && (
+          <div 
+            className="mt-1 flex justify-center"
+            title={`${environmentEffect.name}: ${environmentEffect.description}`}
+          >
+            <div 
+              className="px-2 py-1 rounded-full text-xs font-mono border-2 cursor-help transition-all duration-200 hover:scale-110"
+              style={{ 
+                backgroundColor: environmentEffect.color + '40',
+                borderColor: environmentEffect.color,
+                color: environmentEffect.color
+              }}
+            >
+              <span className="mr-1">{environmentEffect.icon}</span>
+              <span className="text-white bg-black bg-opacity-70 px-1 rounded">
+                {environmentEffect.name}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -125,6 +153,7 @@ export default function Map() {
   const [resolutionMode, setResolutionMode] = useState<'none' | 'success' | 'fail'>('none');
   const [narrativeScript, setNarrativeScript] = useState<NarrativeScript | null>(null);
   const [showDebugPanel, setShowDebugPanel] = useState(true);
+  const [environmentalEffects, setEnvironmentalEffects] = useState<Record<string, EnvironmentalEffect>>({});
   const {
     zones,
     currentZone,

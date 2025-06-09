@@ -30,7 +30,7 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
       mapState.resolveEncounter(mapState.currentEncounterZone, isSuccess && !isFlee);
     }
     
-    setLocation('/');
+    setLocation('/map');
   };
 
   return (
