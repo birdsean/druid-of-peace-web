@@ -248,6 +248,12 @@ export function useGameState() {
     }));
   }, []);
 
+  const setAutoTurnEnabled = useCallback((enabled: boolean) => {
+    if (turnManagerRef.current) {
+      turnManagerRef.current.setAutoTurnEnabled(enabled);
+    }
+  }, []);
+
   return {
     gameState,
     diceState,
@@ -258,6 +264,8 @@ export function useGameState() {
     combatLogMode,
     toggleCombatLog,
     completeEncounter,
-    triggerGameOver
+    triggerGameOver,
+    turnManagerRef,
+    setAutoTurnEnabled
   };
 }

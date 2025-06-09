@@ -22,7 +22,9 @@ export default function GameBoard() {
     diceState,
     combatLogMode,
     toggleCombatLog,
-    triggerGameOver
+    triggerGameOver,
+    turnManagerRef,
+    setAutoTurnEnabled
   } = useGameState();
 
   // Load character data
@@ -76,8 +78,9 @@ export default function GameBoard() {
   };
 
   const handleDebugNPCAction = (npcId: "npc1" | "npc2", actionType: "attack" | "defend") => {
-    // TODO: Implement manual NPC action execution
-    console.log(`Debug: ${npcId} performs ${actionType}`);
+    if (turnManagerRef.current) {
+      turnManagerRef.current.executeDebugNPCAction(npcId, actionType);
+    }
   };
 
   const hasActionPoints = gameState.druid.actionPoints > 0;

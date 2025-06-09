@@ -3,6 +3,7 @@ import { GameState, rollDice, executeNPCAction, DiceState } from './gameLogic';
 export class TurnManager {
   private isExecuting = false;
   private executionPromise: Promise<void> | null = null;
+  private autoTurnEnabled = true;
 
   constructor(
     private setGameState: React.Dispatch<React.SetStateAction<GameState>>,
@@ -10,6 +11,10 @@ export class TurnManager {
     private addLogEntry: (entry: string) => void,
     private checkGameEnd: (state?: GameState) => boolean
   ) {}
+
+  setAutoTurnEnabled(enabled: boolean) {
+    this.autoTurnEnabled = enabled;
+  }
 
   async executeTurn(currentState: GameState): Promise<void> {
     // Prevent multiple executions
@@ -36,7 +41,11 @@ export class TurnManager {
       return;
     }
 
-    // NPC turn - auto-execute
+    // NPC turn - only auto-execute if auto-turn is enabled
+    if (!this.autoTurnEnabled) {
+      return;
+    }
+
     const npcId = currentTurn;
     const roll = await this.rollDiceWithAnimation();
     const action = executeNPCAction(roll);
@@ -164,5 +173,59 @@ export class TurnManager {
 
   isCurrentlyExecuting(): boolean {
     return this.isExecuting;
+  }
+
+  async executeDebugNPCAction(npcId: "npc1" | "npc2", actionType: "attack" | "defend"): Promise<void> {
+    if (this.isExecuting) return;
+
+    this.isExecuting = true;
+    
+    try {
+      const roll = await this.rollDiceWithAnimation();
+      
+      // Force the action type instead of using roll to determine it
+      const action = {
+        type: actionType,
+        description: actionType === "attack" ? "attacks fiercely!" : "takes a defensive stance."
+      };
+
+      // Update game state with forced NPC action
+      this.setGameState(prev => {
+        const newState = { ...prev };
+        const npc = newState[npcId];
+        const targetId = npcId === 'npc1' ? 'npc2' : 'npc1';
+        const target = newState[targetId];
+
+        if (action.type === 'attack') {
+          // Apply damage, accounting for armor
+          const damage = Math.max(1, roll - target.armor);
+          target.health = Math.max(0, target.health - damage);
+          target.armor = Math.max(0, target.armor - 1); // Reduce armor
+        } else {
+          // Defend - restore some armor
+          npc.armor = Math.min(npc.maxArmor, npc.armor + roll);
+        }
+
+        return newState;
+      });
+
+      this.addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} ${action.description} (Roll: ${roll})`);
+
+      // Check for game end after action
+      setTimeout(() => {
+        this.setGameState(prev => {
+          this.checkGameEnd(prev);
+          return prev;
+        });
+      }, 1000);
+
+      // Advance turn after action
+      setTimeout(() => {
+        this.setGameState(prev => this.advanceTurn(prev));
+      }, 1500);
+
+    } finally {
+      this.isExecuting = false;
+    }
   }
 }
