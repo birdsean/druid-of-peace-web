@@ -6,18 +6,15 @@ import DruidActionPanel from "./DruidActionPanel";
 import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
-import { useEffect, useRef } from "react";
-import { is } from "drizzle-orm";
+
 
 export default function GameBoard() {
   const {
     gameState,
-    executeNPCTurn,
     usePeaceAbility,
-    nextTurn,
+    endTurn,
     restartGame,
     setTargetingMode,
-    rollDice,
     diceState
   } = useGameState();
 
@@ -35,32 +32,11 @@ export default function GameBoard() {
 
   const handleEndTurn = () => {
     if (gameState.currentTurn === 'druid' && !gameState.targetingMode) {
-      nextTurn();
+      endTurn();
     }
   };
 
-  // if it's an NPC's turn, execute their action
-  const isRunning = useRef(false)
-
-  useEffect(() => {
-    //sleep for 1 second to prevent rapid execution
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-    sleep(1000).then(() => {
-      console.log("testing", gameState.currentTurn, gameState.turnCounter, isRunning.current)
-      if (
-        (gameState.currentTurn === 'npc1' || gameState.currentTurn === 'npc2') &&
-        !isRunning.current
-      ) {
-        isRunning.current = true
-        console.log("scheduling", gameState.currentTurn, gameState.turnCounter)
-
-        executeNPCTurn(gameState.currentTurn).then(() => {
-          console.log("executed", gameState.currentTurn, gameState.turnCounter, isRunning.current)
-          isRunning.current = false
-        })
-      }
-    })
-  }, [gameState.currentTurn, executeNPCTurn])
+  // TurnManager now handles all turn execution automatically
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center">

@@ -83,7 +83,7 @@ export class TurnManager {
     });
   }
 
-  private async rollDiceWithAnimation(): Promise<number> {
+  async rollDiceWithAnimation(): Promise<number> {
     return new Promise((resolve) => {
       this.setDiceState({
         visible: true,

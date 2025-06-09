@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { GameState, NPCStats, DiceState, GameOverState } from "@/lib/gameLogic";
-import { rollDice as rollDiceLogic, executeNPCAction, calculatePeaceEffect } from "@/lib/gameLogic";
+import { rollDice as rollDiceLogic, calculatePeaceEffect } from "@/lib/gameLogic";
 import { TurnManager } from "@/lib/turnManager";
 
 const initialNPC1: NPCStats = {
@@ -130,12 +130,32 @@ export function useGameState() {
     }
   }, [gameState.currentTurn, gameState.gameOver]);
 
-
-
-
-
   const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
-    const roll = await rollDice(1, 6);
+    if (!turnManagerRef.current) return;
+    
+    const roll = await new Promise<number>((resolve) => {
+      setDiceState({
+        visible: true,
+        rolling: true,
+        result: null,
+        effect: 'Determining outcome...'
+      });
+
+      setTimeout(() => {
+        const result = rollDiceLogic(1, 6);
+        setDiceState(prev => ({
+          ...prev,
+          rolling: false,
+          result,
+          effect: `Rolled ${result}`
+        }));
+
+        setTimeout(() => {
+          setDiceState(prev => ({ ...prev, visible: false }));
+          resolve(result);
+        }, 1000);
+      }, 1500);
+    });
     const effect = calculatePeaceEffect(roll);
     
     setGameState(prev => {
@@ -163,7 +183,13 @@ export function useGameState() {
         return prev;
       });
     }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd]);
+  }, [addLogEntry, checkGameEnd]);
+
+  const endTurn = useCallback(() => {
+    if (turnManagerRef.current) {
+      turnManagerRef.current.manualAdvanceTurn();
+    }
+  }, []);
 
   const setTargetingMode = useCallback((targeting: boolean) => {
     setGameState(prev => ({ ...prev, targetingMode: targeting }));
@@ -187,16 +213,12 @@ export function useGameState() {
     });
   }, []);
 
-  // No auto-execution - all turns are manual
-
   return {
     gameState,
     diceState,
-    executeNPCTurn,
     usePeaceAbility,
-    nextTurn,
+    endTurn,
     restartGame,
-    setTargetingMode,
-    rollDice
+    setTargetingMode
   };
 }
