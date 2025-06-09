@@ -69,7 +69,13 @@ export default function GameBoard() {
 
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (gameState.targetingMode && gameState.currentTurn === "druid") {
-      usePeaceAbility(npcId);
+      executeAction({
+        actor: 'druid',
+        type: 'peace_aura',
+        target: npcId,
+        turnCounter: gameState.turnCounter
+      });
+      setTargetingMode(false);
     }
   };
 

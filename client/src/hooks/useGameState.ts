@@ -5,6 +5,8 @@ import { TurnManager } from "@/lib/turnManager";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 import { getGlobalMapState } from "@/lib/mapState";
 import { BattleEvent, createBattleEvent, formatBattleEventForLog } from "@/lib/events";
+import { useDiceActionSystem } from "@/lib/diceActionSystem";
+import { ActionIntent } from "@/lib/actionEffects";
 
 // Default character stats for initialization
 const defaultNPC1: NPCStats = {
@@ -70,6 +72,7 @@ export function useGameState() {
     
     loadCharacterData();
   }, []);
+
   const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
   const [battleEvents, setBattleEvents] = useState<BattleEvent[]>([
     createBattleEvent(1, 'game_start', 'druid')
@@ -92,6 +95,9 @@ export function useGameState() {
       combatLog: [...prev.combatLog, `Turn ${prev.turnCounter}: ${message}`]
     }));
   }, []);
+
+  // Initialize dice action system after addBattleEvent is defined
+  const { executeAction, diceActionState } = useDiceActionSystem(addBattleEvent);
 
   const checkGameEnd = useCallback((currentState?: typeof gameState) => {
     const stateToCheck = currentState || gameState;
