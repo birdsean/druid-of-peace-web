@@ -8,6 +8,7 @@ import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 import { IS_DEBUG } from "@/lib/debug";
 import { Settings, LogOut, Package } from "lucide-react";
+import { useMapEvents } from "@/hooks/useMapEvents";
 
 // Inline components to avoid import issues
 function HeatBar({ heat }: { heat: number }) {
@@ -135,6 +136,14 @@ export default function Map() {
     resolveEncounter
   } = useMapState();
 
+  const {
+    logTurnAdvance,
+    logEncounterStart,
+    logEncounterComplete,
+    logZoneChange,
+    getEventLog
+  } = useMapEvents();
+
   // Set global map state for encounter resolution
   useEffect(() => {
     setGlobalMapState({ 
@@ -172,8 +181,10 @@ export default function Map() {
   }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode]);
 
   const handleNextTurn = useCallback(() => {
+    const newTurn = turnCounter + 1;
     nextTurn();
-  }, [nextTurn]);
+    logTurnAdvance(newTurn);
+  }, [nextTurn, turnCounter, logTurnAdvance]);
 
   const handleNarrativeStart = useCallback((scriptId: string) => {
     const script = loadNarrativeScript(scriptId);

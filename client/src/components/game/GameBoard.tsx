@@ -99,25 +99,8 @@ export default function GameBoard() {
     const item = getItemById(itemId);
     if (!item || !useItem(itemId)) return;
 
-    // Apply item effects to game state
-    if (item.effects.restoreAP) {
-      // Restore action points
-      const newAP = Math.min(
-        gameState.druid.maxActionPoints,
-        gameState.druid.actionPoints + item.effects.restoreAP
-      );
-      
-      // Update game state directly since we can't access setGameState from useGameState
-      console.log(`Used ${item.name}: Restored ${item.effects.restoreAP} AP (${gameState.druid.actionPoints} -> ${newAP})`);
-    }
-
-    if (item.effects.reduceAwareness) {
-      console.log(`Used ${item.name}: Reduced NPC awareness by ${item.effects.reduceAwareness}`);
-    }
-
-    if (item.effects.reduceWill) {
-      console.log(`Used ${item.name}: Reduced NPC will to fight by ${item.effects.reduceWill}`);
-    }
+    // Apply item effects using the hook function
+    applyItemEffects(item.effects, item.name);
     
     // Close inventory modal
     setShowInventoryModal(false);
