@@ -6,19 +6,33 @@ import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 import { getGlobalMapState } from "@/lib/mapState";
 import { BattleEvent, createBattleEvent, formatBattleEventForLog } from "@/lib/events";
 
-// Load character data from JSON
-const npcData = loadNPCData();
-const pcData = loadPCData();
+// Default character stats for initialization
+const defaultNPC1: NPCStats = {
+  health: 80, maxHealth: 80,
+  armor: 30, maxArmor: 30,
+  willToFight: 60, maxWill: 60,
+  awareness: 20, maxAwareness: 100
+};
 
-const initialNPC1: NPCStats = npcData[0].stats;
-const initialNPC2: NPCStats = npcData[1].stats;
+const defaultNPC2: NPCStats = {
+  health: 70, maxHealth: 70,
+  armor: 20, maxArmor: 20,
+  willToFight: 50, maxWill: 50,
+  awareness: 30, maxAwareness: 100
+};
+
+const defaultDruid = {
+  hidden: true,
+  actionPoints: 3,
+  maxActionPoints: 3
+};
 
 const initialGameState: GameState = {
   currentTurn: 'npc1',
   turnCounter: 1,
-  npc1: initialNPC1,
-  npc2: initialNPC2,
-  druid: pcData.stats,
+  npc1: defaultNPC1,
+  npc2: defaultNPC2,
+  druid: defaultDruid,
   gameOver: false,
   targetingMode: false,
   combatLog: ['Turn 1: Combat begins'],
@@ -33,6 +47,29 @@ export function useGameState() {
     result: null,
     effect: ''
   });
+
+  // Load character data and update game state
+  useEffect(() => {
+    const loadCharacterData = async () => {
+      try {
+        const npcs = await loadNPCData();
+        const pc = await loadPCData();
+        
+        if (npcs.length >= 2 && pc) {
+          setGameState(prev => ({
+            ...prev,
+            npc1: npcs[0].stats,
+            npc2: npcs[1].stats,
+            druid: pc.stats
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load character data:', error);
+      }
+    };
+    
+    loadCharacterData();
+  }, []);
   const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
   const [battleEvents, setBattleEvents] = useState<BattleEvent[]>([
     createBattleEvent(1, 'game_start', 'druid')
@@ -217,8 +254,8 @@ export function useGameState() {
   const restartGame = useCallback(() => {
     setGameState({
       ...initialGameState,
-      npc1: { ...initialNPC1 },
-      npc2: { ...initialNPC2 },
+      npc1: { ...defaultNPC1 },
+      npc2: { ...defaultNPC2 },
       combatLog: ['Turn 1: Combat begins']
     });
     setDiceState({

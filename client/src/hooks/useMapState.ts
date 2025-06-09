@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { loadLocationData } from "./locationLoader";
+import { loadLocationData } from "../lib/locationLoader";
 
 export interface Zone {
   id: string;
@@ -93,6 +93,22 @@ function calculateEncounterChance(heat: number): number {
 
 export function useMapState() {
   const [mapState, setMapState] = useState<MapState>(initialMapState);
+
+  // Load location data on initialization
+  useEffect(() => {
+    const loadZones = async () => {
+      try {
+        const locations = await loadLocationData();
+        setMapState(prev => ({
+          ...prev,
+          zones: locations
+        }));
+      } catch (error) {
+        console.error('Failed to load location data:', error);
+      }
+    };
+    loadZones();
+  }, []);
 
   const setCurrentZone = useCallback((zoneId: string) => {
     setMapState(prev => ({
