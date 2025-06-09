@@ -6,6 +6,8 @@ import DruidActionPanel from "./DruidActionPanel";
 import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
+import { useEffect, useRef } from "react";
+import { is } from "drizzle-orm";
 
 export default function GameBoard() {
   const {
@@ -36,6 +38,29 @@ export default function GameBoard() {
       nextTurn();
     }
   };
+
+  // if it's an NPC's turn, execute their action
+  const isRunning = useRef(false)
+
+  useEffect(() => {
+    //sleep for 1 second to prevent rapid execution
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+    sleep(1000).then(() => {
+      console.log("testing", gameState.currentTurn, gameState.turnCounter, isRunning.current)
+      if (
+        (gameState.currentTurn === 'npc1' || gameState.currentTurn === 'npc2') &&
+        !isRunning.current
+      ) {
+        isRunning.current = true
+        console.log("scheduling", gameState.currentTurn, gameState.turnCounter)
+
+        executeNPCTurn(gameState.currentTurn).then(() => {
+          console.log("executed", gameState.currentTurn, gameState.turnCounter, isRunning.current)
+          isRunning.current = false
+        })
+      }
+    })
+  }, [gameState.currentTurn, executeNPCTurn])
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center">
@@ -106,10 +131,9 @@ export default function GameBoard() {
                 {gameState.currentTurn === 'npc1' ? 'GARETH\'S TURN' : 'LYRA\'S TURN'}
               </h3>
               <button 
-                onClick={() => executeNPCTurn(gameState.currentTurn as 'npc1' | 'npc2')}
                 className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs py-3 px-4 rounded transition-colors duration-200"
               >
-                ⚡ TAKE ACTION
+                ⚡ Taking Action
               </button>
               <div className="text-xs text-gray-400 mt-2">
                 Click to roll dice and act

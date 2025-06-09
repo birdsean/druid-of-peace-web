@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { GameState, NPCStats, DiceState, GameOverState } from "@/lib/gameLogic";
 import { rollDice as rollDiceLogic, executeNPCAction, calculatePeaceEffect } from "@/lib/gameLogic";
+import { TurnManager } from "@/lib/turnManager";
 
 const initialNPC1: NPCStats = {
   health: 100,
@@ -43,60 +44,14 @@ export function useGameState() {
     result: null,
     effect: ''
   });
+  
+  const turnManagerRef = useRef<TurnManager | null>(null);
 
   const addLogEntry = useCallback((message: string) => {
     setGameState(prev => ({
       ...prev,
       combatLog: [...prev.combatLog, `Turn ${prev.turnCounter}: ${message}`]
     }));
-  }, []);
-
-  const rollDice = useCallback(async (min = 1, max = 6): Promise<number> => {
-    return new Promise((resolve) => {
-      setDiceState({
-        visible: true,
-        rolling: true,
-        result: null,
-        effect: 'Determining outcome...'
-      });
-
-      setTimeout(() => {
-        const result = rollDiceLogic(min, max);
-        setDiceState(prev => ({
-          ...prev,
-          rolling: false,
-          result,
-          effect: `Rolled ${result}`
-        }));
-
-        setTimeout(() => {
-          setDiceState(prev => ({ ...prev, visible: false }));
-          resolve(result);
-        }, 1000);
-      }, 1500);
-    });
-  }, []);
-
-  const nextTurn = useCallback(() => {
-    setGameState(prev => {
-      let newTurn: 'npc1' | 'npc2' | 'druid';
-      let newTurnCounter = prev.turnCounter;
-      
-      if (prev.currentTurn === 'npc1') {
-        newTurn = 'npc2';
-      } else if (prev.currentTurn === 'npc2') {
-        newTurn = 'druid';
-      } else {
-        newTurn = 'npc1';
-        newTurnCounter++;
-      }
-      
-      return {
-        ...prev,
-        currentTurn: newTurn,
-        turnCounter: newTurnCounter
-      };
-    });
   }, []);
 
   const checkGameEnd = useCallback((currentState?: typeof gameState) => {
@@ -148,71 +103,36 @@ export function useGameState() {
     }
     
     return false;
-  }, [gameState, addLogEntry]);
+  }, [gameState]);
 
-  const executeNPCTurn = useCallback(async (npcId: 'npc1' | 'npc2') => {
-    const roll = await rollDice(1, 6);
-    const action = executeNPCAction(roll);
+  // Initialize turn manager
+  useEffect(() => {
+    if (!turnManagerRef.current) {
+      turnManagerRef.current = new TurnManager(
+        setGameState,
+        setDiceState,
+        addLogEntry,
+        checkGameEnd
+      );
+    }
+  }, [addLogEntry, checkGameEnd]);
+
+  // Auto-execute NPC turns when it's their turn
+  useEffect(() => {
+    if (!turnManagerRef.current || gameState.gameOver) return;
     
-    setGameState(prev => {
-      const newState = { ...prev };
-      const npc = newState[npcId];
-      const targetId = npcId === 'npc1' ? 'npc2' : 'npc1';
-      const target = newState[targetId];
-
-      switch (action.type) {
-        case 'attack':
-          const damage = Math.floor(Math.random() * 20) + 10;
-          const oldHealth = target.health;
-          target.health = Math.max(0, target.health - damage);
-          // Each point of health lost removes half a point of will to fight
-          const healthLost = oldHealth - target.health;
-          const willLost = healthLost * 0.5;
-          target.willToFight = Math.max(0, target.willToFight - willLost);
-          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} attacks for ${damage} damage (${willLost.toFixed(1)} will lost)`);
-          break;
-        case 'defend':
-          npc.health = Math.min(npc.maxHealth, npc.health + 5);
-          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} defends and recovers`);
-          break;
-        case 'investigate':
-          // NPCs investigating no longer affects awareness - only druid actions do
-          addLogEntry(`${npcId === 'npc1' ? 'Gareth' : 'Lyra'} investigates but finds nothing`);
-          break;
+    const { currentTurn } = gameState;
+    if (currentTurn === 'npc1' || currentTurn === 'npc2') {
+      // Only execute if not already executing
+      if (!turnManagerRef.current.isCurrentlyExecuting()) {
+        turnManagerRef.current.executeTurn(gameState);
       }
+    }
+  }, [gameState.currentTurn, gameState.gameOver]);
 
-      return newState;
-    });
 
-    // Check for game end conditions after state update
-    setTimeout(() => {
-      setGameState(prev => {
-        // Check game end with the updated state
-        const gameEnded = checkGameEnd(prev);
-        if (!gameEnded) {
-          // Only advance turn if game hasn't ended
-          let newTurn: 'npc1' | 'npc2' | 'druid';
-          let newTurnCounter = prev.turnCounter;
-          
-          if (prev.currentTurn === 'npc1') {
-            newTurn = 'npc2';
-          } else if (prev.currentTurn === 'npc2') {
-            newTurn = 'druid';
-          } else {
-            newTurn = 'npc1';
-            newTurnCounter++;
-          }
-          
-          return {
-            ...prev,
-            currentTurn: newTurn,
-            turnCounter: newTurnCounter
-          };
-        }
-        return prev;
-      });
-    }, 1500);
-  }, [rollDice, addLogEntry, checkGameEnd, nextTurn, gameState]);
+
+
 
   const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
     const roll = await rollDice(1, 6);

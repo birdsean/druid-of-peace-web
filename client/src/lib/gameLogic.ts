@@ -19,7 +19,7 @@ export interface GameOverState {
 }
 
 export interface GameState {
-  currentTurn: 'npc1' | 'npc2' | 'druid';
+  currentTurn: "npc1" | "npc2" | "druid";
   turnCounter: number;
   npc1: NPCStats;
   npc2: NPCStats;
@@ -38,7 +38,7 @@ export interface DiceState {
 }
 
 export interface NPCAction {
-  type: 'attack' | 'defend' | 'investigate';
+  type: "attack" | "defend";
   description: string;
 }
 
@@ -52,20 +52,15 @@ export function rollDice(min = 1, max = 6): number {
 }
 
 export function executeNPCAction(roll: number): NPCAction {
-  if (roll <= 2) {
+  if (roll % 2 == 0) {
     return {
-      type: 'attack',
-      description: 'NPC attacks the other character'
-    };
-  } else if (roll <= 4) {
-    return {
-      type: 'defend',
-      description: 'NPC defends and recovers health'
+      type: "attack",
+      description: "NPC attacks the other character",
     };
   } else {
     return {
-      type: 'investigate',
-      description: 'NPC investigates surroundings, increasing awareness'
+      type: "defend",
+      description: "NPC defends and recovers health",
     };
   }
 }
@@ -73,9 +68,9 @@ export function executeNPCAction(roll: number): NPCAction {
 export function calculatePeaceEffect(roll: number): PeaceEffect {
   const willReduction = roll * 8 + Math.floor(Math.random() * 10) + 5;
   const awarenessIncrease = Math.floor(roll / 2) + 1;
-  
+
   return {
     willReduction,
-    awarenessIncrease
+    awarenessIncrease,
   };
 }
