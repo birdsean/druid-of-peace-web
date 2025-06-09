@@ -277,13 +277,8 @@ export default function Map() {
 
   return (
     <div className="relative w-screen h-screen bg-gradient-to-b from-green-800 via-green-600 to-green-400 overflow-hidden">
-      {/* Forest Background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-70"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&h=1080')"
-        }}
-      />
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-emerald-800 to-amber-900" />
       
       {/* Debug Panel - Map Screen */}
       {IS_DEBUG && (

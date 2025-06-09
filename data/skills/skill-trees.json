@@ -1,0 +1,439 @@
+{
+  "skillTrees": {
+    "diplomacy": {
+      "category": "diplomacy",
+      "name": "Diplomacy",
+      "description": "Skills focused on peaceful conflict resolution and persuasion",
+      "icon": "🕊️",
+      "color": "#3b82f6",
+      "nodes": [
+        {
+          "id": "calm_demeanor",
+          "name": "Calm Demeanor",
+          "description": "Increases Peaceful Aura's effect by 10%.",
+          "hint": "De-escalate a tense situation without being noticed.",
+          "tags": ["diplomacy", "buff"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["empathic_reading", "soothing_presence"],
+          "position": { "x": 200, "y": 100 },
+          "icon": "😌",
+          "type": "passive",
+          "effects": {
+            "peaceful_aura_bonus": 10
+          }
+        },
+        {
+          "id": "empathic_reading",
+          "name": "Empathic Reading",
+          "description": "Gain insight into NPC emotional states and motivations.",
+          "hint": "Read the room before acting.",
+          "tags": ["diplomacy", "awareness"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["calm_demeanor", "emotional_mastery"],
+          "position": { "x": 100, "y": 200 },
+          "icon": "👁️",
+          "type": "passive",
+          "effects": {
+            "awareness_bonus": 15
+          }
+        },
+        {
+          "id": "soothing_presence",
+          "name": "Soothing Presence",
+          "description": "Reduces NPC aggression in your vicinity by 20%.",
+          "hint": "Your mere presence calms hostile intentions.",
+          "tags": ["diplomacy", "aura"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["calm_demeanor", "master_mediator"],
+          "position": { "x": 300, "y": 200 },
+          "icon": "✨",
+          "type": "passive",
+          "effects": {
+            "npc_aggression_reduction": 20
+          }
+        },
+        {
+          "id": "emotional_mastery",
+          "name": "Emotional Mastery",
+          "description": "Advanced emotional control allows manipulating NPC will to fight.",
+          "hint": "Channel emotions like a master conductor.",
+          "tags": ["diplomacy", "advanced"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["empathic_reading", "perfect_harmony"],
+          "position": { "x": 50, "y": 350 },
+          "icon": "🎭",
+          "type": "active",
+          "effects": {
+            "will_manipulation": 25
+          }
+        },
+        {
+          "id": "master_mediator",
+          "name": "Master Mediator",
+          "description": "Can attempt to end conflicts by targeting both NPCs simultaneously.",
+          "hint": "Bring opposing forces together in understanding.",
+          "tags": ["diplomacy", "ultimate"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["soothing_presence", "perfect_harmony"],
+          "position": { "x": 350, "y": 350 },
+          "icon": "⚖️",
+          "type": "active",
+          "effects": {
+            "dual_target_peace": true
+          }
+        },
+        {
+          "id": "perfect_harmony",
+          "name": "Perfect Harmony",
+          "description": "Ultimate peaceful resolution - ends any conflict instantly.",
+          "hint": "Achieve the impossible: true peace between all beings.",
+          "tags": ["diplomacy", "legendary"],
+          "category": "diplomacy",
+          "prerequisites": [],
+          "connections": ["emotional_mastery", "master_mediator"],
+          "position": { "x": 200, "y": 500 },
+          "icon": "☮️",
+          "type": "active",
+          "effects": {
+            "instant_resolution": true
+          }
+        }
+      ]
+    },
+    "earth": {
+      "category": "earth",
+      "name": "Earth Mastery",
+      "description": "Harness the power of stone, soil, and growing things",
+      "icon": "🌍",
+      "color": "#059669",
+      "nodes": [
+        {
+          "id": "root_network",
+          "name": "Root Network",
+          "description": "Sense movement and intentions through underground root systems.",
+          "hint": "The earth itself becomes your eyes and ears.",
+          "tags": ["earth", "detection"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["stone_skin", "nature_bond"],
+          "position": { "x": 200, "y": 100 },
+          "icon": "🌱",
+          "type": "passive",
+          "effects": {
+            "detection_radius": 50
+          }
+        },
+        {
+          "id": "stone_skin",
+          "name": "Stone Skin",
+          "description": "Increases natural armor and resistance to physical damage.",
+          "hint": "Become as unyielding as the mountain itself.",
+          "tags": ["earth", "defense"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["root_network", "earthquake"],
+          "position": { "x": 100, "y": 200 },
+          "icon": "🗿",
+          "type": "passive",
+          "effects": {
+            "armor_bonus": 25,
+            "damage_resistance": 15
+          }
+        },
+        {
+          "id": "nature_bond",
+          "name": "Nature's Bond",
+          "description": "Animals and plants provide assistance and information.",
+          "hint": "All of nature becomes your ally.",
+          "tags": ["earth", "ally"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["root_network", "forest_guardian"],
+          "position": { "x": 300, "y": 200 },
+          "icon": "🦎",
+          "type": "passive",
+          "effects": {
+            "animal_assistance": true
+          }
+        },
+        {
+          "id": "earthquake",
+          "name": "Earthquake",
+          "description": "Shake the ground to disorient all NPCs in the area.",
+          "hint": "When words fail, let the earth speak.",
+          "tags": ["earth", "aoe"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["stone_skin", "mountain_lord"],
+          "position": { "x": 50, "y": 350 },
+          "icon": "🌋",
+          "type": "active",
+          "effects": {
+            "aoe_disorient": 30,
+            "will_reduction": 15
+          }
+        },
+        {
+          "id": "forest_guardian",
+          "name": "Forest Guardian",
+          "description": "Command tree branches and vines to restrain aggressive NPCs.",
+          "hint": "The forest itself rises to your defense.",
+          "tags": ["earth", "control"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["nature_bond", "mountain_lord"],
+          "position": { "x": 350, "y": 350 },
+          "icon": "🌳",
+          "type": "active",
+          "effects": {
+            "npc_restraint": true,
+            "movement_prevention": 2
+          }
+        },
+        {
+          "id": "mountain_lord",
+          "name": "Mountain Lord",
+          "description": "Complete mastery over earth - reshape terrain at will.",
+          "hint": "Become one with the eternal mountains.",
+          "tags": ["earth", "legendary"],
+          "category": "earth",
+          "prerequisites": [],
+          "connections": ["earthquake", "forest_guardian"],
+          "position": { "x": 200, "y": 500 },
+          "icon": "⛰️",
+          "type": "active",
+          "effects": {
+            "terrain_control": true,
+            "battlefield_mastery": true
+          }
+        }
+      ]
+    },
+    "stealth": {
+      "category": "stealth",
+      "name": "Shadow Arts",
+      "description": "Master the art of remaining unseen and moving undetected",
+      "icon": "🌙",
+      "color": "#6366f1",
+      "nodes": [
+        {
+          "id": "silent_step",
+          "name": "Silent Step",
+          "description": "Move without making sound, reducing detection chance by 25%.",
+          "hint": "Walk like the mist itself.",
+          "tags": ["stealth", "movement"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["shadow_blend", "distraction"],
+          "position": { "x": 200, "y": 100 },
+          "icon": "👤",
+          "type": "passive",
+          "effects": {
+            "detection_reduction": 25
+          }
+        },
+        {
+          "id": "shadow_blend",
+          "name": "Shadow Blend",
+          "description": "Become nearly invisible in shadows and dim light.",
+          "hint": "Darkness welcomes you as one of its own.",
+          "tags": ["stealth", "concealment"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["silent_step", "vanish"],
+          "position": { "x": 100, "y": 200 },
+          "icon": "🌑",
+          "type": "active",
+          "effects": {
+            "concealment_bonus": 40,
+            "dim_light_invisibility": true
+          }
+        },
+        {
+          "id": "distraction",
+          "name": "Distraction",
+          "description": "Create sounds or movements to misdirect NPC attention.",
+          "hint": "Look here while you act there.",
+          "tags": ["stealth", "misdirection"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["silent_step", "phantom_presence"],
+          "position": { "x": 300, "y": 200 },
+          "icon": "💨",
+          "type": "active",
+          "effects": {
+            "attention_redirect": true,
+            "confusion_duration": 3
+          }
+        },
+        {
+          "id": "vanish",
+          "name": "Vanish",
+          "description": "Instantly disappear from sight, even in broad daylight.",
+          "hint": "Be gone before they realize you were there.",
+          "tags": ["stealth", "escape"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["shadow_blend", "shadow_master"],
+          "position": { "x": 50, "y": 350 },
+          "icon": "💫",
+          "type": "active",
+          "effects": {
+            "instant_stealth": true,
+            "combat_escape": true
+          }
+        },
+        {
+          "id": "phantom_presence",
+          "name": "Phantom Presence",
+          "description": "Create false images of yourself to confuse enemies.",
+          "hint": "Be everywhere and nowhere at once.",
+          "tags": ["stealth", "illusion"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["distraction", "shadow_master"],
+          "position": { "x": 350, "y": 350 },
+          "icon": "👻",
+          "type": "active",
+          "effects": {
+            "false_images": 3,
+            "npc_confusion": 50
+          }
+        },
+        {
+          "id": "shadow_master",
+          "name": "Shadow Master",
+          "description": "Complete control over light and shadow in the battlefield.",
+          "hint": "Become the darkness that swallows all conflict.",
+          "tags": ["stealth", "legendary"],
+          "category": "stealth",
+          "prerequisites": [],
+          "connections": ["vanish", "phantom_presence"],
+          "position": { "x": 200, "y": 500 },
+          "icon": "🌌",
+          "type": "active",
+          "effects": {
+            "battlefield_darkness": true,
+            "mass_concealment": true
+          }
+        }
+      ]
+    },
+    "fire": {
+      "category": "fire",
+      "name": "Flame Mastery", 
+      "description": "Channel the passionate force of fire for intimidation and control",
+      "icon": "🔥",
+      "color": "#dc2626",
+      "nodes": [
+        {
+          "id": "inner_flame",
+          "name": "Inner Flame",
+          "description": "Channel inner fire to boost confidence and presence.",
+          "hint": "Let your inner light shine through.",
+          "tags": ["fire", "presence"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["flame_aura", "spark_words"],
+          "position": { "x": 200, "y": 100 },
+          "icon": "🕯️",
+          "type": "passive",
+          "effects": {
+            "presence_bonus": 20,
+            "intimidation_bonus": 15
+          }
+        },
+        {
+          "id": "flame_aura",
+          "name": "Flame Aura",
+          "description": "Surround yourself with harmless but impressive flames.",
+          "hint": "Show your power without causing harm.",
+          "tags": ["fire", "display"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["inner_flame", "controlled_burn"],
+          "position": { "x": 100, "y": 200 },
+          "icon": "🔥",
+          "type": "active",
+          "effects": {
+            "visual_intimidation": 35,
+            "npc_hesitation": 25
+          }
+        },
+        {
+          "id": "spark_words",
+          "name": "Spark Words",
+          "description": "Words that ignite passion and conviction in others.",
+          "hint": "Your words can kindle the flame of understanding.",
+          "tags": ["fire", "persuasion"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["inner_flame", "phoenix_wisdom"],
+          "position": { "x": 300, "y": 200 },
+          "icon": "💬",
+          "type": "active",
+          "effects": {
+            "persuasion_bonus": 30,
+            "emotional_impact": 40
+          }
+        },
+        {
+          "id": "controlled_burn",
+          "name": "Controlled Burn",
+          "description": "Create strategic fire barriers to control NPC movement.",
+          "hint": "Fire that protects rather than destroys.",
+          "tags": ["fire", "control"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["flame_aura", "inferno_lord"],
+          "position": { "x": 50, "y": 350 },
+          "icon": "🔥",
+          "type": "active",
+          "effects": {
+            "movement_barriers": true,
+            "area_denial": 2
+          }
+        },
+        {
+          "id": "phoenix_wisdom",
+          "name": "Phoenix Wisdom",
+          "description": "Grant others the insight to rise above their conflicts.",
+          "hint": "Help others find rebirth through understanding.",
+          "tags": ["fire", "enlightenment"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["spark_words", "inferno_lord"],
+          "position": { "x": 350, "y": 350 },
+          "icon": "🐦‍🔥",
+          "type": "active",
+          "effects": {
+            "enlightenment_grant": true,
+            "conflict_transcendence": 50
+          }
+        },
+        {
+          "id": "inferno_lord",
+          "name": "Inferno Lord",
+          "description": "Master all aspects of fire - create, control, and extinguish at will.",
+          "hint": "Become the living embodiment of transformative flame.",
+          "tags": ["fire", "legendary"],
+          "category": "fire",
+          "prerequisites": [],
+          "connections": ["controlled_burn", "phoenix_wisdom"],
+          "position": { "x": 200, "y": 500 },
+          "icon": "👑",
+          "type": "active",
+          "effects": {
+            "fire_mastery": true,
+            "transformation_power": true
+          }
+        }
+      ]
+    }
+  }
+}
