@@ -20,6 +20,9 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
     const isSuccess = title === "PEACE ACHIEVED";
     const isFlee = title === "FLED ENCOUNTER";
     
+    // Reset the game state first
+    onRestart();
+    
     // Resolve the encounter with the appropriate result
     const mapState = getGlobalMapState();
     if (mapState.resolveEncounter && mapState.currentEncounterZone) {

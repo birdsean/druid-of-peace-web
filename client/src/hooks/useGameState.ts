@@ -214,6 +214,7 @@ export function useGameState() {
       result: null,
       effect: ''
     });
+    setCombatLogMode('hidden');
   }, []);
 
   // Handle encounter completion and heat updates

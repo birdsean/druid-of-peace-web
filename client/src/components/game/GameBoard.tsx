@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGameState } from "@/hooks/useGameState";
 import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
@@ -26,6 +27,13 @@ export default function GameBoard() {
   // Load character data
   const npcData = loadNPCData();
   const pcData = loadPCData();
+
+  // Cleanup state when component unmounts
+  useEffect(() => {
+    return () => {
+      restartGame();
+    };
+  }, [restartGame]);
 
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (gameState.targetingMode && gameState.currentTurn === "druid") {
