@@ -7,7 +7,7 @@ import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
 import InventoryScreen from "@/components/inventory/InventoryScreen";
-import { loadNPCData, loadPCData } from "@/lib/characterLoader";
+import { loadNPCData, loadPCData, NPCCharacterData, PCCharacterData } from "@/lib/characterLoader";
 import { useInventory } from "@/hooks/useInventory";
 import { getItemById, ItemEffect } from "@/lib/inventory";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,9 @@ export default function GameBoard() {
   } = useGameState();
 
   // Load character data
-  const [npcData, setNpcData] = useState<any[]>([]);
-  const [pcData, setPcData] = useState<any>(null);
+  const [npcData, setNpcData] = useState<NPCCharacterData[]>([]);
+  const [pcData, setPcData] = useState<PCCharacterData | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -42,8 +43,10 @@ export default function GameBoard() {
         const pc = await loadPCData();
         setNpcData(npcs);
         setPcData(pc);
+        setDataLoaded(true);
       } catch (error) {
         console.error('Failed to load character data:', error);
+        setDataLoaded(true); // Set loaded even on error to prevent infinite loading
       }
     };
     loadData();
@@ -134,6 +137,15 @@ export default function GameBoard() {
 
   const CombatLogIcon = getCombatLogIcon();
 
+  // Show loading state while character data loads
+  if (!dataLoaded || !pcData) {
+    return (
+      <div className="w-screen h-screen bg-gradient-to-b from-sky-400 via-green-300 to-green-600 flex items-center justify-center">
+        <div className="text-white text-2xl font-mono">Loading character data...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-screen h-screen bg-gradient-to-b from-sky-400 via-green-300 to-green-600 overflow-hidden">
       {/* Forest Background */}
@@ -210,7 +222,7 @@ export default function GameBoard() {
             {/* Center - Abilities */}
             <div className="flex-1 flex justify-center">
               <div className="flex space-x-4">
-                {pcData.abilities.filter(ability => ability.key !== 'flee').map((ability) => (
+                {pcData?.abilities?.filter(ability => ability.key !== 'flee').map((ability) => (
                   <Button
                     key={ability.key}
                     onClick={() => handleAbilityUse(ability.key)}
