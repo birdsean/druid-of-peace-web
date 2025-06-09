@@ -46,24 +46,7 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
     setRenderedItems(0);
     setShowNext(false);
     setSelectedChoice(null);
-    setItemHeights([]);
-    itemRefs.current = [];
   }, [currentPageIndex]);
-
-  // Measure item heights dynamically as they render
-  useEffect(() => {
-    if (renderedItems === 0) return;
-    
-    const newHeights = [...itemHeights];
-    const currentItemIndex = renderedItems - 1;
-    
-    if (itemRefs.current[currentItemIndex]) {
-      const element = itemRefs.current[currentItemIndex];
-      const height = element.offsetHeight + 32; // Add spacing
-      newHeights[currentItemIndex] = height;
-      setItemHeights(newHeights);
-    }
-  }, [renderedItems]);
 
   // Animation for revealing items
   useEffect(() => {
@@ -142,10 +125,7 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
                   animationFillMode: 'both'
                 }}
               >
-                <div
-                  ref={el => itemRefs.current[index] = el}
-                  className="transform-gpu"
-                >
+                <div className="transform-gpu">
                   {item.type === 'text' && (
                     <div className="text-white text-xl leading-relaxed font-mono">
                       {item.content}
