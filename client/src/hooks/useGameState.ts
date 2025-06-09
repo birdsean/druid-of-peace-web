@@ -266,6 +266,8 @@ export function useGameState() {
     completeEncounter,
     triggerGameOver,
     turnManagerRef,
-    setAutoTurnEnabled
+    setAutoTurnEnabled,
+    setGameState,
+    addLogEntry
   };
 }

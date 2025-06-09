@@ -27,7 +27,9 @@ export default function GameBoard() {
     toggleCombatLog,
     triggerGameOver,
     turnManagerRef,
-    setAutoTurnEnabled
+    setAutoTurnEnabled,
+    setGameState,
+    addLogEntry
   } = useGameState();
 
   // Load character data
@@ -37,6 +39,10 @@ export default function GameBoard() {
   // Debug state
   const [debugState, setDebugState] = useState<DebugState>(initialDebugState);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  
+  // Inventory state
+  const { inventory, useItem } = useInventory();
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
 
   // Cleanup state when component unmounts
   useEffect(() => {
@@ -88,6 +94,17 @@ export default function GameBoard() {
     if (turnManagerRef.current) {
       turnManagerRef.current.executeDebugNPCAction(npcId, actionType);
     }
+  };
+
+  const handleUseItem = (itemId: string) => {
+    const item = getItemById(itemId);
+    if (!item || !useItem(itemId)) return;
+
+    // Apply item effects - for now just log the usage
+    console.log(`Used ${item.name}: ${item.description}`);
+    
+    // Close inventory modal
+    setShowInventoryModal(false);
   };
 
   const hasActionPoints = gameState.druid.actionPoints > 0;
@@ -220,6 +237,21 @@ export default function GameBoard() {
                   title={`Combat Log: ${combatLogMode}`}
                 >
                   <CombatLogIcon className="w-5 h-5" />
+                </Button>
+
+                {/* Use Item */}
+                <Button
+                  onClick={() => setShowInventoryModal(true)}
+                  disabled={!canUseActions}
+                  className={cn(
+                    "w-12 h-12 border-2 transition-all duration-200",
+                    canUseActions
+                      ? "bg-amber-600 hover:bg-amber-700 border-amber-400 text-white"
+                      : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
+                  )}
+                  title="Use Item"
+                >
+                  <Package className="w-5 h-5" />
                 </Button>
 
                 {/* Debug Toggle */}
@@ -364,6 +396,24 @@ export default function GameBoard() {
         title={gameState.gameOverState?.title || ""}
         message={gameState.gameOverState?.message || ""}
         icon={gameState.gameOverState?.icon || ""}
+        onRestart={restartGame}
+      />
+
+      {/* Inventory Modal */}
+      {showInventoryModal && (
+        <InventoryScreen
+          isModal={true}
+          onClose={() => setShowInventoryModal(false)}
+          onUseItem={handleUseItem}
+        />
+      )}
+
+      {/* Game Over Modal */}
+      <GameOverModal
+        visible={gameState.gameOver}
+        title={gameState.gameOverState?.title || ''}
+        message={gameState.gameOverState?.message || ''}
+        icon={gameState.gameOverState?.icon || ''}
         onRestart={restartGame}
       />
 
