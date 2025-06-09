@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameState } from "@/hooks/useGameState";
 import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
@@ -8,8 +8,9 @@ import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Minimize2 } from 'lucide-react';
+import { Eye, EyeOff, Minimize2, Settings, Play, Pause, Sword, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { IS_DEBUG, initialDebugState, DebugState } from '@/lib/debug';
 
 export default function GameBoard() {
   const {
@@ -27,6 +28,10 @@ export default function GameBoard() {
   // Load character data
   const npcData = loadNPCData();
   const pcData = loadPCData();
+
+  // Debug state
+  const [debugState, setDebugState] = useState<DebugState>(initialDebugState);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   // Cleanup state when component unmounts
   useEffect(() => {
@@ -63,6 +68,16 @@ export default function GameBoard() {
 
   const handleFleeAbility = () => {
     triggerGameOver('FLED ENCOUNTER', 'The druid escaped, but the conflict remains...', '🏃');
+  };
+
+  // Debug functions
+  const toggleAutoTurn = () => {
+    setDebugState(prev => ({ ...prev, autoTurn: !prev.autoTurn }));
+  };
+
+  const handleDebugNPCAction = (npcId: "npc1" | "npc2", actionType: "attack" | "defend") => {
+    // TODO: Implement manual NPC action execution
+    console.log(`Debug: ${npcId} performs ${actionType}`);
   };
 
   const hasActionPoints = gameState.druid.actionPoints > 0;
@@ -130,54 +145,8 @@ export default function GameBoard() {
       {/* Druid Character (Hidden) */}
       <DruidCharacter hidden={gameState.druid.hidden} />
 
-      {/* Player Utils Panel - Right Side */}
-      <div className="absolute bottom-4 right-4 z-30">
-        <div className="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-3 shadow-lg border-2 border-gray-400">
-          <div className="flex flex-col gap-3">
-            {/* Flee Button */}
-            <Button
-              onClick={() => handleAbilityUse("flee")}
-              disabled={!canUseActions}
-              className={cn(
-                "w-12 h-12 text-lg border-2 transition-all duration-200",
-                canUseActions 
-                  ? "bg-red-600 hover:bg-red-700 border-red-400 text-white" 
-                  : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
-              )}
-              title="Flee from encounter"
-            >
-              🏃
-            </Button>
-
-            {/* End Turn Button */}
-            <Button
-              onClick={handleEndTurn}
-              disabled={!canUseActions}
-              className={cn(
-                "w-12 h-12 text-lg border-2 transition-all duration-200",
-                canUseActions
-                  ? "bg-orange-600 hover:bg-orange-700 border-orange-400 text-white"
-                  : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
-              )}
-              title="End turn"
-            >
-              ⏰
-            </Button>
-
-            {/* Combat Log Toggle */}
-            <Button
-              onClick={toggleCombatLog}
-              className="w-12 h-12 text-lg border-2 bg-blue-600 hover:bg-blue-700 border-blue-400 text-white transition-all duration-200"
-              title="Toggle combat log"
-            >
-              <CombatLogIcon size={16} />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* PC Character Token - Above Actions Panel */}
-      <div className="absolute bottom-20 left-4 z-30">
+      {/* PC Character Token - Above Player Panel */}
+      <div className="absolute bottom-32 left-4 z-30">
         <div className="relative">
           <div className="w-16 h-16 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-2xl shadow-lg">
             🌿
@@ -190,9 +159,9 @@ export default function GameBoard() {
         </div>
       </div>
 
-      {/* Player Actions Panel - Bottom Left */}
-      <div className="absolute bottom-0 left-0 right-20 z-30">
-        <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-tr-lg p-4 shadow-lg border-2 border-orange-400">
+      {/* Combined Player & Utils Panel - Full Width Bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-30">
+        <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-4 shadow-lg border-t-2 border-orange-400">
           <div className="flex items-center justify-between">
             {/* Left side - Action Points */}
             <div className="flex items-center space-x-4">
@@ -228,16 +197,139 @@ export default function GameBoard() {
               </div>
             </div>
 
-            {/* Right side - Status Info */}
-            <div className="text-right">
-              <div className="text-xs font-mono text-orange-200 mb-1">STATUS</div>
-              <div className="text-sm font-mono text-white">
-                {gameState.targetingMode ? "🎯 TARGETING" : "✋ READY"}
+            {/* Right side - Utils and Status */}
+            <div className="flex items-center space-x-4">
+              {/* Status Info */}
+              <div className="text-right mr-4">
+                <div className="text-xs font-mono text-orange-200 mb-1">STATUS</div>
+                <div className="text-sm font-mono text-white">
+                  {gameState.targetingMode ? "🎯 TARGETING" : "✋ READY"}
+                </div>
+              </div>
+
+              {/* Utils Section */}
+              <div className="flex items-center space-x-2 border-l border-orange-300 pl-4">
+                {/* Combat Log Toggle */}
+                <Button
+                  onClick={toggleCombatLog}
+                  className="w-12 h-12 bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"
+                  title={`Combat Log: ${combatLogMode}`}
+                >
+                  <CombatLogIcon className="w-5 h-5" />
+                </Button>
+
+                {/* End Turn */}
+                <Button
+                  onClick={handleEndTurn}
+                  disabled={!canUseActions}
+                  className={cn(
+                    "w-12 h-12 border-2 transition-all duration-200",
+                    canUseActions
+                      ? "bg-orange-600 hover:bg-orange-700 border-orange-400 text-white"
+                      : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
+                  )}
+                  title="End Turn"
+                >
+                  ⏰
+                </Button>
+
+                {/* Flee */}
+                <Button
+                  onClick={handleFleeAbility}
+                  disabled={!canUseActions}
+                  className={cn(
+                    "w-12 h-12 border-2 transition-all duration-200",
+                    canUseActions
+                      ? "bg-red-600 hover:bg-red-700 border-red-400 text-white"
+                      : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed"
+                  )}
+                  title="Flee from encounter"
+                >
+                  🏃
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Debug Panel - Battle Screen */}
+      {IS_DEBUG && (
+        <div className="absolute top-4 right-4 z-40">
+          <div className="bg-gray-900 rounded-lg p-3 shadow-lg border-2 border-yellow-400">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-mono text-yellow-400">DEBUG</div>
+              <Button
+                onClick={() => setShowDebugPanel(!showDebugPanel)}
+                className="w-6 h-6 p-0 bg-yellow-600 hover:bg-yellow-700 text-white"
+                title="Toggle debug panel"
+              >
+                <Settings className="w-3 h-3" />
+              </Button>
+            </div>
+            
+            {showDebugPanel && (
+              <div className="flex flex-col gap-2">
+                {/* Auto Turn Toggle */}
+                <Button
+                  onClick={toggleAutoTurn}
+                  className={cn(
+                    "w-full h-8 text-xs border-2 transition-all duration-200",
+                    debugState.autoTurn
+                      ? "bg-green-600 hover:bg-green-700 border-green-400 text-white"
+                      : "bg-red-600 hover:bg-red-700 border-red-400 text-white"
+                  )}
+                  title="Toggle automatic NPC turns"
+                >
+                  {debugState.autoTurn ? <Play className="w-3 h-3 mr-1" /> : <Pause className="w-3 h-3 mr-1" />}
+                  Auto Turn
+                </Button>
+
+                {/* NPC Action Buttons */}
+                {!debugState.autoTurn && (
+                  <>
+                    <div className="text-xs font-mono text-gray-400">NPC1 Actions</div>
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => handleDebugNPCAction("npc1", "attack")}
+                        className="flex-1 h-8 text-xs bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
+                        title="NPC1 Attack"
+                      >
+                        <Sword className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDebugNPCAction("npc1", "defend")}
+                        className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"
+                        title="NPC1 Defend"
+                      >
+                        <Shield className="w-3 h-3" />
+                      </Button>
+                    </div>
+
+                    <div className="text-xs font-mono text-gray-400">NPC2 Actions</div>
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => handleDebugNPCAction("npc2", "attack")}
+                        className="flex-1 h-8 text-xs bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
+                        title="NPC2 Attack"
+                      >
+                        <Sword className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDebugNPCAction("npc2", "defend")}
+                        className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"
+                        title="NPC2 Defend"
+                      >
+                        <Shield className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Dice Display */}
       <DiceDisplay
