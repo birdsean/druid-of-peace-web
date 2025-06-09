@@ -131,6 +131,9 @@ export function useMapState() {
   }, [resolveEncounter]);
 
   const nextTurn = useCallback(() => {
+    // Advance time phase first
+    globalTimeManager.advancePhase();
+    
     setMapState(prev => {
       const newZones = prev.zones.map(zone => {
         // Skip if zone already has encounter
@@ -225,6 +228,7 @@ export function useMapState() {
     currentZone: mapState.currentZone,
     turnCounter: mapState.turnCounter,
     activeEncounterZone: mapState.activeEncounterZone,
+    currentTimePhase: mapState.currentTimePhase,
     setCurrentZone,
     startEncounter,
     resolveEncounter,

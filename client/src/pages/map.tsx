@@ -9,6 +9,7 @@ import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader
 import { IS_DEBUG } from "@/lib/debug";
 import { Settings, LogOut, Package } from "lucide-react";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
+import { globalTimeManager, type TimePhase } from "@/lib/timeSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
 
 // Inline components to avoid import issues
@@ -135,13 +136,29 @@ function ForestZone({ zone, isCurrentZone, onClick, environmentEffect }: {
   );
 }
 
-function TurnCounter({ turn }: { turn: number }) {
+function TurnCounter({ turn, timePhase }: { turn: number; timePhase: TimePhase }) {
+  const phaseInfo = globalTimeManager.getPhaseInfo(timePhase);
+  
   return (
     <div className="absolute top-4 right-4 z-30">
-      <div className="bg-black bg-opacity-80 rounded-lg p-4 border-2 border-amber-400">
+      <div className="bg-black bg-opacity-80 rounded-lg p-4 border-2 border-amber-400 space-y-2">
         <div className="text-amber-400 font-mono text-center">
           <div className="text-xs">TURN</div>
           <div className="text-2xl font-bold">{turn}</div>
+        </div>
+        
+        <div className="text-center border-t border-amber-400/30 pt-2">
+          <div className="text-3xl mb-1">{phaseInfo.icon}</div>
+          <div 
+            className="text-xs font-mono font-bold px-2 py-1 rounded"
+            style={{ 
+              backgroundColor: phaseInfo.colorPalette.accent + '40',
+              color: phaseInfo.colorPalette.accent,
+              borderColor: phaseInfo.colorPalette.accent
+            }}
+          >
+            {phaseInfo.name}
+          </div>
         </div>
       </div>
     </div>
@@ -159,6 +176,7 @@ export default function Map() {
     currentZone,
     turnCounter,
     activeEncounterZone,
+    currentTimePhase,
     setCurrentZone,
     nextTurn,
     startEncounter,
@@ -348,7 +366,7 @@ export default function Map() {
       )}
 
       {/* Turn Counter */}
-      <TurnCounter turn={turnCounter} />
+      <TurnCounter turn={turnCounter} timePhase={currentTimePhase} />
       
       {/* Map Title */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
