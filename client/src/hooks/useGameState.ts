@@ -268,7 +268,7 @@ export function useGameState() {
   }, []);
 
   const applyItemEffects = useCallback((itemEffects: any, itemName: string) => {
-    let effectsDescription = [];
+    const effectsDescription: string[] = [];
     
     setGameState(prev => {
       const newState = { ...prev };
@@ -308,12 +308,12 @@ export function useGameState() {
       gameState.turnCounter,
       'item_use',
       'druid',
-      'use_item',
-      undefined,
-      effectsDescription.join(', '),
-      0,
-      effectsDescription.join(', '),
-      itemName
+      {
+        action: 'use_item',
+        result: effectsDescription.join(', '),
+        effect: effectsDescription.join(', '),
+        itemName: itemName
+      }
     );
     addBattleEvent(event);
 

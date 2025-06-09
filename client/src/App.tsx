@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Game from "@/pages/game";
 import Map from "@/pages/map";
 import Inventory from "@/pages/inventory";
+import MainMenu from "@/pages/main-menu";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Map} />
+      <Route path="/" component={MainMenu} />
+      <Route path="/map" component={Map} />
       <Route path="/game" component={Game} />
       <Route path="/inventory" component={Inventory} />
       <Route component={NotFound} />

@@ -204,10 +204,10 @@ export default function Map() {
   }, []);
 
   const handleExitGame = useCallback(() => {
-    if (confirm('Are you sure you want to exit the game?')) {
-      window.location.href = '/';
+    if (confirm('Return to main menu?')) {
+      setLocation('/');
     }
-  }, []);
+  }, [setLocation]);
 
   const handleOpenInventory = useCallback(() => {
     setLocation('/inventory');
