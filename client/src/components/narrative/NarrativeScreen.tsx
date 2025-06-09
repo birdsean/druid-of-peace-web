@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 
 interface NarrativeItem {
   type: 'text' | 'image' | 'choice';
@@ -39,13 +39,31 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
 
   const currentPage = script.pages[currentPageIndex];
   const isLastPage = currentPageIndex === script.pages.length - 1;
+  const hasChoices = currentPage?.items.some(item => item.type === 'choice');
 
   // Reset rendered items when page changes
   useEffect(() => {
     setRenderedItems(0);
     setShowNext(false);
     setSelectedChoice(null);
+    setItemHeights([]);
+    itemRefs.current = [];
   }, [currentPageIndex]);
+
+  // Measure item heights dynamically as they render
+  useEffect(() => {
+    if (renderedItems === 0) return;
+    
+    const newHeights = [...itemHeights];
+    const currentItemIndex = renderedItems - 1;
+    
+    if (itemRefs.current[currentItemIndex]) {
+      const element = itemRefs.current[currentItemIndex];
+      const height = element.offsetHeight + 32; // Add spacing
+      newHeights[currentItemIndex] = height;
+      setItemHeights(newHeights);
+    }
+  }, [renderedItems]);
 
   // Animation for revealing items
   useEffect(() => {
@@ -57,15 +75,8 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
         
         // Check if we've rendered all items
         if (nextCount >= currentPage.items.length) {
-          // Check if page has choices
-          const hasChoices = currentPage.items.some(item => item.type === 'choice');
-          if (!hasChoices) {
-            // Show next button after delay if no choices
-            setTimeout(() => setShowNext(true), 1000);
-          } else {
-            // Show next button immediately if there are choices
-            setShowNext(true);
-          }
+          // Always show next/exit button after delay
+          setTimeout(() => setShowNext(true), 1000);
           clearInterval(timer);
         }
         
@@ -117,74 +128,87 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
       <div className="w-full max-w-4xl mx-auto px-8 py-16 text-center">
         
-        {/* Render items */}
+        {/* Render items with smooth height animations */}
         <div className="space-y-8">
           {currentPage.items.slice(0, renderedItems).map((item, index) => {
             const key = `${currentPageIndex}-${index}`;
             
-            if (item.type === 'text') {
-              return (
-                <div 
-                  key={key}
-                  className="text-white text-xl leading-relaxed font-mono animate-in fade-in duration-1000"
+            return (
+              <div
+                key={key}
+                className="animate-in slide-in-from-bottom-4 fade-in duration-700 ease-out"
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                  animationFillMode: 'both'
+                }}
+              >
+                <div
+                  ref={el => itemRefs.current[index] = el}
+                  className="transform-gpu"
                 >
-                  {item.content}
+                  {item.type === 'text' && (
+                    <div className="text-white text-xl leading-relaxed font-mono">
+                      {item.content}
+                    </div>
+                  )}
+                  
+                  {item.type === 'image' && (
+                    <div className="flex justify-center">
+                      <img 
+                        src={item.src} 
+                        alt={item.alt || ''} 
+                        className="max-w-md max-h-64 object-contain"
+                      />
+                    </div>
+                  )}
+                  
+                  {item.type === 'choice' && (
+                    <div>
+                      <Button
+                        onClick={() => handleChoiceSelect(item.next || '')}
+                        className={`
+                          mx-2 px-6 py-3 text-lg font-mono border-2 transition-all duration-300
+                          ${selectedChoice === item.next 
+                            ? 'bg-white text-black border-white' 
+                            : `bg-transparent border-white text-white hover:bg-white hover:text-black`
+                          }
+                        `}
+                        title={item.tooltip}
+                      >
+                        {item.text}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              );
-            }
-            
-            if (item.type === 'image') {
-              return (
-                <div 
-                  key={key}
-                  className="flex justify-center animate-in fade-in duration-1000"
-                >
-                  <img 
-                    src={item.src} 
-                    alt={item.alt || ''} 
-                    className="max-w-md max-h-64 object-contain"
-                  />
-                </div>
-              );
-            }
-            
-            if (item.type === 'choice') {
-              return (
-                <div 
-                  key={key}
-                  className="animate-in fade-in duration-1000"
-                >
-                  <Button
-                    onClick={() => handleChoiceSelect(item.next || '')}
-                    className={`
-                      mx-2 px-6 py-3 text-lg font-mono border-2 transition-all duration-300
-                      ${selectedChoice === item.next 
-                        ? 'bg-white text-black border-white' 
-                        : `bg-transparent border-white text-white hover:bg-white hover:text-black`
-                      }
-                    `}
-                    title={item.tooltip}
-                  >
-                    {item.text}
-                  </Button>
-                </div>
-              );
-            }
-            
-            return null;
+              </div>
+            );
           })}
         </div>
 
-        {/* Next button */}
+        {/* Next/Exit buttons */}
         {showNext && (
-          <div className="fixed bottom-8 right-8 animate-in fade-in duration-500">
-            <Button
-              onClick={handleNext}
-              className="bg-white text-black hover:bg-gray-200 px-6 py-3 text-lg font-mono border-2 border-white flex items-center gap-2"
-            >
-              {isLastPage && !selectedChoice ? 'COMPLETE' : 'NEXT'}
-              <ChevronRight size={20} />
-            </Button>
+          <div className="fixed bottom-8 right-8 animate-in fade-in duration-500 flex gap-4">
+            {/* Exit button for last page */}
+            {isLastPage && !hasChoices && (
+              <Button
+                onClick={onComplete}
+                className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-lg font-mono border-2 border-red-600 flex items-center gap-2"
+              >
+                EXIT
+                <X size={20} />
+              </Button>
+            )}
+            
+            {/* Next button */}
+            {(!isLastPage || selectedChoice || hasChoices) && (
+              <Button
+                onClick={handleNext}
+                className="bg-white text-black hover:bg-gray-200 px-6 py-3 text-lg font-mono border-2 border-white flex items-center gap-2"
+              >
+                {isLastPage && !selectedChoice ? 'COMPLETE' : 'NEXT'}
+                <ChevronRight size={20} />
+              </Button>
+            )}
           </div>
         )}
 
