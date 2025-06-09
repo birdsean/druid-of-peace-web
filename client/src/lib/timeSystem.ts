@@ -189,6 +189,20 @@ export function getTimeBasedEnvironmentalEffect(phase: TimePhase) {
   };
 }
 
+export function getTimeBasedGradient(phase: TimePhase): string {
+  const gradients: Record<TimePhase, string> = {
+    day1: 'bg-gradient-to-b from-sky-300 via-blue-200 to-green-300',
+    day2: 'bg-gradient-to-b from-blue-400 via-sky-300 to-green-400', 
+    day3: 'bg-gradient-to-b from-orange-300 via-yellow-200 to-green-300',
+    dusk: 'bg-gradient-to-b from-purple-400 via-pink-300 to-orange-400',
+    night1: 'bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-800',
+    night2: 'bg-gradient-to-b from-indigo-900 via-purple-800 to-slate-800',
+    night3: 'bg-gradient-to-b from-slate-800 via-indigo-800 to-purple-700',
+    dawn: 'bg-gradient-to-b from-pink-300 via-rose-200 to-orange-300'
+  };
+  return gradients[phase];
+}
+
 export function applyPhaseColorPalette(phase: TimePhase, element?: HTMLElement) {
   const palette = PHASE_INFO[phase].colorPalette;
   const root = element || document.documentElement;

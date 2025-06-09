@@ -9,7 +9,8 @@ import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader
 import { IS_DEBUG } from "@/lib/debug";
 import { Settings, LogOut, Package, TreePine } from "lucide-react";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
-import { globalTimeManager, type TimePhase } from "@/lib/timeSystem";
+import { globalTimeManager, type TimePhase, getTimeBasedGradient } from "@/lib/timeSystem";
+import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
 
 // Inline components to avoid import issues
