@@ -6,9 +6,12 @@ import TurnIndicator from "./TurnIndicator";
 import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
+import InventoryScreen from "@/components/inventory/InventoryScreen";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
+import { useInventory } from "@/hooks/useInventory";
+import { getItemById, ItemEffect } from "@/lib/inventory";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Minimize2, Settings, Play, Pause, Sword, Shield } from 'lucide-react';
+import { Eye, EyeOff, Minimize2, Settings, Play, Pause, Sword, Shield, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { IS_DEBUG, initialDebugState, DebugState } from '@/lib/debug';
 

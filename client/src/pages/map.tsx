@@ -7,7 +7,7 @@ import { setGlobalMapState } from "@/lib/mapState";
 import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 import { IS_DEBUG } from "@/lib/debug";
-import { Settings } from "lucide-react";
+import { Settings, LogOut, Package } from "lucide-react";
 
 // Inline components to avoid import issues
 function HeatBar({ heat }: { heat: number }) {
@@ -190,6 +190,16 @@ export default function Map() {
     console.log(`Choice made: ${choiceId} on page ${pageId}`);
   }, []);
 
+  const handleExitGame = useCallback(() => {
+    if (confirm('Are you sure you want to exit the game?')) {
+      window.location.href = '/';
+    }
+  }, []);
+
+  const handleOpenInventory = useCallback(() => {
+    setLocation('/inventory');
+  }, [setLocation]);
+
   return (
     <div className="relative w-screen h-screen bg-gradient-to-b from-green-800 via-green-600 to-green-400 overflow-hidden">
       {/* Forest Background */}
@@ -299,6 +309,31 @@ export default function Map() {
           <div className="text-yellow-300">51-70: Warm</div>
           <div className="text-orange-300">71-90: Hot</div>
           <div className="text-red-300">91-100: Critical</div>
+        </div>
+      </div>
+
+      {/* Bottom Panel - Right Side */}
+      <div className="absolute bottom-0 right-0 z-30">
+        <div className="p-4">
+          <div className="flex items-center space-x-2">
+            {/* Inventory Button */}
+            <Button
+              onClick={handleOpenInventory}
+              className="w-12 h-12 bg-amber-600 hover:bg-amber-700 border-2 border-amber-400 text-white"
+              title="Open Inventory"
+            >
+              <Package className="w-5 h-5" />
+            </Button>
+
+            {/* Exit Game Button */}
+            <Button
+              onClick={handleExitGame}
+              className="w-12 h-12 bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
+              title="Exit Game"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
