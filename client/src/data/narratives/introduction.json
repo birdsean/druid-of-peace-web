@@ -1,0 +1,123 @@
+{
+  "id": "introduction",
+  "title": "The Druid's Awakening",
+  "pages": [
+    {
+      "id": "opening",
+      "items": [
+        {
+          "type": "text",
+          "content": "Deep within the ancient forest, shadows stir with unrest."
+        },
+        {
+          "type": "text",
+          "content": "You are the Druid of Peace, keeper of harmony between all living things."
+        },
+        {
+          "type": "text",
+          "content": "But something has changed. The forest whispers of conflict..."
+        }
+      ],
+      "next": "awakening"
+    },
+    {
+      "id": "awakening",
+      "items": [
+        {
+          "type": "text",
+          "content": "You sense the discord spreading through the woodland realms."
+        },
+        {
+          "type": "text",
+          "content": "Creatures that once lived in harmony now eye each other with suspicion."
+        },
+        {
+          "type": "text",
+          "content": "Your mission is clear: restore peace before the forest tears itself apart."
+        }
+      ],
+      "next": "powers"
+    },
+    {
+      "id": "powers",
+      "items": [
+        {
+          "type": "text",
+          "content": "As a Druid of Peace, you possess unique abilities:"
+        },
+        {
+          "type": "text",
+          "content": "🕊️ PEACE AURA - Calms hostile creatures and reduces their will to fight"
+        },
+        {
+          "type": "text",
+          "content": "🌿 HIDDEN NATURE - You remain unseen, observing conflicts from the shadows"
+        },
+        {
+          "type": "text",
+          "content": "🏃 RETREAT - When overwhelmed, escape to fight another day"
+        }
+      ],
+      "next": "philosophy"
+    },
+    {
+      "id": "philosophy",
+      "items": [
+        {
+          "type": "text",
+          "content": "Remember: True strength lies not in conquest, but in understanding."
+        },
+        {
+          "type": "text",
+          "content": "Every creature has a reason for their anger. Find it. Heal it."
+        },
+        {
+          "type": "choice",
+          "text": "I understand. I will bring peace to the forest.",
+          "next": "commitment",
+          "tooltip": "Accept your role as peacekeeper"
+        },
+        {
+          "type": "choice",
+          "text": "This sounds dangerous. What if I fail?",
+          "next": "reassurance",
+          "tooltip": "Express concern about the mission"
+        }
+      ]
+    },
+    {
+      "id": "commitment",
+      "items": [
+        {
+          "type": "text",
+          "content": "Your resolve strengthens the very roots of the forest."
+        },
+        {
+          "type": "text",
+          "content": "The woodland spirits smile upon your dedication."
+        },
+        {
+          "type": "text",
+          "content": "Go forth, Druid. May wisdom guide your path."
+        }
+      ]
+    },
+    {
+      "id": "reassurance",
+      "items": [
+        {
+          "type": "text",
+          "content": "Fear is natural, young druid. Even the mightiest oak was once an acorn."
+        },
+        {
+          "type": "text",
+          "content": "You do not walk this path alone. The forest itself will aid you."
+        },
+        {
+          "type": "text",
+          "content": "Trust in your abilities. Peace is not weakness—it is the greatest strength."
+        }
+      ]
+    }
+  ]
+}

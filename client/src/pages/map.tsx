@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useMapState, Zone } from "@/hooks/useMapState";
 import { setGlobalMapState } from "@/lib/mapState";
+import NarrativeScreen from "@/components/narrative/NarrativeScreen";
+import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 
 // Inline components to avoid import issues
 function HeatBar({ heat }: { heat: number }) {
@@ -118,6 +120,7 @@ function TurnCounter({ turn }: { turn: number }) {
 export default function Map() {
   const [, setLocation] = useLocation();
   const [resolutionMode, setResolutionMode] = useState<'none' | 'success' | 'fail'>('none');
+  const [narrativeScript, setNarrativeScript] = useState<NarrativeScript | null>(null);
   const {
     zones,
     currentZone,
@@ -168,6 +171,21 @@ export default function Map() {
   const handleNextTurn = useCallback(() => {
     nextTurn();
   }, [nextTurn]);
+
+  const handleNarrativeStart = useCallback((scriptId: string) => {
+    const script = loadNarrativeScript(scriptId);
+    if (script) {
+      setNarrativeScript(script);
+    }
+  }, []);
+
+  const handleNarrativeComplete = useCallback(() => {
+    setNarrativeScript(null);
+  }, []);
+
+  const handleNarrativeChoice = useCallback((choiceId: string, pageId: string) => {
+    console.log(`Choice made: ${choiceId} on page ${pageId}`);
+  }, []);
 
   return (
     <div className="relative w-screen h-screen bg-gradient-to-b from-green-800 via-green-600 to-green-400 overflow-hidden">
