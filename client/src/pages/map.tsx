@@ -261,16 +261,6 @@ export default function Map() {
         ))}
       </div>
 
-      {/* Next Turn Button */}
-      <div className="absolute bottom-4 right-4 z-30">
-        <Button
-          onClick={handleNextTurn}
-          className="w-32 h-12 bg-amber-600 hover:bg-amber-700 border-2 border-amber-400 text-white font-mono text-lg shadow-lg"
-        >
-          ⏰ Next Turn
-        </Button>
-      </div>
-
       {/* Legend */}
       <div className="absolute bottom-4 left-4 z-30 bg-black bg-opacity-80 rounded-lg p-4 text-white font-mono text-sm">
         <h3 className="font-bold mb-2">Heat Levels:</h3>
