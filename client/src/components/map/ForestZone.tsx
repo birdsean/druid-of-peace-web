@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Zone } from "@/hooks/useMapState";
-import HeatBar from "./HeatBar";
+import HeatBar from "@/components/map/HeatBar";
 
 interface ForestZoneProps {
   zone: Zone;

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 interface GameOverModalProps {
   visible: boolean;
@@ -9,7 +10,13 @@ interface GameOverModalProps {
 }
 
 export default function GameOverModal({ visible, title, message, icon, onRestart }: GameOverModalProps) {
+  const [, setLocation] = useLocation();
+  
   if (!visible) return null;
+
+  const handleReturnToMap = () => {
+    setLocation('/');
+  };
 
   return (
     <div className="absolute inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
@@ -19,10 +26,10 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
           <h2 className="font-mono text-yellow-400 text-xl mb-4">{title}</h2>
           <p className="text-gray-300 mb-6">{message}</p>
           <Button 
-            onClick={onRestart}
+            onClick={handleReturnToMap}
             className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-mono py-3 px-6 rounded transition-colors duration-200"
           >
-            PLAY AGAIN
+            RETURN TO MAP
           </Button>
         </div>
       </div>
