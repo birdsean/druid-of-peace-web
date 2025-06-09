@@ -173,6 +173,21 @@ export default function Map() {
     getEventLog
   } = useMapEvents();
 
+  // Load environmental effects data
+  useEffect(() => {
+    const loadEffects = async () => {
+      try {
+        const effectsData = await loadEnvironmentalEffects();
+        if (effectsData) {
+          setEnvironmentalEffects(effectsData.environmentalEffects);
+        }
+      } catch (error) {
+        console.error('Failed to load environmental effects:', error);
+      }
+    };
+    loadEffects();
+  }, []);
+
   // Set global map state for encounter resolution
   useEffect(() => {
     setGlobalMapState({ 
@@ -353,6 +368,7 @@ export default function Map() {
             zone={zone}
             isCurrentZone={currentZone === zone.id}
             onClick={() => handleZoneClick(zone.id)}
+            environmentEffect={zone.environmentEffect ? environmentalEffects[zone.environmentEffect] : undefined}
           />
         ))}
       </div>
