@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { getGlobalMapState } from "@/lib/mapState";
 
 interface GameOverModalProps {
   visible: boolean;
@@ -15,6 +16,15 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
   if (!visible) return null;
 
   const handleReturnToMap = () => {
+    // Determine if encounter was successful based on game outcome
+    const isSuccess = title === "PEACE ACHIEVED";
+    
+    // Resolve the encounter with the appropriate result
+    const mapState = getGlobalMapState();
+    if (mapState.resolveEncounter && mapState.currentEncounterZone) {
+      mapState.resolveEncounter(mapState.currentEncounterZone, isSuccess);
+    }
+    
     setLocation('/');
   };
 

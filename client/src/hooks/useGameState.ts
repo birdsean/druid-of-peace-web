@@ -219,10 +219,8 @@ export function useGameState() {
   // Handle encounter completion and heat updates
   const completeEncounter = useCallback((success: boolean) => {
     const mapState = getGlobalMapState();
-    if (mapState.resolveEncounter) {
-      // Use a default zone ID if none is available
-      const zoneId = 'grove'; // This should be passed from the map when starting encounter
-      mapState.resolveEncounter(zoneId, success);
+    if (mapState.resolveEncounter && mapState.currentEncounterZone) {
+      mapState.resolveEncounter(mapState.currentEncounterZone, success);
     }
   }, []);
 

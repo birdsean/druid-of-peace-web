@@ -69,7 +69,7 @@ export function executeNPCAction(roll: number): NPCAction {
 }
 
 export function calculatePeaceEffect(roll: number): PeaceEffect {
-  const willReduction = roll * 8 + Math.floor(Math.random() * 10) + 5;
+  const willReduction = roll * 8 + Math.floor(Math.random() * 10) + 5 + 1000;
   const awarenessIncrease = Math.floor(roll / 2) + 1;
 
   return {

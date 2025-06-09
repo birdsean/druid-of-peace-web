@@ -7,7 +7,6 @@ export interface Zone {
   hasEncounter: boolean;
   position: { x: number; y: number };
   icon: string;
-  explored: boolean;
 }
 
 interface MapState {
@@ -25,8 +24,7 @@ const initialZones: Zone[] = [
     heat: 25,
     hasEncounter: false,
     position: { x: 20, y: 35 },
-    icon: "🌳",
-    explored: true
+    icon: "🌳"
   },
   {
     id: "lake",
@@ -34,8 +32,7 @@ const initialZones: Zone[] = [
     heat: 15,
     hasEncounter: false,
     position: { x: 50, y: 35 },
-    icon: "🌊",
-    explored: true
+    icon: "🌊"
   },
   {
     id: "thicket",
@@ -43,8 +40,7 @@ const initialZones: Zone[] = [
     heat: 45,
     hasEncounter: true,
     position: { x: 80, y: 35 },
-    icon: "🌿",
-    explored: true
+    icon: "🌿"
   },
   // Bottom row
   {
@@ -53,8 +49,7 @@ const initialZones: Zone[] = [
     heat: 8,
     hasEncounter: false,
     position: { x: 20, y: 65 },
-    icon: "☀️",
-    explored: true
+    icon: "☀️"
   },
   {
     id: "ruins",
@@ -62,8 +57,7 @@ const initialZones: Zone[] = [
     heat: 75,
     hasEncounter: false,
     position: { x: 50, y: 65 },
-    icon: "🏛️",
-    explored: true
+    icon: "🏛️"
   },
   {
     id: "cavern",
@@ -71,8 +65,7 @@ const initialZones: Zone[] = [
     heat: 90,
     hasEncounter: true,
     position: { x: 80, y: 65 },
-    icon: "🕳️",
-    explored: true
+    icon: "🕳️"
   }
 ];
 

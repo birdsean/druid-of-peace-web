@@ -121,6 +121,7 @@ export default function Map() {
     zones,
     currentZone,
     turnCounter,
+    activeEncounterZone,
     setCurrentZone,
     nextTurn,
     startEncounter,
@@ -129,8 +130,11 @@ export default function Map() {
 
   // Set global map state for encounter resolution
   useEffect(() => {
-    setGlobalMapState({ resolveEncounter });
-  }, [resolveEncounter]);
+    setGlobalMapState({ 
+      resolveEncounter,
+      currentEncounterZone: activeEncounterZone || undefined
+    });
+  }, [resolveEncounter, activeEncounterZone]);
 
   const handleZoneClick = useCallback((zoneId: string) => {
     if (currentZone === zoneId) return; // Re-clicking current zone does nothing
@@ -143,9 +147,14 @@ export default function Map() {
     // If zone has active encounter, launch battle
     if (zone.hasEncounter) {
       startEncounter(zoneId);
+      // Store the encounter zone in global state
+      setGlobalMapState({ 
+        resolveEncounter,
+        currentEncounterZone: zoneId
+      });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter]);
 
   const handleNextTurn = useCallback(() => {
     nextTurn();
