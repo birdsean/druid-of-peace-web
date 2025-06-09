@@ -74,7 +74,11 @@ export default function GameBoard() {
 
   // Debug functions
   const toggleAutoTurn = () => {
-    setDebugState(prev => ({ ...prev, autoTurn: !prev.autoTurn }));
+    setDebugState(prev => {
+      const newAutoTurn = !prev.autoTurn;
+      setAutoTurnEnabled(newAutoTurn);
+      return { ...prev, autoTurn: newAutoTurn };
+    });
   };
 
   const handleDebugNPCAction = (npcId: "npc1" | "npc2", actionType: "attack" | "defend") => {
@@ -148,26 +152,20 @@ export default function GameBoard() {
       {/* Druid Character (Hidden) */}
       <DruidCharacter hidden={gameState.druid.hidden} />
 
-      {/* PC Character Token - Above Player Panel */}
-      <div className="absolute bottom-32 left-4 z-30">
-        <div className="relative">
-          <div className="w-16 h-16 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-2xl shadow-lg">
-            🌿
-          </div>
-          {gameState.druid.hidden && (
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-600 rounded-full border-2 border-purple-400 flex items-center justify-center text-xs text-white">
-              👁️
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Combined Player & Utils Panel - Full Width Bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-30">
         <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-4 shadow-lg border-t-2 border-orange-400">
           <div className="flex items-center justify-between">
-            {/* Left side - Action Points */}
+            {/* Left side - PC Character Token and Action Points */}
             <div className="flex items-center space-x-4">
+              {/* PC Character Token */}
+              <div className="relative">
+                <div className="w-12 h-12 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-lg shadow-lg">
+                  🌿
+                </div>
+              </div>
+
+              {/* Action Points */}
               <div className="text-center">
                 <div className="text-xs font-mono text-orange-200 mb-1">AP</div>
                 <div className="text-lg font-mono text-white font-bold">
@@ -221,6 +219,22 @@ export default function GameBoard() {
                   <CombatLogIcon className="w-5 h-5" />
                 </Button>
 
+                {/* Debug Toggle */}
+                {IS_DEBUG && (
+                  <Button
+                    onClick={() => setShowDebugPanel(!showDebugPanel)}
+                    className={cn(
+                      "w-12 h-12 border-2 transition-all duration-200",
+                      showDebugPanel
+                        ? "bg-yellow-700 border-yellow-500 text-white"
+                        : "bg-yellow-600 hover:bg-yellow-700 border-yellow-400 text-white"
+                    )}
+                    title="Toggle debug panel"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </Button>
+                )}
+
                 {/* End Turn */}
                 <Button
                   onClick={handleEndTurn}
@@ -256,80 +270,79 @@ export default function GameBoard() {
         </div>
       </div>
 
-      {/* Debug Panel - Battle Screen */}
-      {IS_DEBUG && (
-        <div className="absolute top-4 right-4 z-40">
-          <div className="bg-gray-900 rounded-lg p-3 shadow-lg border-2 border-yellow-400">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-mono text-yellow-400">DEBUG</div>
-              <Button
-                onClick={() => setShowDebugPanel(!showDebugPanel)}
-                className="w-6 h-6 p-0 bg-yellow-600 hover:bg-yellow-700 text-white"
-                title="Toggle debug panel"
-              >
-                <Settings className="w-3 h-3" />
-              </Button>
+      {/* Debug Panel - Center of Battle Area */}
+      {IS_DEBUG && showDebugPanel && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-gray-900 rounded-lg p-4 shadow-lg border-2 border-yellow-400 min-w-64">
+            <div className="text-center mb-3">
+              <div className="text-sm font-mono text-yellow-400">DEBUG CONTROLS</div>
             </div>
             
-            {showDebugPanel && (
-              <div className="flex flex-col gap-2">
-                {/* Auto Turn Toggle */}
-                <Button
-                  onClick={toggleAutoTurn}
-                  className={cn(
-                    "w-full h-8 text-xs border-2 transition-all duration-200",
-                    debugState.autoTurn
-                      ? "bg-green-600 hover:bg-green-700 border-green-400 text-white"
-                      : "bg-red-600 hover:bg-red-700 border-red-400 text-white"
-                  )}
-                  title="Toggle automatic NPC turns"
-                >
-                  {debugState.autoTurn ? <Play className="w-3 h-3 mr-1" /> : <Pause className="w-3 h-3 mr-1" />}
-                  Auto Turn
-                </Button>
+            <div className="flex flex-col gap-3">
+              {/* Auto Turn Toggle */}
+              <Button
+                onClick={toggleAutoTurn}
+                className={cn(
+                  "w-full h-10 text-sm border-2 transition-all duration-200",
+                  debugState.autoTurn
+                    ? "bg-green-600 hover:bg-green-700 border-green-400 text-white"
+                    : "bg-red-600 hover:bg-red-700 border-red-400 text-white"
+                )}
+                title="Toggle automatic NPC turns"
+              >
+                {debugState.autoTurn ? <Play className="w-4 h-4 mr-2" /> : <Pause className="w-4 h-4 mr-2" />}
+                Auto Turn: {debugState.autoTurn ? 'ON' : 'OFF'}
+              </Button>
 
-                {/* NPC Action Buttons */}
-                {!debugState.autoTurn && (
-                  <>
-                    <div className="text-xs font-mono text-gray-400">NPC1 Actions</div>
-                    <div className="flex gap-1">
+              {/* NPC Action Buttons */}
+              {!debugState.autoTurn && (
+                <>
+                  <div className="text-xs font-mono text-gray-400 text-center mt-2">MANUAL NPC ACTIONS</div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-xs font-mono text-white">Gareth (NPC1)</div>
+                    <div className="flex gap-2">
                       <Button
                         onClick={() => handleDebugNPCAction("npc1", "attack")}
                         className="flex-1 h-8 text-xs bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
-                        title="NPC1 Attack"
+                        title="Gareth Attack"
                       >
-                        <Sword className="w-3 h-3" />
+                        <Sword className="w-3 h-3 mr-1" />
+                        Attack
                       </Button>
                       <Button
                         onClick={() => handleDebugNPCAction("npc1", "defend")}
                         className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"
-                        title="NPC1 Defend"
+                        title="Gareth Defend"
                       >
-                        <Shield className="w-3 h-3" />
+                        <Shield className="w-3 h-3 mr-1" />
+                        Defend
                       </Button>
                     </div>
 
-                    <div className="text-xs font-mono text-gray-400">NPC2 Actions</div>
-                    <div className="flex gap-1">
+                    <div className="text-xs font-mono text-white">Lyra (NPC2)</div>
+                    <div className="flex gap-2">
                       <Button
                         onClick={() => handleDebugNPCAction("npc2", "attack")}
                         className="flex-1 h-8 text-xs bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
-                        title="NPC2 Attack"
+                        title="Lyra Attack"
                       >
-                        <Sword className="w-3 h-3" />
+                        <Sword className="w-3 h-3 mr-1" />
+                        Attack
                       </Button>
                       <Button
                         onClick={() => handleDebugNPCAction("npc2", "defend")}
                         className="flex-1 h-8 text-xs bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"
-                        title="NPC2 Defend"
+                        title="Lyra Defend"
                       >
-                        <Shield className="w-3 h-3" />
+                        <Shield className="w-3 h-3 mr-1" />
+                        Defend
                       </Button>
                     </div>
-                  </>
-                )}
-              </div>
-            )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
