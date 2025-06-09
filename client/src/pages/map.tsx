@@ -6,6 +6,8 @@ import { useMapState, Zone } from "@/hooks/useMapState";
 import { setGlobalMapState } from "@/lib/mapState";
 import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
+import { IS_DEBUG } from "@/lib/debug";
+import { Settings } from "lucide-react";
 
 // Inline components to avoid import issues
 function HeatBar({ heat }: { heat: number }) {
@@ -121,6 +123,7 @@ export default function Map() {
   const [, setLocation] = useLocation();
   const [resolutionMode, setResolutionMode] = useState<'none' | 'success' | 'fail'>('none');
   const [narrativeScript, setNarrativeScript] = useState<NarrativeScript | null>(null);
+  const [showDebugPanel, setShowDebugPanel] = useState(true);
   const {
     zones,
     currentZone,
@@ -197,44 +200,69 @@ export default function Map() {
         }}
       />
       
-      {/* Debug Controls */}
-      <div className="absolute top-4 left-4 z-30 flex flex-col gap-2">
-        <button
-          onClick={handleNextTurn}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-mono"
-        >
-          PROGRESS TURN
-        </button>
-        
-        <button
-          onClick={() => setResolutionMode(resolutionMode === 'success' ? 'none' : 'success')}
-          className={`px-3 py-2 rounded text-sm font-mono ${
-            resolutionMode === 'success' 
-              ? 'bg-green-700 text-white' 
-              : 'bg-green-600 hover:bg-green-700 text-white'
-          }`}
-        >
-          {resolutionMode === 'success' ? 'CLICK ZONE (SUCCESS)' : 'RESOLVE SUCCESS'}
-        </button>
-        
-        <button
-          onClick={() => setResolutionMode(resolutionMode === 'fail' ? 'none' : 'fail')}
-          className={`px-3 py-2 rounded text-sm font-mono ${
-            resolutionMode === 'fail' 
-              ? 'bg-red-700 text-white' 
-              : 'bg-red-600 hover:bg-red-700 text-white'
-          }`}
-        >
-          {resolutionMode === 'fail' ? 'CLICK ZONE (FAIL)' : 'RESOLVE FAIL'}
-        </button>
-        
-        <button
-          onClick={() => handleNarrativeStart('introduction')}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-sm font-mono"
-        >
-          STORY INTRO
-        </button>
-      </div>
+      {/* Debug Panel - Map Screen */}
+      {IS_DEBUG && (
+        <div className="absolute top-4 left-4 z-40">
+          <div className="bg-gray-900 rounded-lg p-3 shadow-lg border-2 border-yellow-400">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-mono text-yellow-400">DEBUG</div>
+              <Button
+                onClick={() => setShowDebugPanel(!showDebugPanel)}
+                className="w-6 h-6 p-0 bg-yellow-600 hover:bg-yellow-700 text-white"
+                title="Toggle debug panel"
+              >
+                <Settings className="w-3 h-3" />
+              </Button>
+            </div>
+            
+            {showDebugPanel && (
+              <div className="flex flex-col gap-2">
+                {/* Progress Turn */}
+                <Button
+                  onClick={handleNextTurn}
+                  className="w-full h-8 text-xs bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white font-mono"
+                >
+                  PROGRESS TURN
+                </Button>
+                
+                {/* Resolve Success */}
+                <Button
+                  onClick={() => setResolutionMode(resolutionMode === 'success' ? 'none' : 'success')}
+                  className={cn(
+                    "w-full h-8 text-xs font-mono border-2 transition-all duration-200",
+                    resolutionMode === 'success' 
+                      ? 'bg-green-700 border-green-500 text-white' 
+                      : 'bg-green-600 hover:bg-green-700 border-green-400 text-white'
+                  )}
+                >
+                  {resolutionMode === 'success' ? 'CLICK ZONE (SUCCESS)' : 'RESOLVE SUCCESS'}
+                </Button>
+                
+                {/* Resolve Fail */}
+                <Button
+                  onClick={() => setResolutionMode(resolutionMode === 'fail' ? 'none' : 'fail')}
+                  className={cn(
+                    "w-full h-8 text-xs font-mono border-2 transition-all duration-200",
+                    resolutionMode === 'fail' 
+                      ? 'bg-red-700 border-red-500 text-white' 
+                      : 'bg-red-600 hover:bg-red-700 border-red-400 text-white'
+                  )}
+                >
+                  {resolutionMode === 'fail' ? 'CLICK ZONE (FAIL)' : 'RESOLVE FAIL'}
+                </Button>
+                
+                {/* Story Intro */}
+                <Button
+                  onClick={() => handleNarrativeStart('introduction')}
+                  className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-700 border-2 border-purple-400 text-white font-mono"
+                >
+                  STORY INTRO
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Turn Counter */}
       <TurnCounter turn={turnCounter} />
