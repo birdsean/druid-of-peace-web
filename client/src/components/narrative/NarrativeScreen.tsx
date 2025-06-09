@@ -34,7 +34,7 @@ interface NarrativeScreenProps {
 
 export default function NarrativeScreen({ script, onComplete, onChoice }: NarrativeScreenProps) {
   const [currentPageKey, setCurrentPageKey] = useState(script.startPage);
-  const [visitedPages, setVisitedPages] = useState<Set<string>>(new Set([script.startPage]));
+  const [visitedPages, setVisitedPages] = useState<string[]>([script.startPage]);
 
   const getCurrentPage = () => {
     return script.pages.find(page => page.key === currentPageKey);
@@ -51,7 +51,7 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
 
     if (currentPage.next) {
       setCurrentPageKey(currentPage.next);
-      setVisitedPages(prev => new Set([...prev, currentPage.next!]));
+      setVisitedPages(prev => [...prev, currentPage.next!]);
     }
   };
 
@@ -73,7 +73,7 @@ export default function NarrativeScreen({ script, onComplete, onChoice }: Narrat
     }
     
     setCurrentPageKey(choiceNext);
-    setVisitedPages(prev => new Set([...prev, choiceNext]));
+    setVisitedPages(prev => [...prev, choiceNext]);
   };
 
   const currentPage = getCurrentPage();

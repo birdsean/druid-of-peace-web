@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { loadLocationData } from "./locationLoader";
 
 export interface Zone {
   id: string;
@@ -7,6 +8,7 @@ export interface Zone {
   hasEncounter: boolean;
   position: { x: number; y: number };
   icon: string;
+  description: string;
 }
 
 interface MapState {

@@ -32,8 +32,22 @@ export default function GameBoard() {
   } = useGameState();
 
   // Load character data
-  const npcData = loadNPCData();
-  const pcData = loadPCData();
+  const [npcData, setNpcData] = useState<any[]>([]);
+  const [pcData, setPcData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const npcs = await loadNPCData();
+        const pc = await loadPCData();
+        setNpcData(npcs);
+        setPcData(pc);
+      } catch (error) {
+        console.error('Failed to load character data:', error);
+      }
+    };
+    loadData();
+  }, []);
 
   // Debug state
   const [debugState, setDebugState] = useState<DebugState>(initialDebugState);
