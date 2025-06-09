@@ -1,5 +1,6 @@
 import { rollDice } from './gameLogic';
 import { createBattleEvent } from './events';
+import { applySkillEffectsToAction } from './skillTreeLoader';
 
 export interface ActionIntent {
   actor: 'npc1' | 'npc2' | 'druid';
