@@ -344,6 +344,33 @@ export default function Map() {
                   STORY INTRO
                 </Button>
 
+                {/* Time Management Debug Tools */}
+                <div className="mt-2 p-2 bg-black/50 rounded border border-gray-600">
+                  <p className="text-xs text-gray-300 mb-2 font-mono">TIME DEBUG:</p>
+                  <div className="space-y-1">
+                    <div className="text-xs text-gray-300 font-mono">
+                      Current: {globalTimeManager.getCurrentPhaseInfo().name} {globalTimeManager.getCurrentPhaseInfo().icon}
+                    </div>
+                    <div className="flex gap-1">
+                      {globalTimeManager.getAllPhases().map((phase) => (
+                        <Button
+                          key={phase}
+                          onClick={() => globalTimeManager.setPhase(phase)}
+                          className={cn(
+                            "w-8 h-6 text-xs border-1 p-0",
+                            currentTimePhase === phase 
+                              ? "bg-yellow-600 border-yellow-400" 
+                              : "bg-gray-700 hover:bg-gray-600 border-gray-500"
+                          )}
+                          title={globalTimeManager.getPhaseInfo(phase).name}
+                        >
+                          {globalTimeManager.getPhaseInfo(phase).icon}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Map Event Log */}
                 <div className="mt-2 p-2 bg-black/50 rounded border border-gray-600">
                   <p className="text-xs text-gray-300 mb-1 font-mono">MAP EVENT LOG:</p>

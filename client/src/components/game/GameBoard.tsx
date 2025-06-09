@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Minimize2, Settings, Play, Pause, Sword, Shield, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { IS_DEBUG, initialDebugState, DebugState } from '@/lib/debug';
+import { globalTimeManager, applyPhaseColorPalette, getTimeBasedEnvironmentalEffect } from '@/lib/timeSystem';
+import { loadEnvironmentalEffects, getEnvironmentalEffectById } from '@/lib/environmentLoader';
 
 export default function GameBoard() {
   const {
@@ -36,6 +38,10 @@ export default function GameBoard() {
   const [npcData, setNpcData] = useState<NPCCharacterData[]>([]);
   const [pcData, setPcData] = useState<PCCharacterData | null>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
+  
+  // Time and environmental effects
+  const [currentTimePhase, setCurrentTimePhase] = useState(globalTimeManager.getState().currentPhase);
+  const [activeEnvironmentalEffects, setActiveEnvironmentalEffects] = useState<string[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -51,6 +57,30 @@ export default function GameBoard() {
       }
     };
     loadData();
+  }, []);
+
+  // Subscribe to time changes and apply environmental effects
+  useEffect(() => {
+    const timeState = globalTimeManager.getState();
+    setCurrentTimePhase(timeState.currentPhase);
+    
+    // Apply color palette for current time phase
+    applyPhaseColorPalette(timeState.currentPhase);
+    
+    // Add time-based environmental effect
+    const timeEffect = getTimeBasedEnvironmentalEffect(timeState.currentPhase);
+    setActiveEnvironmentalEffects([timeEffect.id]);
+
+    const unsubscribe = globalTimeManager.subscribe((newTimeState) => {
+      setCurrentTimePhase(newTimeState.currentPhase);
+      applyPhaseColorPalette(newTimeState.currentPhase);
+      
+      // Update time-based environmental effect
+      const newTimeEffect = getTimeBasedEnvironmentalEffect(newTimeState.currentPhase);
+      setActiveEnvironmentalEffects([newTimeEffect.id]);
+    });
+
+    return unsubscribe;
   }, []);
 
   // Debug state
@@ -172,6 +202,35 @@ export default function GameBoard() {
         currentTurn={gameState.currentTurn}
         turnCounter={gameState.turnCounter}
       />
+
+      {/* Time Phase & Environmental Effects Display */}
+      <div className="absolute top-4 left-4 z-30">
+        <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-amber-400 space-y-2">
+          <div className="text-center">
+            <div className="text-2xl">{globalTimeManager.getCurrentPhaseInfo().icon}</div>
+            <div 
+              className="text-xs font-mono font-bold px-2 py-1 rounded"
+              style={{ 
+                backgroundColor: globalTimeManager.getCurrentPhaseInfo().colorPalette.accent + '40',
+                color: globalTimeManager.getCurrentPhaseInfo().colorPalette.accent,
+              }}
+            >
+              {globalTimeManager.getCurrentPhaseInfo().name}
+            </div>
+          </div>
+          
+          {activeEnvironmentalEffects.length > 0 && (
+            <div className="border-t border-amber-400/30 pt-2">
+              <div className="text-xs text-amber-400 font-mono mb-1">ACTIVE EFFECTS:</div>
+              {activeEnvironmentalEffects.map((effectId) => (
+                <div key={effectId} className="text-xs text-gray-300 font-mono">
+                  • {effectId.toUpperCase()}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Character Stats at Top */}
       <NPCStatsDisplay name="Gareth" npc={gameState.npc1} position="left" />

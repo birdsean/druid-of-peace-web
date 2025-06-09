@@ -55,6 +55,12 @@
   --destructive-foreground: 0 0% 98%;
   --ring: 240 4.9% 83.9%;
   --radius: 0.5rem;
+  
+  /* Time-based color palette variables */
+  --time-primary: #22c55e;
+  --time-secondary: #3b82f6;
+  --time-accent: #fbbf24;
+  --time-background: #dbeafe;
 }
 
 @layer base {
