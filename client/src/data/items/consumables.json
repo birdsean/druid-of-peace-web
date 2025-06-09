@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "id": "healing_potion",
+      "name": "Healing Potion",
+      "description": "Restores health to the druid, helping maintain stealth",
+      "icon": "🧪",
+      "type": "consumable",
+      "effects": {
+        "heal": 3,
+        "reduceAwareness": 1
+      }
+    },
+    {
+      "id": "smoke_bomb",
+      "name": "Smoke Bomb",
+      "description": "Creates a distraction, significantly reducing NPC awareness",
+      "icon": "💨",
+      "type": "consumable",
+      "effects": {
+        "reduceAwareness": 5
+      }
+    },
+    {
+      "id": "calming_herbs",
+      "name": "Calming Herbs",
+      "description": "Pacifies aggressive NPCs, reducing their will to fight",
+      "icon": "🌿",
+      "type": "consumable",
+      "effects": {
+        "reduceWill": 3,
+        "targetAll": true
+      }
+    },
+    {
+      "id": "energy_crystal",
+      "name": "Energy Crystal",
+      "description": "Restores action points for the druid",
+      "icon": "💎",
+      "type": "consumable",
+      "effects": {
+        "restoreAP": 1
+      }
+    },
+    {
+      "id": "distraction_stone",
+      "name": "Distraction Stone",
+      "description": "Throws NPCs off guard, reducing their awareness briefly",
+      "icon": "🪨",
+      "type": "consumable",
+      "effects": {
+        "reduceAwareness": 2,
+        "targetAll": true
+      }
+    }
+  ]
+}
