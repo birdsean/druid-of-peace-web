@@ -14,6 +14,7 @@ export function useEnhancedGameState() {
       icon: "🛒",
       color: "#dc2626",
       description: "A frustrated merchant",
+      position: "left",
       stats: {
         health: 80, maxHealth: 80,
         armor: 30, maxArmor: 30,
@@ -28,6 +29,7 @@ export function useEnhancedGameState() {
       icon: "⚔️",
       color: "#7c2d12",
       description: "A protective guard",
+      position: "right",
       stats: {
         health: 70, maxHealth: 70,
         armor: 20, maxArmor: 20,
@@ -45,7 +47,8 @@ export function useEnhancedGameState() {
         hidden: true,
         actionPoints: 3,
         maxActionPoints: 3
-      }
+      },
+      abilities: []
     },
     gameOver: false,
     targetingMode: false,

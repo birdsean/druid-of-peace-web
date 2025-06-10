@@ -119,9 +119,20 @@ export function useGameState() {
         if (npcs.length >= 2 && pc) {
           setGameState((prev) => ({
             ...prev,
-            npc1: npcs[0],
-            npc2: npcs[1],
-            druid: pc,
+            npc1: {
+              ...npcs[0],
+              description: "A frustrated merchant",
+              actions: ["attack", "defend"]
+            },
+            npc2: {
+              ...npcs[1], 
+              description: "A territorial guard",
+              actions: ["attack", "defend"]
+            },
+            druid: {
+              ...pc,
+              abilities: pc.abilities || []
+            },
           }));
         }
       } catch (error) {

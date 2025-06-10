@@ -21,6 +21,7 @@ export interface NPC {
   icon: string;
   color: string;
   description: string;
+  position: "left" | "right";
   stats: NPCStats;
   actions: string[];
 }
@@ -31,6 +32,15 @@ export interface PC {
   icon: string;
   color: string;
   stats: DruidStats;
+  abilities: PCAbility[];
+}
+
+export interface PCAbility {
+  key: string;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;
 }
 
 export interface GameOverState {
