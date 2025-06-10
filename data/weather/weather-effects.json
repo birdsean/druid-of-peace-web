@@ -14,7 +14,7 @@
     },
     "morning_mist": {
       "id": "morning_mist",
-      "name": "Morning Mist", 
+      "name": "Morning Mist",
       "description": "Thick mist rolls through the forest, reducing visibility but providing cover for stealthy approaches.",
       "icon": "🌫️",
       "season": "autumn",
@@ -33,7 +33,7 @@
       "effects": ["wind_resistance", "nature_awareness_boost"],
       "min_duration": 1,
       "max_duration": 2,
-      "trigger_chance": 0.10,
+      "trigger_chance": 0.1,
       "environmental_effect": "strong_wind"
     },
     "sunbeam_clearing": {
@@ -59,18 +59,6 @@
       "max_duration": 2,
       "trigger_chance": 0.13,
       "environmental_effect": "twilight_peace"
-    },
-    "crystal_frost": {
-      "id": "crystal_frost",
-      "name": "Crystal Frost",
-      "description": "Delicate frost crystals form on leaves and bark, slowing movement but sharpening focus and awareness.",
-      "icon": "❄️",
-      "season": "winter",
-      "effects": ["frost_slow", "clarity_boost"],
-      "min_duration": 2,
-      "max_duration": 4,
-      "trigger_chance": 0.09,
-      "environmental_effect": "frost_clarity"
     }
   }
 }
