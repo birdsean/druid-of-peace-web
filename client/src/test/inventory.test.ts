@@ -44,13 +44,13 @@ describe('Inventory System', () => {
       expect(calmingHerbs?.effects.reduceWill).toBeGreaterThan(0);
     });
 
-    it('should include energy berries with correct properties', () => {
+    it('should include energy crystal with correct properties', () => {
       const items = loadItems();
-      const energyBerries = items.find(item => item.id === 'energy_berries');
+      const energyCrystal = items.find(item => item.id === 'energy_crystal');
       
-      expect(energyBerries).toBeDefined();
-      expect(energyBerries?.name).toBe('Energy Berries');
-      expect(energyBerries?.effects.restoreAP).toBeGreaterThan(0);
+      expect(energyCrystal).toBeDefined();
+      expect(energyCrystal?.name).toBe('Energy Crystal');
+      expect(energyCrystal?.effects.restoreAP).toBeGreaterThan(0);
     });
   });
 
