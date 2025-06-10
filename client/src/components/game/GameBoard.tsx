@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useEnhancedGameState } from "@/lib/enhancedGameState";
+import { useGameState } from "@/hooks/useGameState";
 import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
 import TurnIndicator from "./TurnIndicator";
@@ -128,13 +128,7 @@ export default function GameBoard() {
 
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (gameState.targetingMode && gameState.currentTurn === "druid") {
-      executeAction({
-        actor: "druid",
-        type: "peace_aura",
-        target: npcId,
-        turnCounter: gameState.turnCounter,
-      });
-      setTargetingMode(false);
+      usePeaceAbility(npcId);
     }
   };
 

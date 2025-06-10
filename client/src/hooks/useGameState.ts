@@ -163,8 +163,7 @@ export function useGameState() {
   }, []);
 
   // Initialize dice action system after addBattleEvent is defined
-  const { executeAction, diceActionState } =
-    useDiceActionSystem(addBattleEvent);
+  const { diceActionState } = useDiceActionSystem(addBattleEvent);
 
   const checkGameEnd = useCallback(
     (currentState?: typeof gameState) => {
@@ -496,6 +495,8 @@ export function useGameState() {
     [addLogEntry, addBattleEvent, gameState.turnCounter],
   );
 
+
+
   return {
     gameState,
     diceState,
@@ -512,6 +513,6 @@ export function useGameState() {
     setGameState,
     addLogEntry,
     applyItemEffects,
-    executeAction,
+    battleEvents,
   };
 }
