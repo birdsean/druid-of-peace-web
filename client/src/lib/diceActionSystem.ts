@@ -5,6 +5,7 @@ import {
   ActionIntent,
 } from "./actionEffects";
 import { createBattleEvent } from "./events";
+import { globalHistoryManager } from "./historySystem";
 
 export interface DiceActionState {
   isRolling: boolean;
@@ -47,6 +48,16 @@ export function useDiceActionSystem(addBattleEvent: (event: any) => void) {
         // Simulate dice roll animation
         setTimeout(() => {
           const { roll, effect } = calculateActionEffect(intent);
+
+          // Track player action in history if it's a druid action
+          if (intent.actor === "druid") {
+            globalHistoryManager.addPlayerAction({
+              type: intent.type as any,
+              target: intent.target === "druid" ? undefined : intent.target,
+              roll,
+              effect
+            });
+          }
 
           // Create effect event
           const effectEvent = createBattleEvent(

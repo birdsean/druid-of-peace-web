@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { globalSkillManager, SkillNodeDisplay, SkillTree } from "@/lib/skillTreeLoader";
+import { globalHistoryManager } from "@/lib/historySystem";
 import { ArrowLeft, TreePine, Flame, Eye, Mountain } from "lucide-react";
 import { IS_DEBUG } from "@/lib/debug";
 
@@ -22,6 +23,15 @@ function SkillNode({ node, onHover, onLearn, treeColor }: SkillNodeProps) {
         color: 'white',
         transform: 'scale(1.1)',
         boxShadow: `0 0 20px ${treeColor}40`
+      };
+    } else if (node.isPending) {
+      return {
+        backgroundColor: '#fbbf24',
+        borderColor: '#f59e0b',
+        color: 'white',
+        borderWidth: '3px',
+        animation: 'pulse 2s infinite',
+        boxShadow: '0 0 15px #fbbf2480'
       };
     } else if (node.isDiscovered) {
       return {
