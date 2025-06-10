@@ -56,6 +56,7 @@ const defaultDruid = {
   icon: "ðŸŒ¿",
   color: "green",
   stats: defaultDruidStats,
+  abilities: []
 };
 
 const initialGameState: GameState = {
