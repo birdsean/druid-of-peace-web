@@ -5,7 +5,6 @@
     "type": "warrior",
     "icon": "🗡️",
     "color": "red",
-    "position": "left",
     "description": "A fierce warrior with a quick temper and strong combat instincts",
     "actions": ["attack", "defend"],
     "stats": {
@@ -25,7 +24,6 @@
     "type": "ranger",
     "icon": "🏹",
     "color": "blue",
-    "position": "right",
     "description": "A skilled ranger with keen senses and tracking abilities",
     "actions": ["attack", "defend", "investigate"],
     "stats": {

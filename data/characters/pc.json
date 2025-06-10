@@ -10,7 +10,7 @@
   },
   "abilities": [
     {
-      "key": "peace",
+      "key": "peaceAura",
       "name": "Peace Aura",
       "description": "Channel calming energy to reduce an opponent's will to fight",
       "icon": "🕊️",

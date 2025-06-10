@@ -1,44 +1,72 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { GameState, NPCStats, DiceState, GameOverState } from "@/lib/gameLogic";
-import { rollDice as rollDiceLogic, calculatePeaceEffect } from "@/lib/gameLogic";
+import {
+  GameState,
+  NPCStats,
+  DiceState,
+  GameOverState,
+  NPC,
+} from "@/lib/gameLogic";
+import {
+  rollDice as rollDiceLogic,
+  calculatePeaceEffect,
+} from "@/lib/gameLogic";
 import { TurnManager } from "@/lib/turnManager";
 import { loadNPCData, loadPCData } from "@/lib/characterLoader";
 import { getGlobalMapState } from "@/lib/mapState";
-import { BattleEvent, createBattleEvent, formatBattleEventForLog } from "@/lib/events";
+import {
+  BattleEvent,
+  createBattleEvent,
+  formatBattleEventForLog,
+} from "@/lib/events";
 import { useDiceActionSystem } from "@/lib/diceActionSystem";
 import { ActionIntent } from "@/lib/actionEffects";
 
 // Default character stats for initialization
-const defaultNPC1: NPCStats = {
-  health: 80, maxHealth: 80,
-  armor: 30, maxArmor: 30,
-  willToFight: 60, maxWill: 60,
-  awareness: 20, maxAwareness: 100
+const defaultStats: NPCStats = {
+  health: 80,
+  maxHealth: 80,
+  armor: 30,
+  maxArmor: 30,
+  willToFight: 60,
+  maxWill: 60,
+  awareness: 20,
+  maxAwareness: 100,
 };
 
-const defaultNPC2: NPCStats = {
-  health: 70, maxHealth: 70,
-  armor: 20, maxArmor: 20,
-  willToFight: 50, maxWill: 50,
-  awareness: 30, maxAwareness: 100
+const defaultNPC: NPC = {
+  id: "unknown",
+  name: "Unknown",
+  icon: "?",
+  color: "gray",
+  description: "Unknown NPC",
+  stats: defaultStats,
+  actions: [],
+};
+
+const defaultDruidStats = {
+  hidden: true,
+  actionPoints: 3,
+  maxActionPoints: 3,
 };
 
 const defaultDruid = {
-  hidden: true,
-  actionPoints: 3,
-  maxActionPoints: 3
+  id: "druid",
+  name: "Druid of Peace",
+  icon: "ðŸŒ¿",
+  color: "green",
+  stats: defaultDruidStats,
 };
 
 const initialGameState: GameState = {
-  currentTurn: 'npc1',
+  currentTurn: "npc1",
   turnCounter: 1,
-  npc1: defaultNPC1,
-  npc2: defaultNPC2,
+  npc1: defaultNPC,
+  npc2: defaultNPC,
   druid: defaultDruid,
   gameOver: false,
   targetingMode: false,
-  combatLog: ['Turn 1: Combat begins'],
-  gameOverState: null
+  combatLog: ["Turn 1: Combat begins"],
+  gameOverState: null,
 };
 
 export function useGameState() {
@@ -47,7 +75,7 @@ export function useGameState() {
     visible: false,
     rolling: false,
     result: null,
-    effect: ''
+    effect: "",
   });
 
   // Load character data and update game state
@@ -56,99 +84,110 @@ export function useGameState() {
       try {
         const npcs = await loadNPCData();
         const pc = await loadPCData();
-        
+
         if (npcs.length >= 2 && pc) {
-          setGameState(prev => ({
+          setGameState((prev) => ({
             ...prev,
-            npc1: npcs[0].stats,
-            npc2: npcs[1].stats,
-            druid: pc.stats
+            npc1: npcs[0],
+            npc2: npcs[1],
+            druid: pc,
           }));
         }
       } catch (error) {
-        console.error('Failed to load character data:', error);
+        console.error("Failed to load character data:", error);
       }
     };
-    
+
     loadCharacterData();
   }, []);
 
-  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
+  const [combatLogMode, setCombatLogMode] = useState<
+    "hidden" | "small" | "large"
+  >("hidden");
   const [battleEvents, setBattleEvents] = useState<BattleEvent[]>([
-    createBattleEvent(1, 'game_start', 'druid')
+    createBattleEvent(1, "game_start", "druid"),
   ]);
-  
+
   const turnManagerRef = useRef<TurnManager | null>(null);
 
-  const addBattleEvent = useCallback((event: BattleEvent) => {
-    setBattleEvents(prev => [...prev, event]);
-    // Update combat log from events
-    setGameState(prev => ({
-      ...prev,
-      combatLog: [...battleEvents, event].map(e => `Turn ${e.turn}: ${formatBattleEventForLog(e)}`)
-    }));
-  }, [battleEvents]);
+  const addBattleEvent = useCallback(
+    (event: BattleEvent) => {
+      setBattleEvents((prev) => [...prev, event]);
+      // Update combat log from events
+      setGameState((prev) => ({
+        ...prev,
+        combatLog: [...battleEvents, event].map(
+          (e) => `Turn ${e.turn}: ${formatBattleEventForLog(e)}`,
+        ),
+      }));
+    },
+    [battleEvents],
+  );
 
   const addLogEntry = useCallback((message: string) => {
-    setGameState(prev => ({
+    setGameState((prev) => ({
       ...prev,
-      combatLog: [...prev.combatLog, `Turn ${prev.turnCounter}: ${message}`]
+      combatLog: [...prev.combatLog, `Turn ${prev.turnCounter}: ${message}`],
     }));
   }, []);
 
   // Initialize dice action system after addBattleEvent is defined
-  const { executeAction, diceActionState } = useDiceActionSystem(addBattleEvent);
+  const { executeAction, diceActionState } =
+    useDiceActionSystem(addBattleEvent);
 
-  const checkGameEnd = useCallback((currentState?: typeof gameState) => {
-    const stateToCheck = currentState || gameState;
-    const { npc1, npc2 } = stateToCheck;
-    
-    // Check if druid is revealed (awareness reaches 100%)
-    if (npc1.awareness >= 100 || npc2.awareness >= 100) {
-      setGameState(prev => ({
-        ...prev,
-        gameOver: true,
-        gameOverState: {
-          title: 'MISSION FAILED',
-          message: 'The druid has been detected!',
-          icon: '💀'
-        }
-      }));
-      return true;
-    }
-    
-    // Check if any NPC died (health reaches 0)
-    if (npc1.health <= 0 || npc2.health <= 0) {
-      const deadNPC = npc1.health <= 0 ? 'Gareth' : 'Lyra';
-      setGameState(prev => ({
-        ...prev,
-        gameOver: true,
-        gameOverState: {
-          title: 'COMBAT ENDED',
-          message: `${deadNPC} has been defeated!`,
-          icon: '⚔️'
-        }
-      }));
-      return true;
-    }
-    
-    // Check if any NPC lost will to fight
-    if (npc1.willToFight <= 0 || npc2.willToFight <= 0) {
-      const fleeingNPC = npc1.willToFight <= 0 ? 'Gareth' : 'Lyra';
-      setGameState(prev => ({
-        ...prev,
-        gameOver: true,
-        gameOverState: {
-          title: 'PEACE ACHIEVED',
-          message: `${fleeingNPC} has lost the will to fight!`,
-          icon: '🕊️'
-        }
-      }));
-      return true;
-    }
-    
-    return false;
-  }, [gameState]);
+  const checkGameEnd = useCallback(
+    (currentState?: typeof gameState) => {
+      const stateToCheck = currentState || gameState;
+      const { npc1, npc2 } = stateToCheck;
+
+      // Check if druid is revealed (awareness reaches 100%)
+      if (npc1.stats.awareness >= 100 || npc2.stats.awareness >= 100) {
+        setGameState((prev) => ({
+          ...prev,
+          gameOver: true,
+          gameOverState: {
+            title: "MISSION FAILED",
+            message: "The druid has been detected!",
+            icon: "💀",
+          },
+        }));
+        return true;
+      }
+
+      // Check if any NPC died (health reaches 0)
+      if (npc1.stats.health <= 0 || npc2.stats.health <= 0) {
+        const deadNPC = npc1.stats.health <= 0 ? npc1.name : npc2.name;
+        setGameState((prev) => ({
+          ...prev,
+          gameOver: true,
+          gameOverState: {
+            title: "COMBAT ENDED",
+            message: `${deadNPC} has been defeated!`,
+            icon: "⚔️",
+          },
+        }));
+        return true;
+      }
+
+      // Check if any NPC lost will to fight
+      if (npc1.stats.willToFight <= 0 || npc2.stats.willToFight <= 0) {
+        const fleeingNPC = npc1.stats.willToFight <= 0 ? "Gareth" : "Lyra";
+        setGameState((prev) => ({
+          ...prev,
+          gameOver: true,
+          gameOverState: {
+            title: "PEACE ACHIEVED",
+            message: `${fleeingNPC} has lost the will to fight!`,
+            icon: "🕊️",
+          },
+        }));
+        return true;
+      }
+
+      return false;
+    },
+    [gameState],
+  );
 
   // Initialize turn manager
   useEffect(() => {
@@ -157,7 +196,7 @@ export function useGameState() {
         setGameState,
         setDiceState,
         addLogEntry,
-        checkGameEnd
+        checkGameEnd,
       );
     }
   }, [addLogEntry, checkGameEnd]);
@@ -165,9 +204,9 @@ export function useGameState() {
   // Auto-execute NPC turns when it's their turn
   useEffect(() => {
     if (!turnManagerRef.current || gameState.gameOver) return;
-    
+
     const { currentTurn } = gameState;
-    if (currentTurn === 'npc1' || currentTurn === 'npc2') {
+    if (currentTurn === "npc1" || currentTurn === "npc2") {
       // Only execute if not already executing
       if (!turnManagerRef.current.isCurrentlyExecuting()) {
         turnManagerRef.current.executeTurn(gameState);
@@ -175,102 +214,123 @@ export function useGameState() {
     }
   }, [gameState.currentTurn, gameState.gameOver]);
 
-  const usePeaceAbility = useCallback(async (targetId: 'npc1' | 'npc2') => {
-    if (!turnManagerRef.current) return;
-    
-    // Check if druid has action points
-    if (gameState.druid.actionPoints <= 0) return;
-    
-    const roll = await new Promise<number>((resolve) => {
-      setDiceState({
-        visible: true,
-        rolling: true,
-        result: null,
-        effect: 'Determining outcome...'
-      });
+  const usePeaceAbility = useCallback(
+    async (targetId: "npc1" | "npc2") => {
+      if (!turnManagerRef.current) return;
 
-      setTimeout(() => {
-        const result = rollDiceLogic(1, 6);
-        setDiceState(prev => ({
-          ...prev,
-          rolling: false,
-          result,
-          effect: `Rolled ${result}`
-        }));
+      // Check if druid has action points
+      if (gameState.druid.stats.actionPoints <= 0) return;
+
+      const roll = await new Promise<number>((resolve) => {
+        setDiceState({
+          visible: true,
+          rolling: true,
+          result: null,
+          effect: "Determining outcome...",
+        });
 
         setTimeout(() => {
-          setDiceState(prev => ({ ...prev, visible: false }));
-          resolve(result);
-        }, 1000);
-      }, 1500);
-    });
-    const effect = calculatePeaceEffect(roll);
-    
-    setGameState(prev => {
-      const newState = { ...prev };
-      const target = newState[targetId];
-      
-      // Reduce target's will to fight
-      target.willToFight = Math.max(0, target.willToFight - effect.willReduction);
-      
-      // Increase awareness for both NPCs (only druid actions affect awareness)
-      newState.npc1.awareness = Math.min(newState.npc1.maxAwareness, newState.npc1.awareness + effect.awarenessIncrease);
-      newState.npc2.awareness = Math.min(newState.npc2.maxAwareness, newState.npc2.awareness + effect.awarenessIncrease);
-      
-      // Consume action point
-      newState.druid.actionPoints = Math.max(0, newState.druid.actionPoints - 1);
-      
-      newState.targetingMode = false;
-      
-      return newState;
-    });
-    
-    addLogEntry(`Druid uses Peace Aura on ${targetId === 'npc1' ? 'Gareth' : 'Lyra'} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`);
-    
-    // Check for game end after druid action
-    setTimeout(() => {
-      setGameState(prev => {
-        checkGameEnd(prev);
-        return prev;
+          const result = rollDiceLogic(1, 6);
+          setDiceState((prev) => ({
+            ...prev,
+            rolling: false,
+            result,
+            effect: `Rolled ${result}`,
+          }));
+
+          setTimeout(() => {
+            setDiceState((prev) => ({ ...prev, visible: false }));
+            resolve(result);
+          }, 1000);
+        }, 1500);
       });
-    }, 1500);
-  }, [addLogEntry, checkGameEnd, gameState.druid.actionPoints]);
+      const effect = calculatePeaceEffect(roll);
+
+      setGameState((prev) => {
+        const newState = { ...prev };
+        const target = newState[targetId];
+        const { stats } = target;
+
+        // Reduce target's will to fight
+        stats.willToFight = Math.max(
+          0,
+          stats.willToFight - effect.willReduction,
+        );
+
+        // Increase awareness for both NPCs (only druid actions affect awareness)
+        newState.npc1.stats.awareness = Math.min(
+          newState.npc1.stats.maxAwareness,
+          newState.npc1.stats.awareness + effect.awarenessIncrease,
+        );
+        newState.npc2.stats.awareness = Math.min(
+          newState.npc2.stats.maxAwareness,
+          newState.npc2.stats.awareness + effect.awarenessIncrease,
+        );
+
+        // Consume action point
+        newState.druid.stats.actionPoints = Math.max(
+          0,
+          newState.druid.stats.actionPoints - 1,
+        );
+
+        newState.targetingMode = false;
+
+        return newState;
+      });
+
+      addLogEntry(
+        `Druid uses Peace Aura on ${targetId === "npc1" ? "Gareth" : "Lyra"} (-${effect.willReduction} will, +${effect.awarenessIncrease} awareness)`,
+      );
+
+      // Check for game end after druid action
+      setTimeout(() => {
+        setGameState((prev) => {
+          checkGameEnd(prev);
+          return prev;
+        });
+      }, 1500);
+    },
+    [addLogEntry, checkGameEnd, gameState.druid.stats.actionPoints],
+  );
 
   const endTurn = useCallback(() => {
     if (turnManagerRef.current) {
       // Reset action points when ending turn
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
         druid: {
           ...prev.druid,
-          actionPoints: prev.druid.maxActionPoints
-        }
+          actionPoints: prev.druid.stats.maxActionPoints,
+        },
       }));
       turnManagerRef.current.manualAdvanceTurn();
     }
   }, []);
 
-  const setTargetingMode = useCallback((targeting: boolean) => {
-    setGameState(prev => ({ ...prev, targetingMode: targeting }));
-    if (targeting) {
-      addLogEntry('Select target for Peace Aura');
-    }
-  }, [addLogEntry]);
+  const setTargetingMode = useCallback(
+    (targeting: boolean) => {
+      setGameState((prev) => ({ ...prev, targetingMode: targeting }));
+      if (targeting) {
+        addLogEntry("Select target for Peace Aura");
+      }
+    },
+    [addLogEntry],
+  );
 
   const restartGame = useCallback(() => {
     setGameState({
       ...initialGameState,
-      npc1: { ...defaultNPC1 },
-      npc2: { ...defaultNPC2 },
-      combatLog: ['Turn 1: Combat begins']
+      npc1: { ...defaultNPC },
+      npc2: { ...defaultNPC },
+      combatLog: ["Turn 1: Combat begins"],
     });
     setDiceState({
       visible: false,
       rolling: false,
       result: null,
-      effect: ''
+      effect: "",
     });
-    setCombatLogMode('hidden');
+    setCombatLogMode("hidden");
   }, []);
 
   // Handle encounter completion and heat updates
@@ -282,27 +342,34 @@ export function useGameState() {
   }, []);
 
   const toggleCombatLog = useCallback(() => {
-    setCombatLogMode(prev => {
+    setCombatLogMode((prev) => {
       switch (prev) {
-        case 'hidden': return 'small';
-        case 'small': return 'large';
-        case 'large': return 'hidden';
-        default: return 'small';
+        case "hidden":
+          return "small";
+        case "small":
+          return "large";
+        case "large":
+          return "hidden";
+        default:
+          return "small";
       }
     });
   }, []);
 
-  const triggerGameOver = useCallback((title: string, message: string, icon: string) => {
-    setGameState(prev => ({
-      ...prev,
-      gameOver: true,
-      gameOverState: {
-        title,
-        message,
-        icon
-      }
-    }));
-  }, []);
+  const triggerGameOver = useCallback(
+    (title: string, message: string, icon: string) => {
+      setGameState((prev) => ({
+        ...prev,
+        gameOver: true,
+        gameOverState: {
+          title,
+          message,
+          icon,
+        },
+      }));
+    },
+    [],
+  );
 
   const setAutoTurnEnabled = useCallback((enabled: boolean) => {
     if (turnManagerRef.current) {
@@ -310,58 +377,93 @@ export function useGameState() {
     }
   }, []);
 
-  const applyItemEffects = useCallback((itemEffects: any, itemName: string) => {
-    const effectsDescription: string[] = [];
-    
-    setGameState(prev => {
-      const newState = { ...prev };
-      
-      if (itemEffects.restoreAP) {
-        const apRestored = Math.min(itemEffects.restoreAP, newState.druid.maxActionPoints - newState.druid.actionPoints);
-        newState.druid.actionPoints = Math.min(
-          newState.druid.maxActionPoints,
-          newState.druid.actionPoints + itemEffects.restoreAP
-        );
-        effectsDescription.push(`AP +${apRestored}`);
-      }
+  const applyItemEffects = useCallback(
+    (itemEffects: any, itemName: string) => {
+      const effectsDescription: string[] = [];
 
-      if (itemEffects.reduceAwareness) {
-        if (itemEffects.targetAll) {
-          const npc1AwarenessReduced = Math.min(itemEffects.reduceAwareness, newState.npc1.awareness);
-          const npc2AwarenessReduced = Math.min(itemEffects.reduceAwareness, newState.npc2.awareness);
-          newState.npc1.awareness = Math.max(0, newState.npc1.awareness - itemEffects.reduceAwareness);
-          newState.npc2.awareness = Math.max(0, newState.npc2.awareness - itemEffects.reduceAwareness);
-          effectsDescription.push(`Awareness -${npc1AwarenessReduced}/-${npc2AwarenessReduced}`);
+      setGameState((prev) => {
+        const newState = { ...prev };
+
+        if (itemEffects.restoreAP) {
+          const apRestored = Math.min(
+            itemEffects.restoreAP,
+            newState.druid.stats.maxActionPoints -
+              newState.druid.stats.actionPoints,
+          );
+          newState.druid.stats.actionPoints = Math.min(
+            newState.druid.stats.maxActionPoints,
+            newState.druid.stats.actionPoints + itemEffects.restoreAP,
+          );
+          effectsDescription.push(`AP +${apRestored}`);
         }
-      }
 
-      if (itemEffects.reduceWill && itemEffects.targetAll) {
-        const npc1WillReduced = Math.min(itemEffects.reduceWill, newState.npc1.willToFight);
-        const npc2WillReduced = Math.min(itemEffects.reduceWill, newState.npc2.willToFight);
-        newState.npc1.willToFight = Math.max(0, newState.npc1.willToFight - itemEffects.reduceWill);
-        newState.npc2.willToFight = Math.max(0, newState.npc2.willToFight - itemEffects.reduceWill);
-        effectsDescription.push(`Will -${npc1WillReduced}/-${npc2WillReduced}`);
-      }
+        if (itemEffects.reduceAwareness) {
+          if (itemEffects.targetAll) {
+            const npc1AwarenessReduced = Math.min(
+              itemEffects.reduceAwareness,
+              newState.npc1.stats.awareness,
+            );
+            const npc2AwarenessReduced = Math.min(
+              itemEffects.reduceAwareness,
+              newState.npc2.stats.awareness,
+            );
+            newState.npc1.stats.awareness = Math.max(
+              0,
+              newState.npc1.stats.awareness - itemEffects.reduceAwareness,
+            );
+            newState.npc2.stats.awareness = Math.max(
+              0,
+              newState.npc2.stats.awareness - itemEffects.reduceAwareness,
+            );
+            effectsDescription.push(
+              `Awareness -${npc1AwarenessReduced}/-${npc2AwarenessReduced}`,
+            );
+          }
+        }
 
-      return newState;
-    });
+        if (itemEffects.reduceWill && itemEffects.targetAll) {
+          const npc1WillReduced = Math.min(
+            itemEffects.reduceWill,
+            newState.npc1.stats.willToFight,
+          );
+          const npc2WillReduced = Math.min(
+            itemEffects.reduceWill,
+            newState.npc2.stats.willToFight,
+          );
+          newState.npc1.stats.willToFight = Math.max(
+            0,
+            newState.npc1.stats.willToFight - itemEffects.reduceWill,
+          );
+          newState.npc2.stats.willToFight = Math.max(
+            0,
+            newState.npc2.stats.willToFight - itemEffects.reduceWill,
+          );
+          effectsDescription.push(
+            `Will -${npc1WillReduced}/-${npc2WillReduced}`,
+          );
+        }
 
-    // Create battle event for item use
-    const event = createBattleEvent(
-      gameState.turnCounter,
-      'item_use',
-      'druid',
-      {
-        action: 'use_item',
-        result: effectsDescription.join(', '),
-        effect: effectsDescription.join(', '),
-        itemName: itemName
-      }
-    );
-    addBattleEvent(event);
+        return newState;
+      });
 
-    addLogEntry(`Used ${itemName}: ${effectsDescription.join(', ')}`);
-  }, [addLogEntry, addBattleEvent, gameState.turnCounter]);
+      // Create battle event for item use
+      const event = createBattleEvent(
+        gameState.turnCounter,
+        "item_use",
+        "druid",
+        {
+          action: "use_item",
+          result: effectsDescription.join(", "),
+          effect: effectsDescription.join(", "),
+          itemName: itemName,
+        },
+      );
+      addBattleEvent(event);
+
+      addLogEntry(`Used ${itemName}: ${effectsDescription.join(", ")}`);
+    },
+    [addLogEntry, addBattleEvent, gameState.turnCounter],
+  );
 
   return {
     gameState,
@@ -379,6 +481,6 @@ export function useGameState() {
     setGameState,
     addLogEntry,
     applyItemEffects,
-    executeAction
+    executeAction,
   };
 }

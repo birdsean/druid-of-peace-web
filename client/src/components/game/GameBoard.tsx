@@ -200,7 +200,7 @@ export default function GameBoard() {
     setShowInventoryModal(false);
   };
 
-  const hasActionPoints = gameState.druid.actionPoints > 0;
+  const hasActionPoints = gameState.druid.stats.actionPoints > 0;
   const canUseActions =
     gameState.currentTurn === "druid" && !gameState.targetingMode;
 
@@ -278,38 +278,38 @@ export default function GameBoard() {
       </div>
 
       {/* Character Stats at Top */}
-      <NPCStatsDisplay name="Gareth" npc={gameState.npc1} position="left" />
-      <NPCStatsDisplay name="Lyra" npc={gameState.npc2} position="right" />
+      <NPCStatsDisplay name={gameState.npc1.name} npc={gameState.npc1.stats} position="left" />
+      <NPCStatsDisplay name={gameState.npc2.name} npc={gameState.npc2.stats} position="right" />
 
       {/* NPC Characters */}
       <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
         <NPCCharacter
           id="npc1"
-          name="Gareth"
-          npc={gameState.npc1}
+          name={gameState.npc1.name}
+          npc={gameState.npc1.stats}
           position="left"
           targetingMode={gameState.targetingMode}
           onClick={() => handleNPCClick("npc1")}
-          icon="⚔️"
-          color="bg-gray-700"
+          icon={gameState.npc1.icon}
+          color={gameState.npc1.color}
         />
       </div>
 
       <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
         <NPCCharacter
           id="npc2"
-          name="Lyra"
-          npc={gameState.npc2}
+          name={gameState.npc2.name}
+          npc={gameState.npc2.stats}
           position="right"
           targetingMode={gameState.targetingMode}
           onClick={() => handleNPCClick("npc2")}
-          icon="🏹"
-          color="bg-blue-700"
+          icon={gameState.npc2.icon}
+          color={gameState.npc2.color}
         />
       </div>
 
       {/* Druid Character (Hidden) */}
-      <DruidCharacter hidden={gameState.druid.hidden} />
+      <DruidCharacter hidden={gameState.druid.stats.hidden} />
 
       {/* Combined Player & Utils Panel - Full Width Bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-30">
@@ -337,33 +337,28 @@ export default function GameBoard() {
             {/* Center - Abilities */}
             <div className="flex-1 flex justify-center">
               <div className="flex space-x-4">
-                {pcData?.abilities
-                  ?.filter((ability) => ability.key !== "flee")
-                  .map((ability) => (
-                    <Button
-                      key={ability.key}
-                      onClick={() => handleAbilityUse(ability.key)}
-                      disabled={
-                        !canUseActions ||
-                        !hasActionPoints ||
-                        ability.cost > gameState.druid.actionPoints
-                      }
-                      className={cn(
-                        "w-12 h-12 text-2xl border-2 transition-all duration-200",
-                        canUseActions &&
-                          hasActionPoints &&
-                          ability.cost <= gameState.druid.actionPoints
-                          ? gameState.targetingMode &&
-                            ability.key === "peaceAura"
-                            ? "bg-green-700 border-green-500 text-white"
-                            : "bg-green-600 hover:bg-green-700 border-green-400 text-white"
-                          : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed",
-                      )}
-                      title={`${ability.name}: ${ability.description} (Cost: ${ability.cost})`}
-                    >
-                      {ability.icon}
-                    </Button>
-                  ))}
+                {pcData?.abilities.map((ability) => (
+                  <Button
+                    key={ability.key}
+                    onClick={() => handleAbilityUse(ability.key)}
+                    disabled={
+                      !canUseActions ||
+                      !hasActionPoints ||
+                      ability.cost > gameState.druid.actionPoints
+                    }
+                    className={cn(
+                      "w-12 h-12 text-2xl border-2 transition-all duration-200",
+                      canUseActions &&
+                        hasActionPoints &&
+                        ability.cost <= gameState.druid.actionPoints
+                        ? "bg-green-600 hover:bg-green-700 border-green-400 text-white"
+                        : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed",
+                    )}
+                    title={`${ability.name}: ${ability.description} (Cost: ${ability.cost})`}
+                  >
+                    {ability.icon}
+                  </Button>
+                ))}
               </div>
             </div>
 

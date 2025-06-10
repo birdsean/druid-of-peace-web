@@ -15,6 +15,24 @@ export interface DruidStats {
   maxActionPoints: number;
 }
 
+export interface NPC {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  stats: NPCStats;
+  actions: string[];
+}
+
+export interface PC {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  stats: DruidStats;
+}
+
 export interface GameOverState {
   title: string;
   message: string;
@@ -24,9 +42,9 @@ export interface GameOverState {
 export interface GameState {
   currentTurn: "npc1" | "npc2" | "druid";
   turnCounter: number;
-  npc1: NPCStats;
-  npc2: NPCStats;
-  druid: DruidStats;
+  npc1: NPC;
+  npc2: NPC;
+  druid: PC;
   gameOver: boolean;
   targetingMode: boolean;
   combatLog: string[];
