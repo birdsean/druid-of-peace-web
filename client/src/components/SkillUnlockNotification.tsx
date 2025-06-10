@@ -39,7 +39,7 @@ export default function SkillUnlockNotification({
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm">
-      <div className="bg-gradient-to-br from-amber-600 to-yellow-500 border-4 border-yellow-300 rounded-lg p-4 shadow-2xl animate-bounce">
+      <div className="bg-gradient-to-br from-amber-600 to-yellow-500 border-4 border-yellow-300 rounded-lg p-4 shadow-2xl animate-pulse">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">

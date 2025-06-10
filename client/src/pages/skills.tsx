@@ -61,7 +61,12 @@ function SkillNode({ node, onHover, onLearn, treeColor }: SkillNodeProps) {
         transform: 'translate(-50%, -50%)'
       }}
       onMouseEnter={() => onHover(node)}
-      onMouseLeave={() => onHover(null)}
+      onMouseLeave={() => {
+        // Don't hide immediately to allow hovering the detail panel
+        setTimeout(() => {
+          onHover(null);
+        }, 300);
+      }}
       onClick={() => node.isDiscovered && !node.isLearned && onLearn(node.id)}
     >
       <div
@@ -120,7 +125,16 @@ function SkillDetailPanel({ node, onClose, onLearn }: SkillDetailPanelProps) {
   if (!node) return null;
 
   return (
-    <div className="absolute right-4 top-4 bottom-4 w-80 bg-black bg-opacity-90 rounded-lg p-6 border-2 border-amber-400 z-30">
+    <div 
+      className="absolute right-4 top-4 bottom-4 w-80 bg-black bg-opacity-90 rounded-lg p-6 border-2 border-amber-400 z-30"
+      onMouseEnter={() => {
+        // Keep the panel visible when hovering over it
+      }}
+      onMouseLeave={() => {
+        // Delay closing to allow smooth interaction
+        setTimeout(onClose, 100);
+      }}
+    >
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xl font-mono text-amber-400">{node.name}</h3>
         <Button onClick={onClose} className="w-8 h-8 p-0 bg-gray-700 hover:bg-gray-600">
@@ -336,17 +350,6 @@ export default function Skills() {
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900" />
 
-      {/* Header */}
-      <div className="absolute top-4 left-4 z-30">
-        <Button
-          onClick={() => setLocation('/map')}
-          className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-mono"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          RETURN TO MAP
-        </Button>
-      </div>
-
       {/* Tree Selector */}
       <TreeSelector 
         selectedTree={selectedTree}
@@ -367,20 +370,22 @@ export default function Skills() {
 
       {/* Skill Graph */}
       <div className="absolute inset-0 pt-40 pb-20">
-        <div className="relative w-full h-full">
-          {/* Connection Lines */}
-          {renderConnections()}
-          
-          {/* Skill Nodes */}
-          {visibleNodes.map(node => (
-            <SkillNode
-              key={node.id}
-              node={node}
-              onHover={setHoveredNode}
-              onLearn={handleLearnSkill}
-              treeColor={currentTree?.color || '#6b7280'}
-            />
-          ))}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative" style={{ width: '800px', height: '600px' }}>
+            {/* Connection Lines */}
+            {renderConnections()}
+            
+            {/* Skill Nodes */}
+            {visibleNodes.map(node => (
+              <SkillNode
+                key={node.id}
+                node={node}
+                onHover={setHoveredNode}
+                onLearn={handleLearnSkill}
+                treeColor={currentTree?.color || '#6b7280'}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
