@@ -208,6 +208,7 @@ export default function Map() {
   } = useMapState();
 
   const {
+    addMapEvent,
     logTurnAdvance,
     logEncounterStart,
     logEncounterComplete,
@@ -291,19 +292,31 @@ export default function Map() {
 
     // Log day cycle change event if phase changed
     if (previousPhase !== nextTimePhase.currentPhase) {
-      console.log(`Day cycle changed from ${previousPhase} to ${nextTimePhase.currentPhase}`);
+      const phaseEvent = {
+        id: `phase-${Date.now()}`,
+        timestamp: Date.now(),
+        turn: newTurn,
+        type: 'travel' as const,
+        details: `Day cycle: ${previousPhase} → ${nextTimePhase.currentPhase}`
+      };
+      addMapEvent(phaseEvent);
     }
 
     // Log weather event if weather changed
     if (weatherChanged) {
       const activeWeather = globalWeatherManager.getWeatherState().activeWeather;
-      if (activeWeather) {
-        console.log(`Weather event started: ${activeWeather.effect.name} (${activeWeather.remainingTurns} turns)`);
-      } else {
-        console.log('Weather event ended');
-      }
+      const weatherEvent = {
+        id: `weather-${Date.now()}`,
+        timestamp: Date.now(),
+        turn: newTurn,
+        type: 'travel' as const,
+        details: activeWeather 
+          ? `Weather: ${activeWeather.effect.name} (${activeWeather.remainingTurns} turns)`
+          : 'Weather cleared'
+      };
+      addMapEvent(weatherEvent);
     }
-  }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase]);
+  }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase, addMapEvent]);
 
   const handleNarrativeStart = useCallback((scriptId: string) => {
     const script = loadNarrativeScript(scriptId);
@@ -317,8 +330,15 @@ export default function Map() {
   }, []);
 
   const handleNarrativeChoice = useCallback((choiceId: string, pageId: string) => {
-    console.log(`Choice made: ${choiceId} on page ${pageId}`);
-  }, []);
+    const choiceEvent = {
+      id: `choice-${Date.now()}`,
+      timestamp: Date.now(),
+      turn: turnCounter,
+      type: 'travel' as const,
+      details: `Story choice: ${choiceId} on ${pageId}`
+    };
+    addMapEvent(choiceEvent);
+  }, [turnCounter, addMapEvent]);
 
   const handleExitGame = useCallback(() => {
     if (confirm('Return to main menu?')) {
