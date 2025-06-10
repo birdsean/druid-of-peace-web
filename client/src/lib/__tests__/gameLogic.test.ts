@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { rollDice, executeNPCAction, calculatePeaceEffect } from '../gameLogic';
+import { rollDice, executeNPCAction, calculatePeaceEffect, NPCAction, PeaceEffect } from '../gameLogic';
 
 describe('Game Logic System', () => {
   beforeEach(() => {
@@ -98,7 +98,7 @@ describe('Game Logic System', () => {
     });
 
     it('should scale effects appropriately with roll value', () => {
-      const effects = [];
+      const effects: PeaceEffect[] = [];
       for (let roll = 1; roll <= 6; roll++) {
         effects.push(calculatePeaceEffect(roll));
       }
@@ -127,7 +127,7 @@ describe('Game Logic System', () => {
     });
 
     it('should maintain state consistency across multiple operations', () => {
-      const operations = [];
+      const operations: Array<{ roll: number; action: NPCAction; peace: PeaceEffect }> = [];
       for (let i = 0; i < 10; i++) {
         const roll = rollDice(1, 6);
         const action = executeNPCAction(roll);
