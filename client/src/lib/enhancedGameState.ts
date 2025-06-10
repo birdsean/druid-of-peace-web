@@ -95,23 +95,29 @@ export function useEnhancedGameState() {
           let armorDamage = 0;
           let healthDamage = 0;
           
-          if (target.armor > 0) {
-            armorDamage = Math.min(target.armor, effect.armorDamage || 0);
-            target.armor = Math.max(0, target.armor - armorDamage);
-            remainingDamage -= armorDamage;
+          // Only apply to NPC targets that have these stats
+          if (intent.target !== 'druid' && target.stats) {
+            if (target.stats.armor > 0) {
+              armorDamage = Math.min(target.stats.armor, effect.armorDamage || 0);
+              target.stats.armor = Math.max(0, target.stats.armor - armorDamage);
+              remainingDamage -= armorDamage;
+            }
+            
+            if (remainingDamage > 0) {
+              const oldHealth = target.stats.health;
+              target.stats.health = Math.max(0, target.stats.health - remainingDamage);
+              healthDamage = oldHealth - target.stats.health;
+            }
+            
+            const willLost = healthDamage * 0.5;
+            target.stats.willToFight = Math.max(0, target.stats.willToFight - willLost);
           }
-          
-          if (remainingDamage > 0) {
-            const oldHealth = target.health;
-            target.health = Math.max(0, target.health - remainingDamage);
-            healthDamage = oldHealth - target.health;
-          }
-          
-          const willLost = healthDamage * 0.5;
-          target.willToFight = Math.max(0, target.willToFight - willLost);
         }
       } else if (actionType === 'defend' && effect.healing) {
-        actor.health = Math.min(actor.maxHealth, actor.health + effect.healing);
+        // Only apply to NPC actors that have these stats
+        if (intent.actor !== 'druid' && actor.stats) {
+          actor.stats.health = Math.min(actor.stats.maxHealth, actor.stats.health + effect.healing);
+        }
       }
       
       return newState;

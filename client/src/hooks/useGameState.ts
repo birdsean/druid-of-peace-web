@@ -60,9 +60,40 @@ const defaultDruid = {
 const initialGameState: GameState = {
   currentTurn: "npc1",
   turnCounter: 1,
-  npc1: defaultNPC,
-  npc2: defaultNPC,
-  druid: defaultDruid,
+  npc1: {
+    id: "npc1",
+    name: "Gareth",
+    icon: "⚔️",
+    color: "#6b7280",
+    description: "A gruff warrior with weathered armor",
+    stats: defaultStats,
+    actions: ["slash", "guard"]
+  },
+  npc2: {
+    id: "npc2", 
+    name: "Lyra",
+    icon: "🏹",
+    color: "#3b82f6",
+    description: "A skilled archer with keen eyes",
+    stats: {
+      health: 70,
+      maxHealth: 70,
+      armor: 20,
+      maxArmor: 20,
+      willToFight: 50,
+      maxWill: 50,
+      awareness: 30,
+      maxAwareness: 100,
+    },
+    actions: ["arrow_shot", "dodge"]
+  },
+  druid: {
+    id: "druid",
+    name: "Druid of Peace",
+    icon: "🌿",
+    color: "#22c55e",
+    stats: defaultDruidStats,
+  },
   gameOver: false,
   targetingMode: false,
   combatLog: ["Turn 1: Combat begins"],

@@ -328,8 +328,8 @@ export default function GameBoard() {
               <div className="text-center">
                 <div className="text-xs font-mono text-orange-200 mb-1">AP</div>
                 <div className="text-lg font-mono text-white font-bold">
-                  {gameState.druid.actionPoints}/
-                  {gameState.druid.maxActionPoints}
+                  {gameState.druid.stats.actionPoints}/
+                  {gameState.druid.stats.maxActionPoints}
                 </div>
               </div>
             </div>
@@ -344,13 +344,13 @@ export default function GameBoard() {
                     disabled={
                       !canUseActions ||
                       !hasActionPoints ||
-                      ability.cost > gameState.druid.actionPoints
+                      ability.cost > gameState.druid.stats.actionPoints
                     }
                     className={cn(
                       "w-12 h-12 text-2xl border-2 transition-all duration-200",
                       canUseActions &&
                         hasActionPoints &&
-                        ability.cost <= gameState.druid.actionPoints
+                        ability.cost <= gameState.druid.stats.actionPoints
                         ? "bg-green-600 hover:bg-green-700 border-green-400 text-white"
                         : "bg-gray-500 border-gray-400 text-gray-300 cursor-not-allowed",
                     )}
