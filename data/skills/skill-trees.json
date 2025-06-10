@@ -15,12 +15,33 @@
           "tags": ["diplomacy", "buff"],
           "category": "diplomacy",
           "prerequisites": [],
-          "connections": ["empathic_reading", "soothing_presence"],
+          "connections": ["empathic_reading", "soothing_presence", "wind_whisperer"],
           "position": { "x": 200, "y": 100 },
           "icon": "😌",
           "type": "passive",
           "effects": {
             "peaceful_aura_bonus": 10
+          }
+        },
+        {
+          "id": "wind_whisperer",
+          "name": "Wind Whisperer",
+          "description": "Harness forest winds to enhance your peaceful presence. Increases Peaceful Aura's effect by 10%.",
+          "hint": "Use Peaceful Aura while forest winds blow through the encounter.",
+          "tags": ["diplomacy", "environmental", "buff"],
+          "category": "diplomacy",
+          "prerequisites": ["calm_demeanor"],
+          "connections": ["calm_demeanor"],
+          "position": { "x": 300, "y": 180 },
+          "icon": "🌬️",
+          "type": "passive",
+          "effects": {
+            "peaceful_aura_bonus": 10
+          },
+          "unlockRequirements": {
+            "mustUseAbility": "peace_aura",
+            "environmentalEffect": "forest_wind",
+            "description": "Use Peaceful Aura while forest wind environmental effect is active"
           }
         },
         {

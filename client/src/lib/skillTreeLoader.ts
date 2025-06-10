@@ -11,6 +11,11 @@ export interface SkillNode {
   icon: string;
   type: "active" | "passive";
   effects: Record<string, any>;
+  unlockRequirements?: {
+    mustUseAbility?: string;
+    environmentalEffect?: string;
+    description?: string;
+  };
 }
 
 export interface SkillTree {
@@ -35,6 +40,7 @@ export interface SkillNodeDisplay extends SkillNode {
   isLearned: boolean;
   isDiscovered: boolean;
   isVisible: boolean;
+  isPending: boolean;
 }
 
 class SkillTreeManager {
@@ -107,8 +113,18 @@ class SkillTreeManager {
   learnSkill(skillId: string): boolean {
     const skill = this.getSkillNode(skillId);
     if (!skill) return false;
-    
-    // Add to learned skills
+
+    // Check if already learned
+    if (this.isSkillLearned(skillId)) return false;
+
+    // Check prerequisites
+    for (const prereqId of skill.prerequisites) {
+      if (!this.isSkillLearned(prereqId)) {
+        return false;
+      }
+    }
+
+    // Learn the skill
     this.skillState.learnedSkills.add(skillId);
     this.skillState.discoveredSkills.add(skillId);
     
@@ -131,7 +147,8 @@ class SkillTreeManager {
         ...node,
         isLearned: this.isSkillLearned(node.id),
         isDiscovered: this.isSkillDiscovered(node.id),
-        isVisible: this.isSkillVisible(node.id)
+        isVisible: this.isSkillVisible(node.id),
+        isPending: false
       }));
   }
 
