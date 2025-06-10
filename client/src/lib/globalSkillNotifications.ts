@@ -1,4 +1,4 @@
-import { globalHistoryManager } from './historySystem';
+import { globalHistoryManager } from './history';
 
 // Global state for skill unlock notifications
 let pendingNotifications: string[] = [];

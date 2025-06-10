@@ -9,7 +9,7 @@ export interface ActionIntent {
   turnCounter: number;
 }
 
-import { globalHistoryManager, applyHistorySkillEffects } from './historySystem';
+import { globalHistoryManager, applyHistorySkillEffects } from './history';
 
 export interface ActionEffect {
   damage?: number;

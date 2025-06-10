@@ -1,4 +1,4 @@
-import { globalHistoryManager } from './historySystem';
+import { globalHistoryManager } from './history';
 
 export interface SkillNode {
   id: string;

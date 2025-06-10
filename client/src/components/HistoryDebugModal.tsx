@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Calendar, User, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { globalHistoryManager, PCHistoryStore, EncounterHistory, PlayerAction } from '@/lib/historySystem';
+import { globalHistoryManager, type PCHistoryStore, type EncounterHistory, type PlayerAction } from '@/lib/history';
 
 interface HistoryDebugModalProps {
   onClose: () => void;

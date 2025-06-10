@@ -1,5 +1,3 @@
-import { BattleEvent } from './events';
-
 export interface EncounterHistory {
   id: string;
   timestamp: number;
@@ -37,6 +35,8 @@ export interface PCHistoryStore {
   pendingSkills: string[];
 }
 
+import { checkSkillUnlocks } from './skillUnlocks';
+
 class HistoryManager {
   private history: PCHistoryStore = {
     encounters: [],
@@ -51,10 +51,17 @@ class HistoryManager {
 
   private listeners: Array<(history: PCHistoryStore) => void> = [];
   private currentEncounter: Partial<EncounterHistory> | null = null;
-  private encounterStartTime: number = 0;
+  private encounterStartTime = 0;
 
   // Start tracking a new encounter
-  startEncounter(zoneId: string, zoneName: string, turn: number, environmentalEffects: string[], weatherActive?: string, timePhase: string = 'dawn'): void {
+  startEncounter(
+    zoneId: string,
+    zoneName: string,
+    turn: number,
+    environmentalEffects: string[],
+    weatherActive?: string,
+    timePhase: string = 'dawn'
+  ): void {
     this.encounterStartTime = Date.now();
     this.currentEncounter = {
       id: `encounter-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -113,8 +120,8 @@ class HistoryManager {
     }
 
     // Check for new skill unlocks
-    const newlyUnlockedSkills = this.checkSkillUnlocks(completedEncounter);
-    
+    const newlyUnlockedSkills = checkSkillUnlocks(this.history, completedEncounter);
+
     // Reset current encounter
     this.currentEncounter = null;
     this.encounterStartTime = 0;
@@ -123,26 +130,6 @@ class HistoryManager {
     this.notifyListeners();
 
     return newlyUnlockedSkills;
-  }
-
-  // Check if skills should be unlocked based on the completed encounter
-  private checkSkillUnlocks(encounter: EncounterHistory): string[] {
-    const newlyUnlocked: string[] = [];
-
-    // Check Wind Whisperer skill
-    if (!this.history.skillsUnlocked.includes('wind_whisperer')) {
-      const hasUsedPeaceAura = encounter.actions.some(action => action.type === 'peace_aura');
-      const hasForestWind = encounter.environmentalEffects.includes('forest_wind') || 
-                           encounter.actions.some(action => action.environmentalEffects?.includes('forest_wind'));
-
-      if (hasUsedPeaceAura && hasForestWind) {
-        this.history.skillsUnlocked.push('wind_whisperer');
-        this.history.pendingSkills.push('wind_whisperer');
-        newlyUnlocked.push('wind_whisperer');
-      }
-    }
-
-    return newlyUnlocked;
   }
 
   // Claim a skill (move from pending to claimed)
@@ -186,8 +173,16 @@ class HistoryManager {
     return this.history.encounters.filter(encounter => {
       if (criteria.result && encounter.result !== criteria.result) return false;
       if (criteria.zoneId && encounter.zoneId !== criteria.zoneId) return false;
-      if (criteria.environmentalEffect && !encounter.environmentalEffects.includes(criteria.environmentalEffect)) return false;
-      if (criteria.usedAbility && !encounter.actions.some(action => action.type === criteria.usedAbility)) return false;
+      if (
+        criteria.environmentalEffect &&
+        !encounter.environmentalEffects.includes(criteria.environmentalEffect)
+      )
+        return false;
+      if (
+        criteria.usedAbility &&
+        !encounter.actions.some(action => action.type === criteria.usedAbility)
+      )
+        return false;
       return true;
     });
   }
@@ -236,16 +231,5 @@ class HistoryManager {
 // Global history manager instance
 export const globalHistoryManager = new HistoryManager();
 
-// Helper function to apply skill effects to peace aura
-export function applyHistorySkillEffects(baseEffect: any, skillsClaimed: string[]): any {
-  let modifiedEffect = { ...baseEffect };
+export type { HistoryManager };
 
-  // Wind Whisperer: +10% to peaceful aura effect
-  if (skillsClaimed.includes('wind_whisperer')) {
-    if (modifiedEffect.willReduction) {
-      modifiedEffect.willReduction = Math.floor(modifiedEffect.willReduction * 1.1);
-    }
-  }
-
-  return modifiedEffect;
-}

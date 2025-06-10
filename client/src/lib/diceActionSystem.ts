@@ -5,7 +5,7 @@ import {
   ActionIntent,
 } from "./actionEffects";
 import { createBattleEvent } from "./events";
-import { globalHistoryManager } from "./historySystem";
+import { globalHistoryManager } from "./history";
 
 export interface DiceActionState {
   isRolling: boolean;

@@ -7,7 +7,7 @@ import {
   SkillNodeDisplay,
   SkillTree,
 } from "@/lib/skillTreeLoader";
-import { globalHistoryManager } from "@/lib/historySystem";
+import { globalHistoryManager } from "@/lib/history";
 import {
   ArrowLeft,
   TreePine,

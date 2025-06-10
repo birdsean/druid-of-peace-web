@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { X, Target, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { globalSkillManager, SkillNode } from '@/lib/skillTreeLoader';
-import { globalHistoryManager } from '@/lib/historySystem';
+import { globalHistoryManager } from '@/lib/history';
 
 interface SkillRequirementsModalProps {
   onClose: () => void;
