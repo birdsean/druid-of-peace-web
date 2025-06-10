@@ -1,14 +1,16 @@
 import { cn } from "@/lib/utils";
 import { Zone } from "@/hooks/useMapState";
 import HeatBar from "@/components/map/HeatBar";
+import type { EnvironmentalEffect } from "@/lib/environmentLoader";
 
 interface ForestZoneProps {
   zone: Zone;
   isCurrentZone: boolean;
   onClick: () => void;
+  environmentEffect?: EnvironmentalEffect;
 }
 
-export default function ForestZone({ zone, isCurrentZone, onClick }: ForestZoneProps) {
+export default function ForestZone({ zone, isCurrentZone, onClick, environmentEffect }: ForestZoneProps) {
   return (
     <div
       className={cn(
@@ -60,6 +62,27 @@ export default function ForestZone({ zone, isCurrentZone, onClick }: ForestZoneP
         <div className="mt-1">
           <HeatBar heat={zone.heat} />
         </div>
+
+        {environmentEffect && (
+          <div
+            className="mt-1 flex justify-center"
+            title={`${environmentEffect.name}: ${environmentEffect.description}`}
+          >
+            <div
+              className="px-2 py-1 rounded-full text-xs font-mono border-2 cursor-help transition-all duration-200 hover:scale-110"
+              style={{
+                backgroundColor: environmentEffect.color + '40',
+                borderColor: environmentEffect.color,
+                color: environmentEffect.color
+              }}
+            >
+              <span className="mr-1">{environmentEffect.icon}</span>
+              <span className="text-white bg-black bg-opacity-70 px-1 rounded">
+                {environmentEffect.name}
+              </span>
+            </div>
+          </div>
+        )}
         
 
       </div>
