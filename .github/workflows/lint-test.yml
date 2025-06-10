@@ -17,3 +17,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
