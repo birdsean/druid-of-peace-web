@@ -168,6 +168,13 @@ function SkillDetailPanel({ node, onClose, onLearn }: SkillDetailPanelProps) {
         <div className="pt-4 border-t border-gray-600">
           {node.isLearned ? (
             <div className="text-green-400 font-mono text-center">✓ LEARNED</div>
+          ) : node.isPending ? (
+            <Button 
+              onClick={() => onLearn(node.id)}
+              className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-mono animate-pulse"
+            >
+              CLAIM SKILL
+            </Button>
           ) : node.isDiscovered ? (
             <Button 
               onClick={() => onLearn(node.id)}
@@ -387,6 +394,18 @@ export default function Skills() {
               className="w-full h-8 text-xs bg-red-600 hover:bg-red-700 text-white font-mono"
             >
               RESET SKILLS
+            </Button>
+            <Button
+              onClick={() => globalHistoryManager.debugUnlockSkill('wind_whisperer')}
+              className="w-full h-8 text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-mono"
+            >
+              UNLOCK WIND WHISPERER
+            </Button>
+            <Button
+              onClick={() => globalHistoryManager.debugReset()}
+              className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-mono"
+            >
+              RESET HISTORY
             </Button>
           </div>
         </div>
