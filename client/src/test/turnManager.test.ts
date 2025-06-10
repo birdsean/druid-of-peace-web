@@ -1,0 +1,125 @@
+import { describe, it, expect, vi } from 'vitest';
+import { TurnManager } from '../lib/turnManager';
+import type { GameState, DiceState } from '../lib/gameLogic';
+
+function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1): GameState {
+  return {
+    currentTurn,
+    turnCounter,
+    npc1: {
+      id: 'npc1',
+      name: 'NPC 1',
+      icon: '',
+      color: '',
+      description: '',
+      position: 'left',
+      stats: {
+        health: 10,
+        maxHealth: 10,
+        armor: 0,
+        maxArmor: 0,
+        willToFight: 10,
+        maxWill: 10,
+        awareness: 0,
+        maxAwareness: 100,
+      },
+      actions: [],
+    },
+    npc2: {
+      id: 'npc2',
+      name: 'NPC 2',
+      icon: '',
+      color: '',
+      description: '',
+      position: 'right',
+      stats: {
+        health: 10,
+        maxHealth: 10,
+        armor: 0,
+        maxArmor: 0,
+        willToFight: 10,
+        maxWill: 10,
+        awareness: 0,
+        maxAwareness: 100,
+      },
+      actions: [],
+    },
+    druid: {
+      id: 'druid',
+      name: 'Druid',
+      icon: '',
+      color: '',
+      stats: {
+        hidden: true,
+        actionPoints: 3,
+        maxActionPoints: 3,
+      },
+      abilities: [],
+    },
+    gameOver: false,
+    targetingMode: false,
+    combatLog: [],
+    gameOverState: null,
+  };
+}
+
+describe('TurnManager', () => {
+  it('advanceTurn cycles turns correctly', () => {
+    const manager = new TurnManager(
+      vi.fn(),
+      vi.fn(),
+      vi.fn(),
+      vi.fn(),
+    );
+
+    let state = createBaseState('npc1', 1);
+    state = manager.advanceTurn(state);
+    expect(state.currentTurn).toBe('npc2');
+    expect(state.turnCounter).toBe(1);
+
+    state = manager.advanceTurn(state);
+    expect(state.currentTurn).toBe('druid');
+    expect(state.turnCounter).toBe(1);
+
+    state = manager.advanceTurn(state);
+    expect(state.currentTurn).toBe('npc1');
+    expect(state.turnCounter).toBe(2);
+  });
+
+  it('manualAdvanceTurn advances when game not ended', () => {
+    const setGameState = vi.fn();
+    const manager = new TurnManager(
+      setGameState,
+      vi.fn(),
+      vi.fn(),
+      vi.fn().mockReturnValue(false),
+    );
+
+    manager.manualAdvanceTurn();
+    expect(setGameState).toHaveBeenCalledTimes(1);
+
+    const updateFn = setGameState.mock.calls[0][0] as (s: GameState) => GameState;
+    const base = createBaseState('npc1', 1);
+    const result = updateFn(base);
+
+    expect(result.currentTurn).toBe('npc2');
+    expect(result.turnCounter).toBe(1);
+  });
+
+  it('manualAdvanceTurn does not advance when game ended', () => {
+    const setGameState = vi.fn();
+    const checkEnd = vi.fn().mockReturnValue(true);
+    const manager = new TurnManager(setGameState, vi.fn(), vi.fn(), checkEnd);
+
+    manager.manualAdvanceTurn();
+    expect(setGameState).toHaveBeenCalledTimes(1);
+
+    const updateFn = setGameState.mock.calls[0][0] as (s: GameState) => GameState;
+    const base = createBaseState('npc1', 1);
+    const result = updateFn(base);
+
+    expect(checkEnd).toHaveBeenCalledWith(base);
+    expect(result).toBe(base);
+  });
+});
+
