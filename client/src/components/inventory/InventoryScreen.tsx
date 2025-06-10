@@ -5,6 +5,7 @@ import { loadItems } from '@/lib/inventory';
 import { IS_DEBUG } from '@/lib/debug';
 import { Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'wouter';
 
 interface InventoryScreenProps {
   isModal?: boolean;
@@ -15,6 +16,7 @@ interface InventoryScreenProps {
 export default function InventoryScreen({ isModal = false, onClose, onUseItem }: InventoryScreenProps) {
   const { inventory, addItem } = useInventory();
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [, setLocation] = useLocation();
   const allItems = loadItems();
 
   const handleUseItem = (itemId: string) => {
@@ -68,7 +70,7 @@ export default function InventoryScreen({ isModal = false, onClose, onUseItem }:
             </Button>
           ) : (
             <Button
-              onClick={() => window.location.href = '/'}
+              onClick={() => setLocation('/map')}
               className="bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
             >
               <X className="w-4 h-4 mr-2" />

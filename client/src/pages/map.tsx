@@ -318,8 +318,8 @@ export default function Map() {
     }
   }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase, addMapEvent]);
 
-  const handleNarrativeStart = useCallback((scriptId: string) => {
-    const script = loadNarrativeScript(scriptId);
+  const handleNarrativeStart = useCallback(async (scriptId: string) => {
+    const script = await loadNarrativeScript(scriptId);
     if (script) {
       setNarrativeScript(script);
     }
