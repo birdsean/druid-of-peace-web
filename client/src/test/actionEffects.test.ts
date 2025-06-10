@@ -32,7 +32,7 @@ describe('Action Effects', () => {
       const result = calculateActionEffect(intent);
       
       expect(result.effect).toHaveProperty('description');
-      expect(result.effect.description).toContain('defends');
+      expect(result.effect.description).toContain('Defend');
     });
 
     it('should calculate peace aura effects correctly', () => {

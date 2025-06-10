@@ -26,41 +26,41 @@ describe('Inventory System', () => {
       });
     });
 
-    it('should include healing herbs with correct properties', () => {
+    it('should include healing potion with correct properties', () => {
       const items = loadItems();
-      const healingHerbs = items.find(item => item.id === 'healing_herbs');
+      const healingPotion = items.find(item => item.id === 'healing_potion');
       
-      expect(healingHerbs).toBeDefined();
-      expect(healingHerbs?.name).toBe('Healing Herbs');
-      expect(healingHerbs?.effects.heal).toBeGreaterThan(0);
+      expect(healingPotion).toBeDefined();
+      expect(healingPotion?.name).toBe('Healing Potion');
+      expect(healingPotion?.effects.heal).toBeGreaterThan(0);
     });
 
-    it('should include calming tea with correct properties', () => {
+    it('should include calming herbs with correct properties', () => {
       const items = loadItems();
-      const calmingTea = items.find(item => item.id === 'calming_tea');
+      const calmingHerbs = items.find(item => item.id === 'calming_herbs');
       
-      expect(calmingTea).toBeDefined();
-      expect(calmingTea?.name).toBe('Calming Tea');
-      expect(calmingTea?.effects.reduceWill).toBeGreaterThan(0);
+      expect(calmingHerbs).toBeDefined();
+      expect(calmingHerbs?.name).toBe('Calming Herbs');
+      expect(calmingHerbs?.effects.reduceWill).toBeGreaterThan(0);
     });
 
-    it('should include meditation stones with correct properties', () => {
+    it('should include energy berries with correct properties', () => {
       const items = loadItems();
-      const meditationStones = items.find(item => item.id === 'meditation_stones');
+      const energyBerries = items.find(item => item.id === 'energy_berries');
       
-      expect(meditationStones).toBeDefined();
-      expect(meditationStones?.name).toBe('Meditation Stones');
-      expect(meditationStones?.effects.restoreAP).toBeGreaterThan(0);
+      expect(energyBerries).toBeDefined();
+      expect(energyBerries?.name).toBe('Energy Berries');
+      expect(energyBerries?.effects.restoreAP).toBeGreaterThan(0);
     });
   });
 
   describe('getItemById', () => {
     it('should return item when valid ID is provided', () => {
-      const item = getItemById('healing_herbs');
+      const item = getItemById('healing_potion');
       
       expect(item).toBeDefined();
-      expect(item?.id).toBe('healing_herbs');
-      expect(item?.name).toBe('Healing Herbs');
+      expect(item?.id).toBe('healing_potion');
+      expect(item?.name).toBe('Healing Potion');
     });
 
     it('should return undefined for invalid ID', () => {
@@ -112,13 +112,13 @@ describe('Inventory System', () => {
       });
     });
 
-    it('should have smoke bomb with area effect', () => {
+    it('should have calming herbs with area effect', () => {
       const items = loadItems();
-      const smokeBomb = items.find(item => item.id === 'smoke_bomb');
+      const calmingHerbs = items.find(item => item.id === 'calming_herbs');
       
-      expect(smokeBomb).toBeDefined();
-      expect(smokeBomb?.effects.targetAll).toBe(true);
-      expect(smokeBomb?.effects.reduceAwareness).toBeGreaterThan(0);
+      expect(calmingHerbs).toBeDefined();
+      expect(calmingHerbs?.effects.targetAll).toBe(true);
+      expect(calmingHerbs?.effects.reduceWill).toBeGreaterThan(0);
     });
   });
 });

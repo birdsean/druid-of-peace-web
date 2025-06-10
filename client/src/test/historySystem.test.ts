@@ -184,11 +184,11 @@ describe('History System', () => {
       expect(mountainEncounters[0].zoneId).toBe('mountain');
     });
 
-    it('should filter encounters by weather', () => {
-      const stormEncounters = globalHistoryManager.getEncountersWithCriteria({ weatherActive: 'storm' });
+    it('should filter encounters by environmental effect', () => {
+      const rainEncounters = globalHistoryManager.getEncountersWithCriteria({ environmentalEffect: 'rain' });
       
-      expect(stormEncounters).toHaveLength(1);
-      expect(stormEncounters[0].weatherActive).toBe('storm');
+      expect(rainEncounters).toHaveLength(1);
+      expect(rainEncounters[0].environmentalEffects).toContain('rain');
     });
   });
 });

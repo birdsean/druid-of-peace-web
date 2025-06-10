@@ -23,16 +23,16 @@ describe('Game Logic', () => {
   });
 
   describe('executeNPCAction', () => {
-    it('should return attack action for low rolls', () => {
+    it('should return defend action for odd rolls', () => {
       const result = executeNPCAction(1);
-      expect(result.type).toBe('attack');
-      expect(result.description).toContain('attacks');
-    });
-
-    it('should return defend action for high rolls', () => {
-      const result = executeNPCAction(6);
       expect(result.type).toBe('defend');
       expect(result.description).toContain('defends');
+    });
+
+    it('should return attack action for even rolls', () => {
+      const result = executeNPCAction(6);
+      expect(result.type).toBe('attack');
+      expect(result.description).toContain('attacks');
     });
 
     it('should return valid action structure', () => {
