@@ -1,0 +1,27 @@
+{
+  "id": "druid",
+  "name": "Druid of Peace",
+  "icon": "🌿",
+  "color": "bg-green-700",
+  "stats": {
+    "hidden": true,
+    "actionPoints": 1,
+    "maxActionPoints": 1
+  },
+  "abilities": [
+    {
+      "key": "peaceAura",
+      "name": "Peace Aura",
+      "description": "Reduce target's will to fight",
+      "icon": "🕊️",
+      "cost": 1
+    },
+    {
+      "key": "flee",
+      "name": "Flee",
+      "description": "Escape from the encounter",
+      "icon": "🏃",
+      "cost": 0
+    }
+  ]
+}
