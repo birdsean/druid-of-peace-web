@@ -39,6 +39,7 @@ const defaultNPC: NPC = {
   icon: "?",
   color: "gray",
   description: "Unknown NPC",
+  position: "left",
   stats: defaultStats,
   actions: [],
 };
@@ -66,6 +67,7 @@ const initialGameState: GameState = {
     icon: "⚔️",
     color: "#6b7280",
     description: "A gruff warrior with weathered armor",
+    position: "left",
     stats: defaultStats,
     actions: ["slash", "guard"]
   },
@@ -75,6 +77,7 @@ const initialGameState: GameState = {
     icon: "🏹",
     color: "#3b82f6",
     description: "A skilled archer with keen eyes",
+    position: "right",
     stats: {
       health: 70,
       maxHealth: 70,
@@ -93,6 +96,7 @@ const initialGameState: GameState = {
     icon: "🌿",
     color: "#22c55e",
     stats: defaultDruidStats,
+    abilities: []
   },
   gameOver: false,
   targetingMode: false,
@@ -122,11 +126,13 @@ export function useGameState() {
             npc1: {
               ...npcs[0],
               description: "A frustrated merchant",
+              position: npcs[0].position || "left",
               actions: ["attack", "defend"]
             },
             npc2: {
               ...npcs[1], 
               description: "A territorial guard",
+              position: npcs[1].position || "right",
               actions: ["attack", "defend"]
             },
             druid: {
