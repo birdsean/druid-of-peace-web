@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 import { useInventory } from '@/hooks/useInventory';
 import { loadItems } from '@/lib/inventory';
 import { IS_DEBUG } from '@/lib/debug';
@@ -112,38 +118,35 @@ export default function InventoryScreen({ isModal = false, onClose, onUseItem }:
               <div className="text-gray-400 mt-2">Collect items during your adventures</div>
             </div>
           ) : (
-            <div className="grid grid-cols-6 gap-4">
-              {inventory.items.map((invItem) => (
-                <div
-                  key={invItem.item.id}
-                  className="relative group"
-                >
-                  <Button
-                    onClick={() => handleUseItem(invItem.item.id)}
-                    className="w-full h-24 bg-gray-800 hover:bg-gray-700 border-2 border-gray-600 hover:border-amber-400 text-white flex flex-col items-center justify-center p-2 transition-all duration-200"
-                    title={invItem.item.description}
-                    disabled={!onUseItem}
-                  >
-                    <div className="text-2xl mb-1">{invItem.item.icon}</div>
-                    <div className="text-xs font-mono text-center leading-tight">{invItem.item.name}</div>
-                    
-                    {/* Stack count */}
-                    {invItem.count > 1 && (
-                      <div className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                        {invItem.count}
-                      </div>
-                    )}
-                  </Button>
+            <TooltipProvider delayDuration={0}>
+              <div className="grid grid-cols-6 gap-4">
+                {inventory.items.map((invItem) => (
+                  <Tooltip key={invItem.item.id}>
+                    <TooltipTrigger asChild>
+                      <div className="relative group">
+                        <Button
+                          onClick={() => handleUseItem(invItem.item.id)}
+                          className="w-full h-24 bg-gray-800 hover:bg-gray-700 border-2 border-gray-600 hover:border-amber-400 text-white flex flex-col items-center justify-center p-2 transition-all duration-200"
+                          title={invItem.item.description}
+                          disabled={!onUseItem}
+                        >
+                          <div className="text-2xl mb-1">{invItem.item.icon}</div>
+                          <div className="text-xs font-mono text-center leading-tight">{invItem.item.name}</div>
 
-                  {/* Tooltip */}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                    <div className="bg-gray-900 text-white text-xs rounded px-2 py-1 border border-gray-600 whitespace-nowrap">
-                      {invItem.item.description}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                          {/* Stack count */}
+                          {invItem.count > 1 && (
+                            <div className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                              {invItem.count}
+                            </div>
+                          )}
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>{invItem.item.description}</TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+            </TooltipProvider>
           )}
         </div>
       </div>

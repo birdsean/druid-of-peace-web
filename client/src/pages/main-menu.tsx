@@ -79,21 +79,24 @@ export default function MainMenu() {
           <Button
             onClick={handleNewGame}
             disabled={loading}
-            className="w-full h-14 text-xl font-mono bg-emerald-600 hover:bg-emerald-700 border-2 border-emerald-400 text-white shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50"
+            variant="menu"
+            className="h-14 text-xl bg-emerald-600 hover:bg-emerald-700 border-emerald-400 disabled:opacity-50"
           >
             {loading ? "🌱 LOADING..." : "🌱 NEW GAME"}
           </Button>
           
           <Button
             onClick={handleContinueGame}
-            className="w-full h-14 text-xl font-mono bg-green-600 hover:bg-green-700 border-2 border-green-400 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            variant="menu"
+            className="h-14 text-xl bg-green-600 hover:bg-green-700 border-green-400"
           >
             🗺️ CONTINUE GAME
           </Button>
           
           <Button
             onClick={() => {/* TODO: Settings */}}
-            className="w-full h-12 text-lg font-mono bg-green-700 hover:bg-green-800 border-2 border-green-500 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            variant="menu"
+            className="h-12 text-lg bg-green-700 hover:bg-green-800 border-green-500"
             disabled
           >
             ⚙️ SETTINGS
@@ -101,7 +104,8 @@ export default function MainMenu() {
           
           <Button
             onClick={() => {/* TODO: Credits */}}
-            className="w-full h-12 text-lg font-mono bg-green-700 hover:bg-green-800 border-2 border-green-500 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            variant="menu"
+            className="h-12 text-lg bg-green-700 hover:bg-green-800 border-green-500"
             disabled
           >
             📜 CREDITS
