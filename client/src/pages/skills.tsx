@@ -4,8 +4,11 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { globalSkillManager, SkillNodeDisplay, SkillTree } from "@/lib/skillTreeLoader";
 import { globalHistoryManager } from "@/lib/historySystem";
-import { ArrowLeft, TreePine, Flame, Eye, Mountain } from "lucide-react";
+import { ArrowLeft, TreePine, Flame, Eye, Mountain, History, Target } from "lucide-react";
 import { IS_DEBUG } from "@/lib/debug";
+import HistoryDebugModal from "@/components/HistoryDebugModal";
+import SkillRequirementsModal from "@/components/SkillRequirementsModal";
+import SkillUnlockNotification from "@/components/SkillUnlockNotification";
 
 interface SkillNodeProps {
   node: SkillNodeDisplay;
@@ -269,6 +272,16 @@ export default function Skills() {
     return unsubscribe;
   }, [selectedTree]);
 
+  // Listen for history changes to show skill unlock notifications
+  useEffect(() => {
+    const unsubscribe = globalHistoryManager.subscribe((history) => {
+      if (history.pendingSkills.length > 0) {
+        setNewlyUnlockedSkills(history.pendingSkills);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   const handleLearnSkill = useCallback((skillId: string) => {
     globalSkillManager.learnSkill(skillId);
   }, []);
@@ -406,6 +419,20 @@ export default function Skills() {
               className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-mono"
             >
               RESET HISTORY
+            </Button>
+            <Button
+              onClick={() => setShowHistoryModal(true)}
+              className="w-full h-8 text-xs bg-cyan-600 hover:bg-cyan-700 text-white font-mono"
+            >
+              <History className="w-3 h-3 mr-1" />
+              VIEW HISTORY
+            </Button>
+            <Button
+              onClick={() => setShowRequirementsModal(true)}
+              className="w-full h-8 text-xs bg-orange-600 hover:bg-orange-700 text-white font-mono"
+            >
+              <Target className="w-3 h-3 mr-1" />
+              SKILL REQUIREMENTS
             </Button>
           </div>
         </div>
