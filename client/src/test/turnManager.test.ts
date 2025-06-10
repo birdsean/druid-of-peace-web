@@ -121,5 +121,52 @@ describe('TurnManager', () => {
     expect(checkEnd).toHaveBeenCalledWith(base);
     expect(result).toBe(base);
   });
+
+  it('executeTurn resolves NPC turns using timers', async () => {
+    vi.useFakeTimers();
+
+    const setGameState = vi.fn();
+    const addLogEntry = vi.fn();
+    const manager = new TurnManager(
+      setGameState,
+      vi.fn(),
+      addLogEntry,
+      vi.fn().mockReturnValue(false),
+    );
+
+    vi.spyOn(manager, 'rollDiceWithAnimation').mockResolvedValue(4);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    const base = createBaseState('npc1', 1);
+    base.npc2.stats.armor = 5;
+    base.npc2.stats.maxArmor = 5;
+
+    const promise = manager.executeTurn(base);
+    await vi.runAllTimersAsync();
+    await promise;
+
+    expect(setGameState).toHaveBeenCalledTimes(2);
+
+    const stateAfterAction = (
+      setGameState.mock.calls[0][0] as (s: GameState) => GameState
+    )(base);
+
+    expect(addLogEntry).toHaveBeenCalledTimes(1);
+    expect(addLogEntry.mock.calls[0][0]).toContain('Gareth attacks');
+
+    expect(stateAfterAction.npc2.stats.armor).toBe(0);
+    expect(stateAfterAction.npc2.stats.health).toBe(5);
+    expect(stateAfterAction.npc2.stats.willToFight).toBeCloseTo(7.5);
+
+    const finalState = (
+      setGameState.mock.calls[1][0] as (s: GameState) => GameState
+    )(stateAfterAction);
+
+    expect(finalState.currentTurn).toBe('npc2');
+    expect(finalState.turnCounter).toBe(1);
+
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 });
 
