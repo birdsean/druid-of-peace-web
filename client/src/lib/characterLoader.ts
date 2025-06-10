@@ -41,7 +41,7 @@ export interface PCCharacterData {
   abilities: PCAbility[];
 }
 
-export async function loadNPCData(): Promise<NPC[]> {
+export async function loadNPCData(): Promise<NPCCharacterData[]> {
   try {
     const response = await fetch("/data/characters/npcs.json");
     if (!response.ok) throw new Error("Failed to load NPC data");
@@ -52,7 +52,7 @@ export async function loadNPCData(): Promise<NPC[]> {
   }
 }
 
-export async function loadPCData(): Promise<PC | null> {
+export async function loadPCData(): Promise<PCCharacterData | null> {
   try {
     const response = await fetch("/data/characters/pc.json");
     if (!response.ok) throw new Error("Failed to load PC data");

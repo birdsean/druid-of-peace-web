@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { GameState, DruidStats, NPCStats } from './gameLogic';
+import { GameState, DruidStats, NPCStats, NPC, PC } from './gameLogic';
 import { useDiceActionSystem, DiceActionState } from './diceActionSystem';
 import { ActionIntent } from './actionEffects';
 import { BattleEvent, createBattleEvent } from './events';
@@ -9,21 +9,43 @@ export function useEnhancedGameState() {
     currentTurn: "druid",
     turnCounter: 1,
     npc1: {
-      health: 80, maxHealth: 80,
-      armor: 30, maxArmor: 30,
-      willToFight: 60, maxWill: 60,
-      awareness: 20, maxAwareness: 100
+      id: "npc1",
+      name: "Angry Merchant",
+      icon: "🛒",
+      color: "#dc2626",
+      description: "A frustrated merchant",
+      stats: {
+        health: 80, maxHealth: 80,
+        armor: 30, maxArmor: 30,
+        willToFight: 60, maxWill: 60,
+        awareness: 20, maxAwareness: 100
+      },
+      actions: ["attack", "defend"]
     },
     npc2: {
-      health: 70, maxHealth: 70,
-      armor: 20, maxArmor: 20,
-      willToFight: 50, maxWill: 50,
-      awareness: 30, maxAwareness: 100
+      id: "npc2",
+      name: "Territorial Guard",
+      icon: "⚔️",
+      color: "#7c2d12",
+      description: "A protective guard",
+      stats: {
+        health: 70, maxHealth: 70,
+        armor: 20, maxArmor: 20,
+        willToFight: 50, maxWill: 50,
+        awareness: 30, maxAwareness: 100
+      },
+      actions: ["attack", "defend"]
     },
     druid: {
-      hidden: true,
-      actionPoints: 3,
-      maxActionPoints: 3
+      id: "druid",
+      name: "Peaceful Druid",
+      icon: "🌿",
+      color: "#16a34a",
+      stats: {
+        hidden: true,
+        actionPoints: 3,
+        maxActionPoints: 3
+      }
     },
     gameOver: false,
     targetingMode: false,
@@ -54,17 +76,17 @@ export function useEnhancedGameState() {
       const target = newState[targetId];
       
       if (effect.willReduction) {
-        target.willToFight = Math.max(0, target.willToFight - effect.willReduction);
+        target.stats.willToFight = Math.max(0, target.stats.willToFight - effect.willReduction);
       }
       
       if (effect.awarenessChange) {
-        newState.npc1.awareness = Math.min(newState.npc1.maxAwareness, 
-          newState.npc1.awareness + effect.awarenessChange);
-        newState.npc2.awareness = Math.min(newState.npc2.maxAwareness, 
-          newState.npc2.awareness + effect.awarenessChange);
+        newState.npc1.stats.awareness = Math.min(newState.npc1.stats.maxAwareness, 
+          newState.npc1.stats.awareness + effect.awarenessChange);
+        newState.npc2.stats.awareness = Math.min(newState.npc2.stats.maxAwareness, 
+          newState.npc2.stats.awareness + effect.awarenessChange);
       }
       
-      newState.druid.actionPoints = Math.max(0, newState.druid.actionPoints - 1);
+      newState.druid.stats.actionPoints = Math.max(0, newState.druid.stats.actionPoints - 1);
       newState.targetingMode = false;
       
       return newState;
@@ -96,21 +118,23 @@ export function useEnhancedGameState() {
           let healthDamage = 0;
           
           // Only apply to NPC targets that have these stats
-          if (intent.target !== 'druid' && target.stats) {
-            if (target.stats.armor > 0) {
-              armorDamage = Math.min(target.stats.armor, effect.armorDamage || 0);
-              target.stats.armor = Math.max(0, target.stats.armor - armorDamage);
+          if (intent.target !== 'druid') {
+            const npcTarget = target as NPC;
+            const npcStats = npcTarget.stats as NPCStats;
+            if (npcStats.armor > 0) {
+              armorDamage = Math.min(npcStats.armor, effect.armorDamage || 0);
+              npcStats.armor = Math.max(0, npcStats.armor - armorDamage);
               remainingDamage -= armorDamage;
             }
             
             if (remainingDamage > 0) {
-              const oldHealth = target.stats.health;
-              target.stats.health = Math.max(0, target.stats.health - remainingDamage);
-              healthDamage = oldHealth - target.stats.health;
+              const oldHealth = npcStats.health;
+              npcStats.health = Math.max(0, npcStats.health - remainingDamage);
+              healthDamage = oldHealth - npcStats.health;
             }
             
             const willLost = healthDamage * 0.5;
-            target.stats.willToFight = Math.max(0, target.stats.willToFight - willLost);
+            npcStats.willToFight = Math.max(0, npcStats.willToFight - willLost);
           }
         }
       } else if (actionType === 'defend' && effect.healing) {
