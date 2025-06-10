@@ -9,6 +9,8 @@ export interface ActionIntent {
   turnCounter: number;
 }
 
+import { globalHistoryManager, applyHistorySkillEffects } from './historySystem';
+
 export interface ActionEffect {
   damage?: number;
   healing?: number;
@@ -83,14 +85,25 @@ function calculatePeaceEffect(roll: number, intent: ActionIntent): { roll: numbe
     willReduction = 5;
     awarenessIncrease = 12;
   }
+
+  // Apply skill bonuses from history system
+  const history = globalHistoryManager.getHistory();
+  const baseEffect = {
+    willReduction,
+    awarenessChange: awarenessIncrease,
+    description: `Peaceful Aura reduces will to fight by ${willReduction}, increases awareness by ${awarenessIncrease} (roll: ${roll})`
+  };
+
+  const enhancedEffect = applyHistorySkillEffects(baseEffect, history.skillsClaimed);
+
+  // Update description if enhanced
+  if (enhancedEffect.willReduction !== willReduction) {
+    enhancedEffect.description = `Peaceful Aura enhanced by Wind Whisperer! Reduces will to fight by ${enhancedEffect.willReduction}, increases awareness by ${awarenessIncrease} (roll: ${roll})`;
+  }
   
   return {
     roll,
-    effect: {
-      willReduction,
-      awarenessChange: awarenessIncrease,
-      description: `Peace aura reduces will by ${willReduction}, increases awareness by ${awarenessIncrease} (roll: ${roll})`
-    }
+    effect: enhancedEffect
   };
 }
 

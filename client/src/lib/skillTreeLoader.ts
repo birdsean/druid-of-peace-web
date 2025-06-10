@@ -1,3 +1,5 @@
+import { globalHistoryManager } from './historySystem';
+
 export interface SkillNode {
   id: string;
   name: string;
@@ -148,7 +150,7 @@ class SkillTreeManager {
         isLearned: this.isSkillLearned(node.id),
         isDiscovered: this.isSkillDiscovered(node.id),
         isVisible: this.isSkillVisible(node.id),
-        isPending: false
+        isPending: globalHistoryManager.isSkillPending(node.id)
       }));
   }
 
