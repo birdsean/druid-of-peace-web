@@ -61,12 +61,7 @@ function SkillNode({ node, onHover, onLearn, treeColor }: SkillNodeProps) {
         transform: 'translate(-50%, -50%)'
       }}
       onMouseEnter={() => onHover(node)}
-      onMouseLeave={() => {
-        // Don't hide immediately to allow hovering the detail panel
-        setTimeout(() => {
-          onHover(null);
-        }, 300);
-      }}
+      onMouseLeave={() => onHover(null)}
       onClick={() => node.isDiscovered && !node.isLearned && onLearn(node.id)}
     >
       <div
@@ -119,20 +114,19 @@ interface SkillDetailPanelProps {
   node: SkillNodeDisplay | null;
   onClose: () => void;
   onLearn: (skillId: string) => void;
+  onPanelHover?: (isHovering: boolean) => void;
 }
 
-function SkillDetailPanel({ node, onClose, onLearn }: SkillDetailPanelProps) {
+function SkillDetailPanel({ node, onClose, onLearn, onPanelHover }: SkillDetailPanelProps) {
   if (!node) return null;
 
   return (
     <div 
       className="absolute right-4 top-4 bottom-4 w-80 bg-black bg-opacity-90 rounded-lg p-6 border-2 border-amber-400 z-30"
-      onMouseEnter={() => {
-        // Keep the panel visible when hovering over it
-      }}
+      onMouseEnter={() => onPanelHover?.(true)}
       onMouseLeave={() => {
-        // Delay closing to allow smooth interaction
-        setTimeout(onClose, 100);
+        onPanelHover?.(false);
+        setTimeout(onClose, 200);
       }}
     >
       <div className="flex justify-between items-start mb-4">
@@ -256,6 +250,7 @@ export default function Skills() {
   const [selectedTree, setSelectedTree] = useState('diplomacy');
   const [hoveredNode, setHoveredNode] = useState<SkillNodeDisplay | null>(null);
   const [selectedNode, setSelectedNode] = useState<SkillNodeDisplay | null>(null);
+  const [isHoveringPanel, setIsHoveringPanel] = useState(false);
   const [skillTrees, setSkillTrees] = useState<Record<string, SkillTree>>({});
   const [visibleNodes, setVisibleNodes] = useState<SkillNodeDisplay[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -306,6 +301,12 @@ export default function Skills() {
   const handleNodeClick = useCallback((node: SkillNodeDisplay) => {
     setSelectedNode(node);
   }, []);
+
+  const handleHoverNode = useCallback((node: SkillNodeDisplay | null) => {
+    if (!isHoveringPanel) {
+      setHoveredNode(node);
+    }
+  }, [isHoveringPanel]);
 
   const renderConnections = () => {
     const currentTree = skillTrees[selectedTree];
@@ -380,7 +381,7 @@ export default function Skills() {
               <SkillNode
                 key={node.id}
                 node={node}
-                onHover={setHoveredNode}
+                onHover={handleHoverNode}
                 onLearn={handleLearnSkill}
                 treeColor={currentTree?.color || '#6b7280'}
               />
@@ -397,6 +398,7 @@ export default function Skills() {
           setSelectedNode(null);
         }}
         onLearn={handleLearnSkill}
+        onPanelHover={setIsHoveringPanel}
       />
 
       {/* Debug Panel */}
