@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useDiceActionSystem } from '../lib/diceActionSystem';
 import { globalHistoryManager } from '../lib/historySystem';
+import { debugReset } from '../lib/historyDebug';
 import type { ActionIntent, ActionEffect } from '../lib/actionEffects';
 import * as actionEffects from '../lib/actionEffects';
 
@@ -19,7 +20,7 @@ describe('useDiceActionSystem', () => {
     addBattleEvent = vi.fn();
     vi.spyOn(actionEffects, 'calculateActionEffect').mockReturnValue({ roll: 4, effect: mockEffect });
     vi.spyOn(globalHistoryManager, 'addPlayerAction').mockImplementation(() => {});
-    globalHistoryManager.debugReset();
+    debugReset(globalHistoryManager);
   });
 
   afterEach(() => {
