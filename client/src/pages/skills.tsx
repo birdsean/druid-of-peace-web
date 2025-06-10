@@ -8,6 +8,7 @@ import {
   SkillTree,
 } from "@/lib/skillTreeLoader";
 import { globalHistoryManager } from "@/lib/historySystem";
+import { debugReset, debugUnlockSkill } from "@/lib/historyDebug";
 import {
   ArrowLeft,
   TreePine,
@@ -484,14 +485,14 @@ export default function Skills() {
             </Button>
             <Button
               onClick={() =>
-                globalHistoryManager.debugUnlockSkill("wind_whisperer")
+                debugUnlockSkill(globalHistoryManager, "wind_whisperer")
               }
               className="w-full h-8 text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-mono"
             >
               UNLOCK WIND WHISPERER
             </Button>
             <Button
-              onClick={() => globalHistoryManager.debugReset()}
+              onClick={() => debugReset(globalHistoryManager)}
               className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-mono"
             >
               RESET HISTORY

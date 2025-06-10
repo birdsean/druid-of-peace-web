@@ -37,7 +37,7 @@ export interface PCHistoryStore {
   pendingSkills: string[];
 }
 
-class HistoryManager {
+export class HistoryManager {
   private history: PCHistoryStore = {
     encounters: [],
     totalEncounters: 0,
@@ -207,30 +207,6 @@ class HistoryManager {
     this.listeners.forEach(listener => listener(this.history));
   }
 
-  // Debug methods
-  debugReset(): void {
-    this.history = {
-      encounters: [],
-      totalEncounters: 0,
-      successfulEncounters: 0,
-      failedEncounters: 0,
-      fleesCount: 0,
-      skillsUnlocked: [],
-      skillsClaimed: [],
-      pendingSkills: []
-    };
-    this.currentEncounter = null;
-    this.encounterStartTime = 0;
-    this.notifyListeners();
-  }
-
-  debugUnlockSkill(skillId: string): void {
-    if (!this.history.skillsUnlocked.includes(skillId)) {
-      this.history.skillsUnlocked.push(skillId);
-      this.history.pendingSkills.push(skillId);
-      this.notifyListeners();
-    }
-  }
 }
 
 // Global history manager instance

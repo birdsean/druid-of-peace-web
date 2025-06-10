@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { globalHistoryManager } from '../lib/historySystem';
+import { debugReset, debugUnlockSkill } from '../lib/historyDebug';
 import type { PlayerAction } from '../lib/historySystem';
 
 describe('History System', () => {
   beforeEach(() => {
     // Reset history before each test
-    globalHistoryManager.debugReset();
+    debugReset(globalHistoryManager);
   });
 
   describe('Encounter Management', () => {
@@ -124,7 +125,7 @@ describe('History System', () => {
     });
 
     it('should handle skill claiming', () => {
-      globalHistoryManager.debugUnlockSkill('test-skill-id');
+      debugUnlockSkill(globalHistoryManager, 'test-skill-id');
       
       const history = globalHistoryManager.getHistory();
       expect(globalHistoryManager.isSkillPending('test-skill-id')).toBe(true);
@@ -136,7 +137,7 @@ describe('History System', () => {
     });
 
     it('should not claim already claimed skills', () => {
-      globalHistoryManager.debugUnlockSkill('test-skill-id');
+      debugUnlockSkill(globalHistoryManager, 'test-skill-id');
       globalHistoryManager.claimSkill('test-skill-id');
       
       const secondClaim = globalHistoryManager.claimSkill('test-skill-id');
