@@ -23,7 +23,6 @@ export function useDiceActionSystem(addBattleEvent: (event: any) => void) {
 
   const executeAction = useCallback(
     async (intent: ActionIntent): Promise<any> => {
-      console.log("Executing action with intent:", intent);
       return new Promise((resolve) => {
         // Set rolling state and create intent event
         setDiceActionState((prev) => ({

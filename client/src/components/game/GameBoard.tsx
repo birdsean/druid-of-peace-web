@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGameState } from "@/hooks/useGameState";
+import { useEnhancedGameState } from "@/lib/enhancedGameState";
 import NPCCharacter, { NPCStatsDisplay } from "./NPCCharacter";
 import DruidCharacter from "./DruidCharacter";
 import TurnIndicator from "./TurnIndicator";
