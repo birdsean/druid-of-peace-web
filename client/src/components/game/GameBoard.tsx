@@ -15,6 +15,8 @@ import {
 } from "@/lib/characterLoader";
 import { useInventory } from "@/hooks/useInventory";
 import { getItemById, ItemEffect } from "@/lib/inventory";
+import { globalHistoryManager } from "@/lib/historySystem";
+import { globalWeatherManager } from "@/lib/weatherSystem";
 import { Button } from "@/components/ui/button";
 import {
   Eye,
@@ -35,7 +37,6 @@ import {
   getTimeBasedEnvironmentalEffect,
 } from "@/lib/timeSystem";
 import {
-  loadEnvironmentalEffects,
   getEnvironmentalEffectById,
 } from "@/lib/environmentLoader";
 
