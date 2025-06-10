@@ -245,6 +245,9 @@ export default function Skills() {
   const [skillTrees, setSkillTrees] = useState<Record<string, SkillTree>>({});
   const [visibleNodes, setVisibleNodes] = useState<SkillNodeDisplay[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showRequirementsModal, setShowRequirementsModal] = useState(false);
+  const [newlyUnlockedSkills, setNewlyUnlockedSkills] = useState<string[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -458,6 +461,36 @@ export default function Skills() {
           </div>
         </div>
       </div>
+
+      <div className="text-center mt-4">
+        <Button 
+          onClick={() => setLocation('/map')}
+          className="bg-gray-600 hover:bg-gray-700 text-white border-2 border-gray-400 font-mono"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          RETURN TO MAP
+        </Button>
+      </div>
+
+      {/* Debug Modals */}
+      {showHistoryModal && (
+        <HistoryDebugModal onClose={() => setShowHistoryModal(false)} />
+      )}
+
+      {showRequirementsModal && (
+        <SkillRequirementsModal onClose={() => setShowRequirementsModal(false)} />
+      )}
+
+      {/* Skill Unlock Notification */}
+      {newlyUnlockedSkills.length > 0 && (
+        <SkillUnlockNotification
+          skillIds={newlyUnlockedSkills}
+          onClose={() => setNewlyUnlockedSkills([])}
+          onViewSkills={() => {
+            // Already on skills page, just close notification
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -32,7 +32,7 @@
           "category": "diplomacy",
           "prerequisites": ["calm_demeanor"],
           "connections": ["calm_demeanor"],
-          "position": { "x": 200, "y": 280 },
+          "position": { "x": 200, "y": 300 },
           "icon": "🌬️",
           "type": "passive",
           "effects": {
@@ -69,7 +69,7 @@
           "category": "diplomacy",
           "prerequisites": [],
           "connections": ["calm_demeanor", "master_mediator"],
-          "position": { "x": 300, "y": 200 },
+          "position": { "x": 350, "y": 200 },
           "icon": "✨",
           "type": "passive",
           "effects": {

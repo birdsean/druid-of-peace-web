@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, Star } from 'lucide-react';
+import { X, Star, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { globalSkillManager, SkillNode } from '@/lib/skillTreeLoader';
 
 interface SkillUnlockNotificationProps {
   skillIds: string[];
@@ -14,88 +15,92 @@ export default function SkillUnlockNotification({
   onClose, 
   onViewSkills 
 }: SkillUnlockNotificationProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [skills, setSkills] = useState<SkillNode[]>([]);
 
   useEffect(() => {
-    if (skillIds.length > 0) {
-      setIsVisible(true);
-    }
+    const loadSkillDetails = async () => {
+      const skillTrees = globalSkillManager.getSkillTrees();
+      if (skillTrees) {
+        const foundSkills: SkillNode[] = [];
+        Object.values(skillTrees.skillTrees).forEach(tree => {
+          tree.nodes.forEach(node => {
+            if (skillIds.includes(node.id)) {
+              foundSkills.push(node);
+            }
+          });
+        });
+        setSkills(foundSkills);
+      }
+    };
+    loadSkillDetails();
   }, [skillIds]);
 
-  const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(onClose, 300); // Wait for animation
-  };
-
-  const handleViewSkills = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onViewSkills();
-      onClose();
-    }, 300);
-  };
-
-  if (skillIds.length === 0) return null;
+  if (skills.length === 0) return null;
 
   return (
-    <div className={cn(
-      "fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300",
-      isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-    )}>
-      <div className={cn(
-        "bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 border-4 border-amber-400 rounded-lg p-6 max-w-md mx-4 shadow-2xl transform transition-all duration-300",
-        isVisible ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
-      )}>
+    <div className="fixed top-4 right-4 z-50 max-w-sm">
+      <div className="bg-gradient-to-br from-amber-600 to-yellow-500 border-4 border-yellow-300 rounded-lg p-4 shadow-2xl animate-bounce">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Star className="w-6 h-6 text-amber-600" />
-            <h2 className="text-xl font-bold text-amber-800">
-              New Skill{skillIds.length > 1 ? 's' : ''} Unlocked!
-            </h2>
+            <Star className="w-6 h-6 text-white animate-pulse" />
+            <h2 className="text-lg font-bold text-white font-mono">SKILL UNLOCKED!</h2>
           </div>
           <Button
-            onClick={handleClose}
-            className="bg-amber-200 hover:bg-amber-300 text-amber-800 p-1 h-8 w-8"
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-white p-1 h-6 w-6 text-xs"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </Button>
         </div>
 
-        {/* Content */}
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🌟</div>
-          <p className="text-amber-700 mb-4">
-            You've unlocked {skillIds.length} new skill{skillIds.length > 1 ? 's' : ''}! 
-            These can be claimed on the Skills screen.
-          </p>
-          
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-            {skillIds.map((skillId, index) => (
-              <div key={skillId} className="flex items-center justify-center gap-2 text-amber-800">
-                <span className="text-lg">🌬️</span>
-                <span className="font-medium">
-                  {skillId === 'wind_whisperer' ? 'Wind Whisperer' : skillId}
-                </span>
+        {/* Skills List */}
+        <div className="space-y-2 mb-4">
+          {skills.map(skill => (
+            <div key={skill.id} className="bg-white bg-opacity-20 rounded p-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xl">{skill.icon}</span>
+                <span className="font-mono font-bold text-white text-sm">{skill.name}</span>
               </div>
-            ))}
-          </div>
+              <p className="text-xs text-white opacity-90">{skill.description}</p>
+              
+              {/* Effects Preview */}
+              {Object.keys(skill.effects).length > 0 && (
+                <div className="mt-2 text-xs">
+                  <div className="text-yellow-200 font-mono">EFFECTS:</div>
+                  {Object.entries(skill.effects).map(([key, value]) => (
+                    <div key={key} className="text-white opacity-90">
+                      • {key.replace(/_/g, ' ')}: {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : `+${value}`}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3">
+        {/* Action Buttons */}
+        <div className="flex gap-2">
           <Button
-            onClick={handleViewSkills}
-            className="flex-1 bg-amber-600 hover:bg-amber-700 text-white border-2 border-amber-500"
+            onClick={onViewSkills}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-mono"
           >
-            View Skills
+            <Eye className="w-3 h-3 mr-1" />
+            VIEW SKILLS
           </Button>
           <Button
-            onClick={handleClose}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 border-2 border-gray-300"
+            onClick={onClose}
+            className="bg-gray-600 hover:bg-gray-700 text-white text-xs font-mono px-3"
           >
-            Continue
+            DISMISS
           </Button>
+        </div>
+
+        {/* Hint */}
+        <div className="mt-2 text-center">
+          <p className="text-xs text-white opacity-75 font-mono">
+            Visit the Skills page to claim your new abilities!
+          </p>
         </div>
       </div>
     </div>
