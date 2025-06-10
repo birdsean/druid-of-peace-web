@@ -5,8 +5,8 @@
   "color": "green",
   "stats": {
     "hidden": true,
-    "actionPoints": 3,
-    "maxActionPoints": 3
+    "actionPoints": 1,
+    "maxActionPoints": 1
   },
   "abilities": [
     {
@@ -15,20 +15,6 @@
       "description": "Channel calming energy to reduce an opponent's will to fight",
       "icon": "🕊️",
       "cost": 1
-    },
-    {
-      "key": "observe",
-      "name": "Observe",
-      "description": "Study the situation to gain insight",
-      "icon": "👁️",
-      "cost": 1
-    },
-    {
-      "key": "meditate",
-      "name": "Meditate",
-      "description": "Center yourself to restore action points",
-      "icon": "🧘",
-      "cost": 0
     }
   ]
 }
