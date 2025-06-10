@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, Calendar, User, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { globalHistoryManager, PCHistoryStore, EncounterHistory, PlayerAction } from '@/lib/historySystem';
@@ -23,21 +24,17 @@ export default function HistoryDebugModal({ onClose }: HistoryDebugModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border-2 border-amber-400 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="bg-gray-900 border-2 border-amber-400 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+        <DialogHeader className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-amber-400" />
-            <h2 className="text-xl font-bold text-amber-400 font-mono">PC HISTORY</h2>
+            <DialogTitle className="text-xl font-bold text-amber-400 font-mono">PC HISTORY</DialogTitle>
           </div>
-          <Button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white p-1 h-8 w-8"
-          >
+          <Button onClick={onClose} className="bg-red-600 hover:bg-red-700 text-white p-1 h-8 w-8">
             <X className="w-4 h-4" />
           </Button>
-        </div>
+        </DialogHeader>
 
         <div className="p-4 overflow-auto max-h-[calc(80vh-100px)]">
           {/* Statistics */}
@@ -157,7 +154,7 @@ export default function HistoryDebugModal({ onClose }: HistoryDebugModalProps) {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

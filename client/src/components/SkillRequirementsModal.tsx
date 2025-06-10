@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, Target, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { globalSkillManager, SkillNode } from '@/lib/skillTreeLoader';
@@ -59,21 +60,17 @@ export default function SkillRequirementsModal({ onClose }: SkillRequirementsMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border-2 border-amber-400 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="bg-gray-900 border-2 border-amber-400 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-hidden">
+        <DialogHeader className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-amber-400" />
-            <h2 className="text-xl font-bold text-amber-400 font-mono">SKILL REQUIREMENTS</h2>
+            <DialogTitle className="text-xl font-bold text-amber-400 font-mono">SKILL REQUIREMENTS</DialogTitle>
           </div>
-          <Button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white p-1 h-8 w-8"
-          >
+          <Button onClick={onClose} className="bg-red-600 hover:bg-red-700 text-white p-1 h-8 w-8">
             <X className="w-4 h-4" />
           </Button>
-        </div>
+        </DialogHeader>
 
         <div className="p-4 overflow-auto max-h-[calc(80vh-100px)]">
           {skills.length === 0 ? (
@@ -153,7 +150,7 @@ export default function SkillRequirementsModal({ onClose }: SkillRequirementsMod
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
