@@ -53,7 +53,6 @@ export default function GameBoard() {
     turnManagerRef,
     setAutoTurnEnabled,
     applyItemEffects,
-    executeAction,
   } = useGameState();
 
   // Load character data
