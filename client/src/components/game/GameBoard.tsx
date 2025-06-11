@@ -34,7 +34,7 @@ export default function GameBoard() {
   const {
     gameState,
     pendingAbility,
-    usePeaceAbility,
+    useAbility,
     endTurn,
     restartGame,
     setTargetingMode,
@@ -54,7 +54,7 @@ export default function GameBoard() {
     setTargetingMode,
     setPendingAbility,
     clearPendingAbility,
-    usePeaceAbility,
+    useAbility,
     triggerGameOver,
   };
 
