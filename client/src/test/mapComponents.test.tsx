@@ -41,6 +41,7 @@ describe('MapDebugPanel', () => {
         weatherState={null}
         turnCounter={1}
         getEventLog={() => []}
+        logWeatherChange={() => {}}
       />
     );
 
@@ -73,6 +74,7 @@ describe('MapDebugPanel', () => {
         weatherState={null}
         turnCounter={1}
         getEventLog={() => []}
+        logWeatherChange={() => {}}
       />
     );
 
