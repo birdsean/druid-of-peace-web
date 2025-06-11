@@ -125,14 +125,20 @@ function setup() {
 
 describe('GameBoard component', () => {
   it('activates targeting mode on Peace Aura click', async () => {
-    const { container } = setup();
+    const { rerender } = setup();
     await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
     const btn = screen.getByTitle(/Peace Aura/i);
     fireEvent.click(btn);
 
-    const { setTargetingMode, setPendingAbility } = (useGameState as any).mock.results[0].value;
-    expect(setTargetingMode).toHaveBeenCalledWith(true);
-    expect(setPendingAbility).toHaveBeenCalledWith('peaceAura');
+    const state = (useGameState as any).mock.results[0].value;
+    expect(state.setTargetingMode).toHaveBeenCalledWith(true);
+    expect(state.setPendingAbility).toHaveBeenCalledWith('peaceAura');
+
+    // simulate UI state change to show banner
+    state.gameState.targetingMode = true;
+    rerender(<GameBoard />);
+
+    expect(screen.getByText(/TARGETING MODE/i)).toBeInTheDocument();
   });
 
   it('executes Peace Aura on selected NPC', async () => {
@@ -186,6 +192,22 @@ describe('GameBoard component', () => {
 
     expect(ctx.useItem).toHaveBeenCalledWith('smoke_bomb');
     expect(state.applyItemEffects).toHaveBeenCalledWith(smokeBomb.effects, smokeBomb.name, 'npc1');
+    expect(state.setTargetingMode).toHaveBeenCalledWith(false);
+  });
+
+  it('cancels targeting mode via button', async () => {
+    const { rerender } = setup();
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
+    const btn = screen.getByTitle(/Peace Aura/i);
+    fireEvent.click(btn);
+
+    const state = (useGameState as any).mock.results[0].value;
+    state.gameState.targetingMode = true;
+    rerender(<GameBoard />);
+
+    fireEvent.click(screen.getByText('Cancel'));
+
+    expect(state.clearPendingAbility).toHaveBeenCalled();
     expect(state.setTargetingMode).toHaveBeenCalledWith(false);
   });
 
