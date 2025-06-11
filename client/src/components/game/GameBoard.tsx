@@ -291,6 +291,8 @@ export default function GameBoard() {
           icon={gameState.npc1.icon}
           color={gameState.npc1.color}
           immobilized={gameState.npc1.immobilized}
+          isAnimating={Boolean(gameState.npc1.animation)}
+          animationType={gameState.npc1.animation || undefined}
         />
       </div>
 
@@ -305,6 +307,8 @@ export default function GameBoard() {
           icon={gameState.npc2.icon}
           color={gameState.npc2.color}
           immobilized={gameState.npc2.immobilized}
+          isAnimating={Boolean(gameState.npc2.animation)}
+          animationType={gameState.npc2.animation || undefined}
         />
       </div>
 

@@ -5,6 +5,7 @@
       "name": "Attack",
       "description": "Launch a direct assault on the opponent",
       "icon": "⚔️",
+      "animation": "attack",
       "effects": {
         "damage": { "min": 10, "max": 25 },
         "armorDamage": { "min": 5, "max": 15 },
@@ -20,6 +21,7 @@
       "name": "Defend",
       "description": "Take a defensive stance to protect against attacks",
       "icon": "🛡️",
+      "animation": "defend",
       "effects": {
         "armorRestore": { "min": 8, "max": 20 },
         "willIncrease": { "min": 5, "max": 10 },
@@ -35,6 +37,7 @@
       "name": "Investigate",
       "description": "Search the area for signs of the hidden druid",
       "icon": "🔍",
+      "animation": "hit",
       "effects": {
         "awarenessIncrease": { "min": 15, "max": 30 },
         "willDecrease": { "min": 2, "max": 5 }

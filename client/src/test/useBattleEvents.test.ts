@@ -26,6 +26,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
     },
     npc2: {
       id: 'npc2',
@@ -45,6 +46,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
     },
     druid: {
       id: 'druid',

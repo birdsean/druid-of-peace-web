@@ -33,6 +33,7 @@ function createBaseState(): GameState {
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
     },
     npc2: {
       id: 'npc2',
@@ -52,6 +53,7 @@ function createBaseState(): GameState {
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
     },
     druid: {
       id: 'druid',

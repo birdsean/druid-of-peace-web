@@ -22,7 +22,7 @@ interface NPCCharacterProps {
   color: string;
   immobilized?: number;
   isAnimating?: boolean;
-  animationType?: "attack" | "hit" | "heal";
+  animationType?: string;
 }
 
 export default function NPCCharacter({

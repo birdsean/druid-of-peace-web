@@ -3,6 +3,7 @@ export interface NPCActionConfig {
   name: string;
   description: string;
   icon: string;
+  animation?: string;
   effects: {
     damage?: { min: number; max: number };
     armorDamage?: { min: number; max: number };
