@@ -20,6 +20,7 @@ interface StatusBarProps {
   onEndTurn: () => void;
   onFlee: () => void;
   onOpenInventory: () => void;
+  onCancelAction: () => void;
 }
 
 export default function StatusBar({
@@ -32,6 +33,7 @@ export default function StatusBar({
   onEndTurn,
   onFlee,
   onOpenInventory,
+  onCancelAction,
 }: StatusBarProps) {
   const getCombatLogIcon = (): ReactElement => {
     switch (combatLogMode) {
@@ -55,6 +57,15 @@ export default function StatusBar({
         </div>
       </div>
       <div className="flex items-center space-x-2 border-l border-orange-300 pl-4">
+        {targetingMode && (
+          <Button
+            onClick={onCancelAction}
+            className="w-12 h-12 bg-gray-600 hover:bg-gray-700 border-2 border-gray-400 text-white"
+            title="Cancel pending action"
+          >
+            ❌
+          </Button>
+        )}
         <Button
           onClick={onToggleCombatLog}
           className="w-12 h-12 bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 text-white"

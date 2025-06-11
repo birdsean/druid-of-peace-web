@@ -199,6 +199,12 @@ export default function GameBoard() {
     }
   };
 
+  const cancelPendingAction = () => {
+    clearPendingAbility();
+    setPendingItem(null);
+    setTargetingMode(false);
+  };
+
   const canUseActions =
     gameState.currentTurn === "druid" && !gameState.targetingMode;
 
@@ -286,6 +292,7 @@ export default function GameBoard() {
         onEndTurn={handleEndTurn}
         onFlee={handleFleeAbility}
         onOpenInventory={() => setShowInventoryModal(true)}
+        onCancelAction={cancelPendingAction}
       />
 
       {/* Debug Panel - Center of Battle Area */}

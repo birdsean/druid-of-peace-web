@@ -13,6 +13,7 @@ interface PlayerActionPanelProps {
   onToggleCombatLog: () => void;
   combatLogMode: 'hidden' | 'small' | 'large';
   isPlayerTurn: boolean;
+  onCancelAction: () => void;
 }
 
 export default function PlayerActionPanel({
@@ -24,7 +25,8 @@ export default function PlayerActionPanel({
   onEndTurn,
   onToggleCombatLog,
   combatLogMode,
-  isPlayerTurn
+  isPlayerTurn,
+  onCancelAction,
 }: PlayerActionPanelProps) {
   const hasActionPoints = actionPoints > 0;
   const canUseActions = isPlayerTurn && !targetingMode;
@@ -109,8 +111,15 @@ export default function PlayerActionPanel({
 
         {/* Targeting mode indicator */}
         {targetingMode && (
-          <div className="mt-2 text-center text-yellow-200 font-mono text-sm animate-pulse">
-            Select target for Peace Aura
+          <div className="mt-2 flex items-center justify-center text-yellow-200 font-mono text-sm">
+            <span className="animate-pulse mr-2">Select target for Peace Aura</span>
+            <Button
+              onClick={onCancelAction}
+              className="w-6 h-6 p-0 bg-gray-600 hover:bg-gray-700 border-2 border-gray-400 text-white"
+              title="Cancel pending action"
+            >
+              ❌
+            </Button>
           </div>
         )}
       </div>
