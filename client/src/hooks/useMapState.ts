@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { loadLocationData } from "../lib/locationLoader";
+import { loadMapActions, type MapAction } from "@/lib/mapActionLoader";
 import { globalTimeManager, type TimePhase, applyPhaseColorPalette } from "@/lib/timeSystem";
 import { globalMapEventManager } from "@/lib/MapEventManager";
 import { createMapEvent } from "@/lib/events";
@@ -24,6 +25,7 @@ interface MapState {
   currentTimePhase: TimePhase;
   actionPoints: number;
   maxActionPoints: number;
+  mapActions: MapAction[];
 }
 
 const defaultZones: Zone[] = [];
@@ -37,6 +39,7 @@ const initialMapState: MapState = {
   currentTimePhase: 'day1' as TimePhase,
   actionPoints: 1,
   maxActionPoints: 1
+  mapActions: []
 };
 
 function rollDice(min = 1, max = 6): number {
@@ -69,6 +72,22 @@ export function useMapState() {
       }
     };
     loadZones();
+  }, []);
+
+  // Load map actions on initialization
+  useEffect(() => {
+    const loadActions = async () => {
+      try {
+        const actions = await loadMapActions();
+        setMapState(prev => ({
+          ...prev,
+          mapActions: actions
+        }));
+      } catch (error) {
+        console.error('Failed to load map actions:', error);
+      }
+    };
+    loadActions();
   }, []);
 
   // Initialize time system and sync with map state
@@ -268,6 +287,7 @@ export function useMapState() {
     currentTimePhase: mapState.currentTimePhase,
     actionPoints: mapState.actionPoints,
     maxActionPoints: mapState.maxActionPoints,
+    mapActions: mapState.mapActions,
     setCurrentZone,
     spendActionPoint,
     restoreActionPoints,

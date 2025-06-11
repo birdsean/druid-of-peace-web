@@ -24,6 +24,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
       immobilized: 0,
     },
     npc2: {
@@ -44,6 +45,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      animation: null,
       immobilized: 0,
     },
     druid: {
@@ -127,6 +129,16 @@ describe('TurnManager', () => {
   it('executeTurn resolves NPC turns using timers', async () => {
     vi.useFakeTimers();
 
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        npcActions: {
+          attack: { animation: 'attack' },
+          defend: { animation: 'defend' },
+        },
+      }),
+    } as any);
+
     const setGameState = vi.fn();
     const addLogEntry = vi.fn();
     const manager = new TurnManager(
@@ -156,6 +168,9 @@ describe('TurnManager', () => {
     expect(addLogEntry).toHaveBeenCalledTimes(1);
     expect(addLogEntry.mock.calls[0][0]).toContain('Gareth attacks');
 
+    expect(stateAfterAction.npc1.animation).toBe('attack');
+    expect(stateAfterAction.npc2.animation).toBe('hit');
+
     expect(stateAfterAction.npc2.stats.armor).toBe(0);
     expect(stateAfterAction.npc2.stats.health).toBe(5);
     expect(stateAfterAction.npc2.stats.willToFight).toBeCloseTo(7.5);
@@ -166,6 +181,8 @@ describe('TurnManager', () => {
 
     expect(finalState.currentTurn).toBe('npc2');
     expect(finalState.turnCounter).toBe(1);
+    expect(finalState.npc1.animation).toBeNull();
+    expect(finalState.npc2.animation).toBeNull();
 
     vi.useRealTimers();
     vi.restoreAllMocks();
