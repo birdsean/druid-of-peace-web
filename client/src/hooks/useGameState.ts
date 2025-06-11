@@ -86,6 +86,10 @@ const initialGameState: GameState = {
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
+  // Holds the key of an ability that has been activated but still
+  // needs additional input (like selecting a target). When this is set
+  // the GameBoard will route clicks to that ability's `execute` step.
+  const [pendingAbility, setPendingAbility] = useState<string | null>(null);
   const [combatLogMode, setCombatLogMode] = useState<"hidden" | "small" | "large">(
     "hidden",
   );
@@ -194,6 +198,12 @@ export function useGameState() {
     });
   }, []);
 
+  const setPendingAbilityState = useCallback((ability: string | null) => {
+    setPendingAbility(ability);
+  }, []);
+
+  const clearPendingAbility = useCallback(() => setPendingAbility(null), []);
+
   const triggerGameOver = useCallback(
     (title: string, message: string, icon: string) => {
       setGameState((prev) => ({
@@ -208,10 +218,13 @@ export function useGameState() {
   return {
     gameState,
     diceState,
+    pendingAbility,
     usePeaceAbility,
     endTurn,
     restartGame,
     setTargetingMode,
+    setPendingAbility: setPendingAbilityState,
+    clearPendingAbility,
     combatLogMode,
     toggleCombatLog,
     completeEncounter,
