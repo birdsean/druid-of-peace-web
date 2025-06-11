@@ -43,7 +43,7 @@ export default function PlayerActionPanel({
   const CombatLogIcon = getCombatLogIcon();
 
   return (
-    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
+    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl z-30">
       <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-lg p-4 shadow-lg border-2 border-orange-400">
         <div className="flex items-center justify-between">
           {/* Left side - Druid Character and Action Points */}
