@@ -14,6 +14,7 @@ interface MapDebugPanelProps {
   weatherState: any;
   turnCounter: number;
   getEventLog: () => string[];
+  logWeatherChange: (turn: number, details: string) => void;
 }
 
 export default function MapDebugPanel({
@@ -26,7 +27,8 @@ export default function MapDebugPanel({
   currentTimePhase,
   weatherState,
   turnCounter,
-  getEventLog
+  getEventLog,
+  logWeatherChange
 }: MapDebugPanelProps) {
   return (
     <div className="absolute top-4 left-4 z-40">
@@ -113,31 +115,46 @@ export default function MapDebugPanel({
               <div className="space-y-2">
                 <div className="flex gap-1 flex-wrap">
                   <Button
-                    onClick={() => globalWeatherManager.debugTriggerWeather('gentle_rain', turnCounter)}
+                    onClick={() => {
+                      globalWeatherManager.debugTriggerWeather('gentle_rain', turnCounter);
+                      logWeatherChange(turnCounter, 'Weather: Gentle Rain');
+                    }}
                     className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-700"
                   >
                     🌧️ Rain
                   </Button>
                   <Button
-                    onClick={() => globalWeatherManager.debugTriggerWeather('morning_mist', turnCounter)}
+                    onClick={() => {
+                      globalWeatherManager.debugTriggerWeather('morning_mist', turnCounter);
+                      logWeatherChange(turnCounter, 'Weather: Morning Mist');
+                    }}
                     className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700"
                   >
                     🌫️ Mist
                   </Button>
                   <Button
-                    onClick={() => globalWeatherManager.debugTriggerWeather('forest_wind', turnCounter)}
+                    onClick={() => {
+                      globalWeatherManager.debugTriggerWeather('forest_wind', turnCounter);
+                      logWeatherChange(turnCounter, 'Weather: Forest Wind');
+                    }}
                     className="text-xs px-2 py-1 bg-green-600 hover:bg-green-700"
                   >
                     💨 Wind
                   </Button>
                   <Button
-                    onClick={() => globalWeatherManager.debugTriggerWeather('sunbeam_clearing', turnCounter)}
+                    onClick={() => {
+                      globalWeatherManager.debugTriggerWeather('sunbeam_clearing', turnCounter);
+                      logWeatherChange(turnCounter, 'Weather: Sunbeam Clearing');
+                    }}
                     className="text-xs px-2 py-1 bg-yellow-600 hover:bg-yellow-700"
                   >
                     ☀️ Sun
                   </Button>
                   <Button
-                    onClick={() => globalWeatherManager.debugClearWeather(turnCounter)}
+                    onClick={() => {
+                      globalWeatherManager.debugClearWeather(turnCounter);
+                      logWeatherChange(turnCounter, 'Weather cleared');
+                    }}
                     className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700"
                   >
                     Clear

@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { loadLocationData } from "../lib/locationLoader";
 import { globalTimeManager, type TimePhase, applyPhaseColorPalette } from "@/lib/timeSystem";
+import { globalMapEventManager } from "@/lib/MapEventManager";
+import { createMapEvent } from "@/lib/events";
 
 export interface Zone {
   id: string;
@@ -109,7 +111,12 @@ export function useMapState() {
     const zone = mapState.zones.find(z => z.id === zoneId);
     const zoneName = zone?.name || zoneId;
     const heatChange = success ? -15 : 10;
-    
+    const event = createMapEvent(mapState.turnCounter, 'encounter_complete', {
+      zoneId,
+      zoneName,
+      success
+    });
+    globalMapEventManager.addEvent(event);
     
     setMapState(prev => ({
       ...prev,
@@ -191,6 +198,11 @@ export function useMapState() {
         // Apply encounter bonus heat if a new encounter was generated
         if (shouldRollEncounter && hasNewEncounter) {
           heatChange += rollDice(2, 4);
+          const event = createMapEvent(prev.turnCounter + 1, 'encounter_generated', {
+            zoneId: zone.id,
+            zoneName: zone.name
+          });
+          globalMapEventManager.addEvent(event);
         }
 
         const newHeat = Math.max(0, Math.min(100, zone.heat + heatChange));

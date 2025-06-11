@@ -18,7 +18,14 @@ export interface MapEvent {
   id: string;
   timestamp: number;
   turn: number;
-  type: 'turn_advance' | 'encounter_start' | 'encounter_complete' | 'zone_change' | 'travel';
+  type:
+    | 'turn_advance'
+    | 'encounter_start'
+    | 'encounter_complete'
+    | 'encounter_generated'
+    | 'zone_change'
+    | 'travel'
+    | 'weather_change';
   zoneId?: string;
   zoneName?: string;
   success?: boolean;
@@ -82,10 +89,14 @@ export function formatMapEventForLog(event: MapEvent): string {
       return `Encounter started in ${event.zoneName}`;
     case 'encounter_complete':
       return `Encounter ${event.success ? 'successful' : 'failed'} in ${event.zoneName}`;
+    case 'encounter_generated':
+      return `Encounter spawned in ${event.zoneName}`;
     case 'zone_change':
       return `Moved to ${event.zoneName}`;
     case 'travel':
       return event.details || 'Travel action';
+    case 'weather_change':
+      return event.details || 'Weather changed';
     default:
       return event.details || 'Unknown event';
   }
