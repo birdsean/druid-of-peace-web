@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from '@/components/ui/tooltip';
-import { useInventory } from '@/hooks/useInventory';
+import { useInventoryContext } from '@/hooks/InventoryProvider';
 import { loadItems } from '@/lib/inventory';
 import { IS_DEBUG } from '@/lib/debug';
 import { Plus, X } from 'lucide-react';
@@ -20,7 +20,7 @@ interface InventoryScreenProps {
 }
 
 export default function InventoryScreen({ isModal = false, onClose, onUseItem }: InventoryScreenProps) {
-  const { inventory, addItem } = useInventory();
+  const { inventory, addItem } = useInventoryContext();
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [, setLocation] = useLocation();
   const allItems = loadItems();

@@ -12,6 +12,7 @@ export interface Item {
   description: string;
   icon: string;
   type: "consumable";
+  targetType: "self" | "npc" | "all";
   effects: ItemEffect;
 }
 
@@ -34,6 +35,7 @@ export function loadItems(): Item[] {
         "description": "Restores health to the druid, helping maintain stealth",
         "icon": "🧪",
         "type": "consumable",
+        "targetType": "self",
         "effects": {
           "heal": 3,
           "reduceAwareness": 1
@@ -45,6 +47,7 @@ export function loadItems(): Item[] {
         "description": "Creates a distraction, significantly reducing NPC awareness",
         "icon": "💨",
         "type": "consumable",
+        "targetType": "npc",
         "effects": {
           "reduceAwareness": 5
         }
@@ -55,6 +58,7 @@ export function loadItems(): Item[] {
         "description": "Pacifies aggressive NPCs, reducing their will to fight",
         "icon": "🌿",
         "type": "consumable",
+        "targetType": "all",
         "effects": {
           "reduceWill": 3,
           "targetAll": true
@@ -66,6 +70,7 @@ export function loadItems(): Item[] {
         "description": "Restores action points for the druid",
         "icon": "💎",
         "type": "consumable",
+        "targetType": "self",
         "effects": {
           "restoreAP": 1
         }
@@ -76,6 +81,7 @@ export function loadItems(): Item[] {
         "description": "Throws NPCs off guard, reducing their awareness briefly",
         "icon": "🪨",
         "type": "consumable",
+        "targetType": "all",
         "effects": {
           "reduceAwareness": 2,
           "targetAll": true
