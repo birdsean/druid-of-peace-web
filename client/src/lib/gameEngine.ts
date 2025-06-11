@@ -1,6 +1,15 @@
 import type { GameState, PeaceEffect } from './gameLogic';
 import type { ItemEffect } from './inventory';
 
+function cloneState(state: GameState): GameState {
+  return {
+    ...state,
+    npc1: { ...state.npc1, stats: { ...state.npc1.stats } },
+    npc2: { ...state.npc2, stats: { ...state.npc2.stats } },
+    druid: { ...state.druid, stats: { ...state.druid.stats } },
+  };
+}
+
 /**
  * Apply the results of a Peace Aura action to the game state.
  * This function is pure and does not mutate the original state.
@@ -10,12 +19,7 @@ export function resolvePeaceAuraEffects(
   targetId: 'npc1' | 'npc2',
   effect: PeaceEffect,
 ): GameState {
-  const newState: GameState = {
-    ...state,
-    npc1: { ...state.npc1, stats: { ...state.npc1.stats } },
-    npc2: { ...state.npc2, stats: { ...state.npc2.stats } },
-    druid: { ...state.druid, stats: { ...state.druid.stats } },
-  };
+  const newState = cloneState(state);
 
   const target = newState[targetId];
   target.stats.willToFight = Math.max(0, target.stats.willToFight - effect.willReduction);
@@ -36,6 +40,27 @@ export function resolvePeaceAuraEffects(
 }
 
 /**
+ * Apply Vine Snare effects by marking the target as snared for one turn.
+ */
+export function resolveVineSnareEffects(
+  state: GameState,
+  targetId: 'npc1' | 'npc2',
+): GameState {
+  const newState = cloneState(state);
+
+  const target = newState[targetId];
+  target.immobilized = (target.immobilized || 0) + 1;
+
+  newState.druid.stats.actionPoints = Math.max(
+    0,
+    newState.druid.stats.actionPoints - 1,
+  );
+  newState.targetingMode = false;
+
+  return newState;
+}
+
+/**
  * Apply item effects to the game state. Returns the updated state and a
  * description of the effects applied for logging purposes.
  */
@@ -44,12 +69,7 @@ export function applyItemEffectsToState(
   itemEffects: ItemEffect,
   targetId?: 'npc1' | 'npc2',
 ): { state: GameState; descriptions: string[] } {
-  const newState: GameState = {
-    ...state,
-    npc1: { ...state.npc1, stats: { ...state.npc1.stats } },
-    npc2: { ...state.npc2, stats: { ...state.npc2.stats } },
-    druid: { ...state.druid, stats: { ...state.druid.stats } },
-  };
+  const newState = cloneState(state);
   const descriptions: string[] = [];
 
   if (itemEffects.restoreAP) {

@@ -4,6 +4,7 @@ import PlayerUtilsPanel from '@/components/game/PlayerUtilsPanel';
 
 const abilities = [
   { key: 'peaceAura', name: 'Peace Aura', description: 'Calm foes', icon: '🕊️', cost: 1 },
+  { key: 'vineSnare', name: 'Vine Snare', description: 'Snare foe', icon: '🌱', cost: 1 },
   { key: 'flee', name: 'Flee', description: 'Run away', icon: '🏃', cost: 2 },
 ];
 

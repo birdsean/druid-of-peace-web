@@ -11,11 +11,12 @@ import ForestZone from "@/components/map/ForestZone";
 import TurnCounter from "@/components/map/TurnCounter";
 import MapDebugPanel from "@/components/map/MapDebugPanel";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
-import { globalTimeManager, type TimePhase, getTimeBasedGradient } from "@/lib/timeSystem";
+import { globalTimeManager, type TimePhase, getTimeBasedGradient, getTimeBasedEnvironmentalEffect } from "@/lib/timeSystem";
 import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
 import PlayerActionPanel from "@/components/game/PlayerActionPanel";
 import type { PCAbility } from "@/lib/characterLoader";
+import { globalHistoryManager } from "@/lib/historySystem";
 
 
 export default function Map() {
@@ -109,6 +110,21 @@ export default function Map() {
     if (zone.hasEncounter) {
       const weatherEffect = globalWeatherManager.getActiveEnvironmentalEffect();
       startEncounter(zoneId, weatherEffect);
+
+      const timeEffect = getTimeBasedEnvironmentalEffect(currentTimePhase);
+      const envEffects = [timeEffect.id];
+      if (zone.environmentEffect) {
+        envEffects.push(zone.environmentEffect);
+      }
+      globalHistoryManager.startEncounter(
+        zoneId,
+        zone.name,
+        turnCounter,
+        envEffects,
+        weatherEffect || undefined,
+        currentTimePhase
+      );
+
       logEncounterStart(turnCounter, zoneId, zone.name);
       // Store the encounter zone in global state
       setGlobalMapState({
@@ -118,7 +134,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter, currentTimePhase]);
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
@@ -256,19 +272,6 @@ export default function Map() {
             environmentEffect={zone.environmentEffect ? environmentalEffects[zone.environmentEffect] : undefined}
           />
         ))}
-      </div>
-
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-30 bg-black bg-opacity-80 rounded-lg p-4 text-white font-mono text-sm">
-        <h3 className="font-bold mb-2">Heat Levels:</h3>
-        <div className="space-y-1">
-          <div className="text-blue-300">0-10: None</div>
-          <div className="text-cyan-300">11-30: Cold</div>
-          <div className="text-green-300">31-50: Cool</div>
-          <div className="text-yellow-300">51-70: Warm</div>
-          <div className="text-orange-300">71-90: Hot</div>
-          <div className="text-red-300">91-100: Critical</div>
-        </div>
       </div>
 
       {/* Bottom Panel - Right Side */}

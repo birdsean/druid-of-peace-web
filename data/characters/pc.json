@@ -15,6 +15,13 @@
       "description": "Channel calming energy to reduce an opponent's will to fight",
       "icon": "🕊️",
       "cost": 1
+    },
+    {
+      "key": "vineSnare",
+      "name": "Vine Snare",
+      "description": "Entangle a foe with vines, causing them to miss their next turn",
+      "icon": "🌱",
+      "cost": 1
     }
   ]
 }

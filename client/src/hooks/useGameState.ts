@@ -30,6 +30,7 @@ const defaultNPC: NPC = {
   position: "left",
   stats: defaultStats,
   actions: [],
+  immobilized: 0,
 };
 
 const defaultDruidStats = {
@@ -50,6 +51,7 @@ const initialGameState: GameState = {
     position: "left",
     stats: defaultStats,
     actions: ["slash", "guard"],
+    immobilized: 0,
   },
   npc2: {
     id: "npc2",
@@ -69,6 +71,7 @@ const initialGameState: GameState = {
       maxAwareness: 100,
     },
     actions: ["arrow_shot", "dodge"],
+    immobilized: 0,
   },
   druid: {
     id: "druid",
@@ -153,8 +156,13 @@ export function useGameState() {
   );
 
   const { battleEvents, addBattleEvent } = useBattleEvents(setGameState);
-  const { diceState, usePeaceAbility, endTurn, turnManagerRef, setAutoTurnEnabled } =
-    useDiceRolling(gameState, setGameState, addLogEntry, checkGameEnd);
+  const {
+    diceState,
+    useAbility,
+    endTurn,
+    turnManagerRef,
+    setAutoTurnEnabled,
+  } = useDiceRolling(gameState, setGameState, addLogEntry, checkGameEnd);
   const { applyItemEffects } = useCharacterData(
     gameState,
     setGameState,
@@ -219,7 +227,7 @@ export function useGameState() {
     gameState,
     diceState,
     pendingAbility,
-    usePeaceAbility,
+    useAbility,
     endTurn,
     restartGame,
     setTargetingMode,
