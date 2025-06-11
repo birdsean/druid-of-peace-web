@@ -1,12 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useMapState } from "@/hooks/useMapState";
 import { setGlobalMapState } from "@/lib/mapState";
 import NarrativeScreen from "@/components/narrative/NarrativeScreen";
 import { loadNarrativeScript, type NarrativeScript } from "@/lib/narrativeLoader";
 import { IS_DEBUG } from "@/lib/debug";
-import { LogOut, Package, TreePine } from "lucide-react";
 import ForestZone from "@/components/map/ForestZone";
 import TurnCounter from "@/components/map/TurnCounter";
 import MapDebugPanel from "@/components/map/MapDebugPanel";
@@ -15,7 +13,6 @@ import { globalTimeManager, type TimePhase, getTimeBasedGradient, getTimeBasedEn
 import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
 import PlayerActionPanel from "@/components/game/PlayerActionPanel";
-import type { PCAbility } from "@/lib/characterLoader";
 import { globalHistoryManager } from "@/lib/historySystem";
 
 
@@ -31,10 +28,6 @@ export default function Map() {
   const [actionPoints, setActionPoints] = useState(3);
   const maxActionPoints = 3;
   const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
-  const placeholderAbilities: PCAbility[] = [
-    { key: 'camp', name: 'Make Camp', description: 'Rest and recover', icon: '⛺', cost: 1 },
-    { key: 'pray', name: 'Pray', description: 'Seek guidance', icon: '🙏', cost: 1 },
-  ];
   const {
     zones,
     currentZone,
@@ -219,7 +212,8 @@ export default function Map() {
 
   const handleEndTurn = useCallback(() => {
     setActionPoints(maxActionPoints);
-  }, []);
+    handleNextTurn();
+  }, [handleNextTurn]);
 
   const handleToggleCombatLog = useCallback(() => {
     setCombatLogMode(prev => prev === 'hidden' ? 'small' : prev === 'small' ? 'large' : 'hidden');
@@ -274,48 +268,18 @@ export default function Map() {
         ))}
       </div>
 
-      {/* Bottom Panel - Right Side */}
-      <div className="absolute bottom-0 right-0 z-30">
-        <div className="p-4">
-          <div className="flex items-center space-x-2">
-            {/* Skills Button */}
-            <Button
-              onClick={handleOpenSkills}
-              className="w-12 h-12 bg-purple-600 hover:bg-purple-700 border-2 border-purple-400 text-white"
-              title="Open Skills"
-            >
-              <TreePine className="w-5 h-5" />
-            </Button>
-
-            {/* Inventory Button */}
-            <Button
-              onClick={handleOpenInventory}
-              className="w-12 h-12 bg-amber-600 hover:bg-amber-700 border-2 border-amber-400 text-white"
-              title="Open Inventory"
-            >
-              <Package className="w-5 h-5" />
-            </Button>
-
-            {/* Exit Game Button */}
-            <Button
-              onClick={handleExitGame}
-              className="w-12 h-12 bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
-              title="Exit Game"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* Player Action Panel */}
       <PlayerActionPanel
         actionPoints={actionPoints}
         maxActionPoints={maxActionPoints}
         targetingMode={false}
-        abilities={placeholderAbilities}
+        abilities={[]}
         onAbilityUse={handleAbilityUse}
         onEndTurn={handleEndTurn}
+        onOpenInventory={handleOpenInventory}
+        onOpenSkills={handleOpenSkills}
+        onExitGame={handleExitGame}
         onToggleCombatLog={handleToggleCombatLog}
         combatLogMode={combatLogMode}
         isPlayerTurn={true}
