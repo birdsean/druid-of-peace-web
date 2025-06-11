@@ -1,4 +1,10 @@
-import { GameState, rollDice, executeNPCAction, DiceState } from "./gameLogic";
+import {
+  GameState,
+  rollDice,
+  executeNPCAction,
+  DiceState,
+} from "./gameLogic";
+import { getActionById } from "./actionLoader";
 
 export class TurnManager {
   private isExecuting = false;
@@ -63,6 +69,7 @@ export class TurnManager {
 
     const roll = await this.rollDiceWithAnimation();
     const action = executeNPCAction(roll);
+    const actionConfig = await getActionById(action.type);
 
     // Update game state with NPC action
     this.setGameState((prev) => {
@@ -73,6 +80,8 @@ export class TurnManager {
 
       switch (action.type) {
         case "attack":
+          npc.animation = actionConfig?.animation || "attack";
+          target.animation = "hit";
           const damage = Math.floor(Math.random() * 20) + 10;
           let remainingDamage = damage;
           let armorDamage = 0;
@@ -109,6 +118,7 @@ export class TurnManager {
           );
           break;
         case "defend":
+          npc.animation = actionConfig?.animation || "defend";
           npc.stats.health = Math.min(
             npc.stats.maxHealth,
             npc.stats.health + 5,
@@ -131,12 +141,17 @@ export class TurnManager {
     // Wait for action animation
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Check for game end and advance turn
+    // Clear animations and advance turn
     this.setGameState((prev) => {
+      const npc = prev[npcId];
+      const target = prev[npcId === "npc1" ? "npc2" : "npc1"];
+      npc.animation = null;
+      if (target.animation) target.animation = null;
+
       if (!this.checkGameEnd(prev)) {
-        return this.advanceTurn(prev);
+        return this.advanceTurn({ ...prev });
       }
-      return prev;
+      return { ...prev };
     });
   }
 
@@ -218,6 +233,7 @@ export class TurnManager {
             ? "attacks fiercely!"
             : "takes a defensive stance.",
       };
+      const actionConfig = await getActionById(action.type);
 
       // Update game state with forced NPC action
       this.setGameState((prev) => {
@@ -228,11 +244,14 @@ export class TurnManager {
         const { stats } = target;
 
         if (action.type === "attack") {
+          npc.animation = actionConfig?.animation || "attack";
+          target.animation = "hit";
           // Apply damage, accounting for armor
           const damage = Math.max(1, roll - stats.armor);
           stats.health = Math.max(0, stats.health - damage);
           stats.armor = Math.max(0, stats.armor - 1); // Reduce armor
         } else {
+          npc.animation = actionConfig?.animation || "defend";
           // Defend - restore some armor
           npc.stats.armor = Math.min(
             npc.stats.maxArmor,
@@ -250,8 +269,12 @@ export class TurnManager {
       // Check for game end after action
       setTimeout(() => {
         this.setGameState((prev) => {
+          const npc = prev[npcId];
+          const target = prev[npcId === "npc1" ? "npc2" : "npc1"];
+          npc.animation = null;
+          if (target.animation) target.animation = null;
           this.checkGameEnd(prev);
-          return prev;
+          return { ...prev };
         });
       }, 1000);
 

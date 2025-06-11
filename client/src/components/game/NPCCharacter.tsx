@@ -21,7 +21,7 @@ interface NPCCharacterProps {
   icon: string;
   color: string;
   isAnimating?: boolean;
-  animationType?: 'attack' | 'hit' | 'heal';
+  animationType?: string;
 }
 
 export default function NPCCharacter({ 
