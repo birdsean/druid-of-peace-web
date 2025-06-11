@@ -11,7 +11,7 @@ export interface Zone {
   heat: number;
   hasEncounter: boolean;
   position: { x: number; y: number };
-  icon: string;
+  maxActionPoints: 1,
   description: string;
   environmentEffect?: string;
 }
