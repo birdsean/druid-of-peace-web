@@ -194,5 +194,35 @@ describe('GameBoard component', () => {
     await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
     expect(screen.getByText(/RAIN_BOOST/i)).toBeInTheDocument();
   });
+
+  it('cancels pending item targeting', async () => {
+    const { rerender } = setup();
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
+
+    fireEvent.click(screen.getByTitle('Use Item'));
+    const itemButton = await screen.findByTitle(smokeBomb.description);
+    fireEvent.click(itemButton);
+
+    const state = (useGameState as any).mock.results[0].value;
+    const ctx = (useInventoryContext as any).mock.results[0].value;
+
+    state.gameState.targetingMode = true;
+    rerender(<GameBoard />);
+
+    const cancelBtn = screen.getByTitle('Cancel pending action');
+    fireEvent.click(cancelBtn);
+
+    expect(state.clearPendingAbility).toHaveBeenCalled();
+    expect(state.setTargetingMode).toHaveBeenCalledWith(false);
+
+    state.gameState.targetingMode = false;
+    rerender(<GameBoard />);
+    expect(screen.queryByTitle('Cancel pending action')).toBeNull();
+
+    const npcIcon = screen.getAllByText(npcTemplate.icon)[0];
+    fireEvent.click(npcIcon);
+    expect(ctx.useItem).not.toHaveBeenCalled();
+    expect(state.applyItemEffects).not.toHaveBeenCalled();
+  });
 });
 

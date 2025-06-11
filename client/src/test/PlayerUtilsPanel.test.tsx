@@ -21,6 +21,7 @@ const defaultProps = {
   onEndTurn: vi.fn(),
   onFlee: vi.fn(),
   onOpenInventory: vi.fn(),
+  onCancelAction: vi.fn(),
 };
 
 describe('PlayerUtilsPanel', () => {

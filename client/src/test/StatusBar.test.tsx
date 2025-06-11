@@ -13,6 +13,7 @@ describe('StatusBar', () => {
     onEndTurn: vi.fn(),
     onFlee: vi.fn(),
     onOpenInventory: vi.fn(),
+    onCancelAction: vi.fn(),
   };
 
   it('shows status text based on targetingMode', () => {
@@ -30,5 +31,14 @@ describe('StatusBar', () => {
     expect(defaultProps.onToggleCombatLog).toHaveBeenCalled();
     expect(defaultProps.onEndTurn).toHaveBeenCalled();
     expect(defaultProps.onFlee).toHaveBeenCalled();
+  });
+
+  it('renders and triggers cancel button in targeting mode', () => {
+    const props = { ...defaultProps, targetingMode: true };
+    render(<StatusBar {...props} />);
+    const btn = screen.getByTitle('Cancel pending action');
+    expect(btn).toBeInTheDocument();
+    fireEvent.click(btn);
+    expect(defaultProps.onCancelAction).toHaveBeenCalled();
   });
 });
