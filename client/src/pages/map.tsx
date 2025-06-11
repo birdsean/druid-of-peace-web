@@ -41,7 +41,9 @@ export default function Map() {
     logTurnAdvance,
     logEncounterStart,
     logEncounterComplete,
+    logEncounterGenerated,
     logZoneChange,
+    logWeatherChange,
     getEventLog
   } = useMapEvents();
 
@@ -137,18 +139,14 @@ export default function Map() {
     // Log weather event if weather changed
     if (weatherChanged) {
       const activeWeather = globalWeatherManager.getWeatherState().activeWeather;
-      const weatherEvent = {
-        id: `weather-${Date.now()}`,
-        timestamp: Date.now(),
-        turn: newTurn,
-        type: 'travel' as const,
-        details: activeWeather 
+      logWeatherChange(
+        newTurn,
+        activeWeather
           ? `Weather: ${activeWeather.effect.name} (${activeWeather.remainingTurns} turns)`
           : 'Weather cleared'
-      };
-      addMapEvent(weatherEvent);
+      );
     }
-  }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase, addMapEvent]);
+  }, [nextTurn, turnCounter, logTurnAdvance, currentTimePhase, addMapEvent, logWeatherChange]);
 
   const handleNarrativeStart = useCallback(async (scriptId: string) => {
     const script = await loadNarrativeScript(scriptId);
@@ -200,6 +198,7 @@ export default function Map() {
           weatherState={weatherState}
           turnCounter={turnCounter}
           getEventLog={getEventLog}
+          logWeatherChange={logWeatherChange}
         />
       )}
       

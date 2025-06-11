@@ -115,6 +115,18 @@ describe('formatMapEventForLog', () => {
     expect(formatMapEventForLog(event)).toBe('Encounter successful in Cave');
   });
 
+  it('formats encounter_generated events', () => {
+    const event: MapEvent = {
+      id: '12',
+      timestamp: 0,
+      turn: 12,
+      type: 'encounter_generated',
+      zoneId: 'zone4',
+      zoneName: 'Valley'
+    };
+    expect(formatMapEventForLog(event)).toBe('Encounter spawned in Valley');
+  });
+
   it('formats zone_change events', () => {
     const event: MapEvent = {
       id: '10',
@@ -136,5 +148,16 @@ describe('formatMapEventForLog', () => {
       details: 'Travelling'
     };
     expect(formatMapEventForLog(event)).toBe('Travelling');
+  });
+
+  it('formats weather_change events', () => {
+    const event: MapEvent = {
+      id: '13',
+      timestamp: 0,
+      turn: 13,
+      type: 'weather_change',
+      details: 'Weather: Rain'
+    };
+    expect(formatMapEventForLog(event)).toBe('Weather: Rain');
   });
 });

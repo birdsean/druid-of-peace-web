@@ -1,11 +1,17 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { MapEvent, createMapEvent, formatMapEventForLog } from '@/lib/events';
+import { globalMapEventManager } from '@/lib/MapEventManager';
 
 export function useMapEvents() {
-  const [mapEvents, setMapEvents] = useState<MapEvent[]>([]);
+  const [mapEvents, setMapEvents] = useState<MapEvent[]>(() => globalMapEventManager.getEvents());
+
+  useEffect(() => {
+    const unsubscribe = globalMapEventManager.subscribe(setMapEvents);
+    return unsubscribe;
+  }, []);
 
   const addMapEvent = useCallback((event: MapEvent) => {
-    setMapEvents(prev => [...prev, event]);
+    globalMapEventManager.addEvent(event);
   }, []);
 
   const logTurnAdvance = useCallback((turn: number) => {
@@ -23,8 +29,18 @@ export function useMapEvents() {
     addMapEvent(event);
   }, [addMapEvent]);
 
+  const logEncounterGenerated = useCallback((turn: number, zoneId: string, zoneName: string) => {
+    const event = createMapEvent(turn, 'encounter_generated', { zoneId, zoneName });
+    addMapEvent(event);
+  }, [addMapEvent]);
+
   const logZoneChange = useCallback((turn: number, zoneId: string, zoneName: string) => {
     const event = createMapEvent(turn, 'zone_change', { zoneId, zoneName });
+    addMapEvent(event);
+  }, [addMapEvent]);
+
+  const logWeatherChange = useCallback((turn: number, details: string) => {
+    const event = createMapEvent(turn, 'weather_change', { details });
     addMapEvent(event);
   }, [addMapEvent]);
 
@@ -38,7 +54,9 @@ export function useMapEvents() {
     logTurnAdvance,
     logEncounterStart,
     logEncounterComplete,
+    logEncounterGenerated,
     logZoneChange,
+    logWeatherChange,
     getEventLog
   };
 }
