@@ -7,8 +7,8 @@ import DiceDisplay from "./DiceDisplay";
 import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
 import InventoryScreen from "@/components/inventory/InventoryScreen";
-import ActionPanel from "./ActionPanel";
-import StatusBar from "./StatusBar";
+import PlayerUtilsPanel from "./PlayerUtilsPanel";
+import TimePhaseEffectsDisplay from "./TimePhaseEffectsDisplay";
 import DebugPanel from "./DebugPanel";
 import abilities from "@/abilities";
 import { GameContext } from "@/abilities/types";
@@ -18,8 +18,8 @@ import {
   NPCCharacterData,
   PCCharacterData,
 } from "@/lib/characterLoader";
-import { useInventory } from "@/hooks/useInventory";
-import { getItemById } from "@/lib/inventory";
+import { useInventoryContext } from "@/hooks/InventoryProvider";
+import { getItemById, Item } from "@/lib/inventory";
 
 import { initialDebugState, DebugState } from "@/lib/debug";
 import {
@@ -124,7 +124,8 @@ export default function GameBoard() {
   const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   // Inventory state
-  const { inventory, useItem } = useInventory();
+  const { inventory, useItem } = useInventoryContext();
+  const [pendingItem, setPendingItem] = useState<Item | null>(null);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
 
   // Cleanup state when component unmounts
@@ -140,6 +141,11 @@ export default function GameBoard() {
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (pendingAbility) {
       abilities[pendingAbility]?.execute?.(abilityCtx, npcId);
+    } else if (pendingItem) {
+      applyItemEffects(pendingItem.effects, pendingItem.name, npcId);
+      useItem(pendingItem.id);
+      setPendingItem(null);
+      setTargetingMode(false);
     }
   };
 
@@ -180,13 +186,17 @@ export default function GameBoard() {
 
   const handleUseItem = (itemId: string) => {
     const item = getItemById(itemId);
-    if (!item || !useItem(itemId)) return;
+    if (!item) return;
 
-    // Apply item effects using the hook function
-    applyItemEffects(item.effects, item.name);
-
-    // Close inventory modal
-    setShowInventoryModal(false);
+    if (item.targetType === "npc") {
+      setShowInventoryModal(false);
+      setPendingItem(item);
+      setTargetingMode(true);
+    } else {
+      if (!useItem(itemId)) return;
+      applyItemEffects(item.effects, item.name);
+      setShowInventoryModal(false);
+    }
   };
 
   const canUseActions =
@@ -215,40 +225,9 @@ export default function GameBoard() {
       />
 
       {/* Time Phase & Environmental Effects Display */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 top-20 z-30">
-        <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-amber-400 space-y-2">
-          <div className="text-center">
-            <div className="text-2xl">
-              {globalTimeManager.getCurrentPhaseInfo().icon}
-            </div>
-            <div
-              className="text-xs font-mono font-bold px-2 py-1 rounded"
-              style={{
-                backgroundColor:
-                  globalTimeManager.getCurrentPhaseInfo().colorPalette.accent +
-                  "40",
-                color:
-                  globalTimeManager.getCurrentPhaseInfo().colorPalette.accent,
-              }}
-            >
-              {globalTimeManager.getCurrentPhaseInfo().name}
-            </div>
-          </div>
-
-          {activeEnvironmentalEffects.length > 0 && (
-            <div className="border-t border-amber-400/30 pt-2">
-              <div className="text-xs text-amber-400 font-mono mb-1">
-                ACTIVE EFFECTS:
-              </div>
-              {activeEnvironmentalEffects.map((effectId) => (
-                <div key={effectId} className="text-xs text-gray-300 font-mono">
-                  • {effectId.toUpperCase()}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <TimePhaseEffectsDisplay
+        activeEnvironmentalEffects={activeEnvironmentalEffects}
+      />
 
       {/* Character Stats at Top */}
       <NPCStatsDisplay
@@ -293,53 +272,21 @@ export default function GameBoard() {
       <DruidCharacter hidden={gameState.druid.stats.hidden} />
 
       {/* Combined Player & Utils Panel - Full Width Bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-30">
-        <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-4 shadow-lg border-t-2 border-orange-400">
-          <div className="flex items-center justify-between">
-            {/* Left side - PC Character Token and Action Points */}
-            <div className="flex items-center space-x-4">
-              {/* PC Character Token */}
-              <div className="relative">
-                <div className="w-12 h-12 bg-green-700 rounded-full border-4 border-green-400 flex items-center justify-center text-lg shadow-lg">
-                  🌿
-                </div>
-              </div>
-
-              {/* Action Points */}
-              <div className="text-center">
-                <div className="text-xs font-mono text-orange-200 mb-1">AP</div>
-                <div className="text-lg font-mono text-white font-bold">
-                  {gameState.druid.stats.actionPoints}/
-                  {gameState.druid.stats.maxActionPoints}
-                </div>
-              </div>
-            </div>
-
-            {/* Center - Abilities */}
-            <div className="flex-1 flex justify-center">
-              <ActionPanel
-                abilities={pcData?.abilities || []}
-                actionPoints={gameState.druid.stats.actionPoints}
-                canUseActions={canUseActions}
-                onAbilityUse={handleAbilityUse}
-              />
-            </div>
-
-            {/* Right side - Utils and Status */}
-            <StatusBar
-              targetingMode={gameState.targetingMode}
-              canUseActions={canUseActions}
-              combatLogMode={combatLogMode}
-              showDebugPanel={showDebugPanel}
-              onToggleCombatLog={toggleCombatLog}
-              onToggleDebug={() => setShowDebugPanel(!showDebugPanel)}
-              onEndTurn={handleEndTurn}
-              onFlee={handleFleeAbility}
-              onOpenInventory={() => setShowInventoryModal(true)}
-            />
-          </div>
-        </div>
-      </div>
+      <PlayerUtilsPanel
+        actionPoints={gameState.druid.stats.actionPoints}
+        maxActionPoints={gameState.druid.stats.maxActionPoints}
+        abilities={pcData?.abilities || []}
+        targetingMode={gameState.targetingMode}
+        canUseActions={canUseActions}
+        combatLogMode={combatLogMode}
+        showDebugPanel={showDebugPanel}
+        onAbilityUse={handleAbilityUse}
+        onToggleCombatLog={toggleCombatLog}
+        onToggleDebug={() => setShowDebugPanel(!showDebugPanel)}
+        onEndTurn={handleEndTurn}
+        onFlee={handleFleeAbility}
+        onOpenInventory={() => setShowInventoryModal(true)}
+      />
 
       {/* Debug Panel - Center of Battle Area */}
       <DebugPanel

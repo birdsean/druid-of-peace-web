@@ -5,8 +5,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('@/hooks/useGameState', () => ({
   useGameState: vi.fn(),
 }));
-vi.mock('@/hooks/useInventory', () => ({
-  useInventory: vi.fn(),
+vi.mock('@/hooks/InventoryProvider', () => ({
+  useInventoryContext: vi.fn(),
 }));
 vi.mock('@/lib/characterLoader', () => ({
   loadNPCData: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('@/lib/characterLoader', () => ({
 }));
 
 import { useGameState } from '@/hooks/useGameState';
-import { useInventory } from '@/hooks/useInventory';
+import { useInventoryContext } from '@/hooks/InventoryProvider';
 import { loadNPCData, loadPCData } from '@/lib/characterLoader';
 import { setGlobalMapState } from '@/lib/mapState';
 import GameBoard from '@/components/game/GameBoard';
@@ -45,7 +45,18 @@ const energyCrystal = {
   description: 'restore',
   icon: '💎',
   type: 'consumable' as const,
+  targetType: 'self' as const,
   effects: { restoreAP: 1 },
+};
+
+const smokeBomb = {
+  id: 'smoke_bomb',
+  name: 'Smoke Bomb',
+  description: 'bomb',
+  icon: '💨',
+  type: 'consumable' as const,
+  targetType: 'npc' as const,
+  effects: { reduceAwareness: 5 },
 };
 
 const pcData = {
@@ -102,8 +113,8 @@ beforeEach(() => {
     applyItemEffects,
   });
 
-  (useInventory as any).mockReturnValue({
-    inventory: { items: [{ item: energyCrystal, count: 1 }] },
+  (useInventoryContext as any).mockReturnValue({
+    inventory: { items: [{ item: energyCrystal, count: 1 }, { item: smokeBomb, count: 1 }] },
     useItem: vi.fn().mockReturnValue(true),
   });
 });
@@ -151,10 +162,31 @@ describe('GameBoard component', () => {
     fireEvent.click(itemButton);
 
     const { applyItemEffects } = (useGameState as any).mock.results[0].value;
-    const { useItem } = (useInventory as any).mock.results[0].value;
+    const { useItem } = (useInventoryContext as any).mock.results[0].value;
 
     expect(useItem).toHaveBeenCalledWith('energy_crystal');
     expect(applyItemEffects).toHaveBeenCalledWith(energyCrystal.effects, energyCrystal.name);
+  });
+
+  it('handles npc-target item in two phases', async () => {
+    const { rerender } = setup();
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
+    fireEvent.click(screen.getByTitle('Use Item'));
+    const itemButton = await screen.findByTitle(smokeBomb.description);
+    fireEvent.click(itemButton);
+
+    const state = (useGameState as any).mock.results[0].value;
+    const ctx = (useInventoryContext as any).mock.results[0].value;
+    expect(ctx.useItem).not.toHaveBeenCalled();
+    expect(state.setTargetingMode).toHaveBeenCalledWith(true);
+
+    rerender(<GameBoard />);
+    const npcIcon = screen.getAllByText(npcTemplate.icon)[0];
+    fireEvent.click(npcIcon);
+
+    expect(ctx.useItem).toHaveBeenCalledWith('smoke_bomb');
+    expect(state.applyItemEffects).toHaveBeenCalledWith(smokeBomb.effects, smokeBomb.name, 'npc1');
+    expect(state.setTargetingMode).toHaveBeenCalledWith(false);
   });
 
   it('displays active weather effect from map state', async () => {
