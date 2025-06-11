@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
+import { Eye, EyeOff, Maximize2, Minimize2, TreePine, Package, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PCAbility } from '@/lib/characterLoader';
@@ -10,6 +10,9 @@ interface PlayerActionPanelProps {
   abilities: PCAbility[];
   onAbilityUse: (abilityKey: string) => void;
   onEndTurn: () => void;
+  onOpenInventory?: () => void;
+  onOpenSkills?: () => void;
+  onExitGame?: () => void;
   onToggleCombatLog: () => void;
   combatLogMode: 'hidden' | 'small' | 'large';
   isPlayerTurn: boolean;
@@ -23,6 +26,9 @@ export default function PlayerActionPanel({
   abilities,
   onAbilityUse,
   onEndTurn,
+  onOpenInventory,
+  onOpenSkills,
+  onExitGame,
   onToggleCombatLog,
   combatLogMode,
   isPlayerTurn,
@@ -83,8 +89,35 @@ export default function PlayerActionPanel({
             ))}
           </div>
 
-          {/* Right side - End Turn and Combat Log Controls */}
+          {/* Right side - Utility Buttons */}
           <div className="flex items-center space-x-2">
+            {onOpenSkills && (
+              <Button
+                onClick={onOpenSkills}
+                className="w-14 h-14 p-0 rounded-lg bg-purple-600 hover:bg-purple-700 border-2 border-purple-400 text-white transition-all duration-200"
+                title="Open Skills"
+              >
+                <TreePine className="w-5 h-5" />
+              </Button>
+            )}
+            {onOpenInventory && (
+              <Button
+                onClick={onOpenInventory}
+                className="w-14 h-14 p-0 rounded-lg bg-amber-600 hover:bg-amber-700 border-2 border-amber-400 text-white transition-all duration-200"
+                title="Open Inventory"
+              >
+                <Package className="w-5 h-5" />
+              </Button>
+            )}
+            {onExitGame && (
+              <Button
+                onClick={onExitGame}
+                className="w-14 h-14 p-0 rounded-lg bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white transition-all duration-200"
+                title="Exit Game"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
+            )}
             <Button
               onClick={onEndTurn}
               disabled={!isPlayerTurn || targetingMode}

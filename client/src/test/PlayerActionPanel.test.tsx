@@ -14,6 +14,9 @@ const defaultProps = {
   abilities,
   onAbilityUse: vi.fn(),
   onEndTurn: vi.fn(),
+  onOpenInventory: vi.fn(),
+  onOpenSkills: vi.fn(),
+  onExitGame: vi.fn(),
   onToggleCombatLog: vi.fn(),
   combatLogMode: 'hidden' as const,
   isPlayerTurn: true,
@@ -32,9 +35,15 @@ describe('PlayerActionPanel', () => {
     fireEvent.click(screen.getByTitle(/Make Camp/));
     fireEvent.click(screen.getByTitle('End Turn'));
     fireEvent.click(screen.getByTitle('Combat Log: hidden'));
+    fireEvent.click(screen.getByTitle('Open Inventory'));
+    fireEvent.click(screen.getByTitle('Open Skills'));
+    fireEvent.click(screen.getByTitle('Exit Game'));
     expect(defaultProps.onAbilityUse).toHaveBeenCalledWith('camp');
     expect(defaultProps.onEndTurn).toHaveBeenCalled();
     expect(defaultProps.onToggleCombatLog).toHaveBeenCalled();
+    expect(defaultProps.onOpenInventory).toHaveBeenCalled();
+    expect(defaultProps.onOpenSkills).toHaveBeenCalled();
+    expect(defaultProps.onExitGame).toHaveBeenCalled();
   });
 
   it('disables abilities without points', () => {
@@ -47,5 +56,14 @@ describe('PlayerActionPanel', () => {
     expect(screen.getByText(/Select target/)).toBeInTheDocument();
     fireEvent.click(screen.getByTitle('Cancel pending action'));
     expect(defaultProps.onCancelAction).toHaveBeenCalled();
+  });
+
+  it('hides optional buttons when handlers not provided', () => {
+    render(
+      <PlayerActionPanel {...defaultProps} onOpenInventory={undefined} onOpenSkills={undefined} onExitGame={undefined} />
+    );
+    expect(screen.queryByTitle('Open Inventory')).toBeNull();
+    expect(screen.queryByTitle('Open Skills')).toBeNull();
+    expect(screen.queryByTitle('Exit Game')).toBeNull();
   });
 });
