@@ -245,19 +245,6 @@ export default function Map() {
         ))}
       </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-30 bg-black bg-opacity-80 rounded-lg p-4 text-white font-mono text-sm">
-        <h3 className="font-bold mb-2">Heat Levels:</h3>
-        <div className="space-y-1">
-          <div className="text-blue-300">0-10: None</div>
-          <div className="text-cyan-300">11-30: Cold</div>
-          <div className="text-green-300">31-50: Cool</div>
-          <div className="text-yellow-300">51-70: Warm</div>
-          <div className="text-orange-300">71-90: Hot</div>
-          <div className="text-red-300">91-100: Critical</div>
-        </div>
-      </div>
-
       {/* Bottom Panel - Right Side */}
       <div className="absolute bottom-0 right-0 z-30">
         <div className="p-4">
