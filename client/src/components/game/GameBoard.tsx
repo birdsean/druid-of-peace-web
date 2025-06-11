@@ -18,8 +18,8 @@ import {
   NPCCharacterData,
   PCCharacterData,
 } from "@/lib/characterLoader";
-import { useInventory } from "@/hooks/useInventory";
-import { getItemById } from "@/lib/inventory";
+import { useInventoryContext } from "@/hooks/InventoryProvider";
+import { getItemById, Item } from "@/lib/inventory";
 
 import { initialDebugState, DebugState } from "@/lib/debug";
 import {
@@ -125,7 +125,8 @@ export default function GameBoard() {
   const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   // Inventory state
-  const { inventory, useItem } = useInventory();
+  const { inventory, useItem } = useInventoryContext();
+  const [pendingItem, setPendingItem] = useState<Item | null>(null);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
 
   // Cleanup state when component unmounts
@@ -141,6 +142,11 @@ export default function GameBoard() {
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
     if (pendingAbility) {
       abilities[pendingAbility]?.execute?.(abilityCtx, npcId);
+    } else if (pendingItem) {
+      applyItemEffects(pendingItem.effects, pendingItem.name, npcId);
+      useItem(pendingItem.id);
+      setPendingItem(null);
+      setTargetingMode(false);
     }
   };
 
@@ -181,13 +187,17 @@ export default function GameBoard() {
 
   const handleUseItem = (itemId: string) => {
     const item = getItemById(itemId);
-    if (!item || !useItem(itemId)) return;
+    if (!item) return;
 
-    // Apply item effects using the hook function
-    applyItemEffects(item.effects, item.name);
-
-    // Close inventory modal
-    setShowInventoryModal(false);
+    if (item.targetType === 'npc') {
+      setShowInventoryModal(false);
+      setPendingItem(item);
+      setTargetingMode(true);
+    } else {
+      if (!useItem(itemId)) return;
+      applyItemEffects(item.effects, item.name);
+      setShowInventoryModal(false);
+    }
   };
 
   const hasActionPoints = gameState.druid.stats.actionPoints > 0;

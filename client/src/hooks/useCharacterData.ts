@@ -46,11 +46,11 @@ export function useCharacterData(
   }, [setGameState]);
 
   const applyItemEffects = useCallback(
-    (itemEffects: any, itemName: string) => {
+    (itemEffects: any, itemName: string, targetId?: 'npc1' | 'npc2') => {
       let descriptions: string[] = [];
 
       setGameState((prev) => {
-        const result = applyItemEffectsToState(prev, itemEffects);
+        const result = applyItemEffectsToState(prev, itemEffects, targetId);
         descriptions = result.descriptions;
         return result.state;
       });

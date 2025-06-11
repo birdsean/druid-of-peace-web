@@ -42,6 +42,7 @@ export function resolvePeaceAuraEffects(
 export function applyItemEffectsToState(
   state: GameState,
   itemEffects: ItemEffect,
+  targetId?: 'npc1' | 'npc2',
 ): { state: GameState; descriptions: string[] } {
   const newState: GameState = {
     ...state,
@@ -77,6 +78,13 @@ export function applyItemEffectsToState(
     descriptions.push(`Awareness -${npc1Reduced}/-${npc2Reduced}`);
   }
 
+  if (itemEffects.reduceAwareness && !itemEffects.targetAll && targetId) {
+    const target = newState[targetId];
+    const reduced = Math.min(itemEffects.reduceAwareness, target.stats.awareness);
+    target.stats.awareness = Math.max(0, target.stats.awareness - itemEffects.reduceAwareness);
+    descriptions.push(`Awareness -${reduced}`);
+  }
+
   if (itemEffects.reduceWill && itemEffects.targetAll) {
     const npc1WillReduced = Math.min(itemEffects.reduceWill, newState.npc1.stats.willToFight);
     const npc2WillReduced = Math.min(itemEffects.reduceWill, newState.npc2.stats.willToFight);
@@ -89,6 +97,13 @@ export function applyItemEffectsToState(
       newState.npc2.stats.willToFight - itemEffects.reduceWill,
     );
     descriptions.push(`Will -${npc1WillReduced}/-${npc2WillReduced}`);
+  }
+
+  if (itemEffects.reduceWill && !itemEffects.targetAll && targetId) {
+    const target = newState[targetId];
+    const reduced = Math.min(itemEffects.reduceWill, target.stats.willToFight);
+    target.stats.willToFight = Math.max(0, target.stats.willToFight - itemEffects.reduceWill);
+    descriptions.push(`Will -${reduced}`);
   }
 
   return { state: newState, descriptions };

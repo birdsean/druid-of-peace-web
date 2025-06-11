@@ -1,5 +1,10 @@
 import InventoryScreen from "@/components/inventory/InventoryScreen";
+import { InventoryProvider } from "@/hooks/InventoryProvider";
 
 export default function Inventory() {
-  return <InventoryScreen />;
+  return (
+    <InventoryProvider>
+      <InventoryScreen />
+    </InventoryProvider>
+  );
 }
