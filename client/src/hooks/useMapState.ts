@@ -111,10 +111,11 @@ export function useMapState() {
     const zone = mapState.zones.find(z => z.id === zoneId);
     const zoneName = zone?.name || zoneId;
     const heatChange = success ? -15 : 10;
-
-    console.log(`Encounter resolved in zone ${zoneId} (${zoneName}) - Success: ${success}, Heat change: ${heatChange}`);
-
-    const event = createMapEvent(mapState.turnCounter, 'encounter_complete', { zoneId, zoneName, success });
+    const event = createMapEvent(mapState.turnCounter, 'encounter_complete', {
+      zoneId,
+      zoneName,
+      success
+    });
     globalMapEventManager.addEvent(event);
     
     setMapState(prev => ({
@@ -144,13 +145,17 @@ export function useMapState() {
     
     setMapState(prev => {
       const newZones = prev.zones.map(zone => {
-        // Skip if zone already has encounter
-        if (zone.hasEncounter) return zone;
+        // Determine if we should roll for a new encounter
+        const shouldRollEncounter = !zone.hasEncounter;
 
-        // Roll for encounter
-        const roll = rollDice(1, 100);
-        const encounterChance = calculateEncounterChance(zone.heat);
-        const hasNewEncounter = roll <= encounterChance;
+        let hasNewEncounter = zone.hasEncounter;
+        let roll = 0;
+        let encounterChance = 0;
+        if (shouldRollEncounter) {
+          roll = rollDice(1, 100);
+          encounterChance = calculateEncounterChance(zone.heat);
+          hasNewEncounter = roll <= encounterChance;
+        }
 
         // Heat jitter calculation with weighted randomness
         let heatChange = 0;
@@ -190,21 +195,24 @@ export function useMapState() {
           }
         }
 
-        // Apply encounter bonus heat if encounter generated
-        if (hasNewEncounter) {
+        // Apply encounter bonus heat if a new encounter was generated
+        if (shouldRollEncounter && hasNewEncounter) {
           heatChange += rollDice(2, 4);
-          console.log(`New encounter created in zone ${zone.id} (${zone.name}) - Heat: ${zone.heat}, Roll: ${roll}, Chance: ${encounterChance}%`);
-          const event = createMapEvent(prev.turnCounter + 1, 'encounter_generated', { zoneId: zone.id, zoneName: zone.name });
+          const event = createMapEvent(prev.turnCounter + 1, 'encounter_generated', {
+            zoneId: zone.id,
+            zoneName: zone.name
+          });
+
           globalMapEventManager.addEvent(event);
         }
 
         const newHeat = Math.max(0, Math.min(100, zone.heat + heatChange));
 
-        return {
-          ...zone,
-          heat: newHeat,
-          hasEncounter: hasNewEncounter
-        };
+          return {
+            ...zone,
+            heat: newHeat,
+            hasEncounter: hasNewEncounter
+          };
       });
 
       return {

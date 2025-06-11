@@ -99,7 +99,7 @@ beforeEach(() => {
   (useGameState as any).mockReturnValue({
     gameState,
     diceState: { visible: false, rolling: false, result: null, effect: '' },
-    usePeaceAbility: vi.fn(),
+    useAbility: vi.fn(),
     endTurn: vi.fn(),
     restartGame: vi.fn(),
     setTargetingMode,
@@ -156,7 +156,7 @@ describe('GameBoard component', () => {
     const npcIcon = screen.getAllByText(npcTemplate.icon)[0];
     fireEvent.click(npcIcon);
 
-    expect(state.usePeaceAbility).toHaveBeenCalledWith('npc1');
+    expect(state.useAbility).toHaveBeenCalledWith('peaceAura', 'npc1');
     expect(state.clearPendingAbility).toHaveBeenCalled();
     expect(state.setTargetingMode).toHaveBeenCalledWith(false);
   });

@@ -25,6 +25,8 @@ export interface NPC {
   stats: NPCStats;
   actions: string[];
   animation?: string | null;
+  /** Number of turns the NPC is immobilized and must skip actions */
+  immobilized?: number;
 }
 
 export interface PC {
