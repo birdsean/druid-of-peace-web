@@ -3,16 +3,15 @@ import { describe, it, expect, vi } from 'vitest';
 import TimePhaseEffectsDisplay from '@/components/game/TimePhaseEffectsDisplay';
 
 // ensure deterministic phase info
-vi.mock('@/lib/timeSystem', async (orig) => {
-  const mod = await orig();
-  return {
-    ...mod,
-    globalTimeManager: {
-      ...mod.globalTimeManager,
-      getCurrentPhaseInfo: () => ({ name: 'Dawn', icon: '🌅', colorPalette: { accent: '#fff' } }),
-    },
-  };
-});
+vi.mock('@/lib/timeSystem', () => ({
+  globalTimeManager: {
+    getCurrentPhaseInfo: () => ({
+      name: 'Dawn',
+      icon: '🌅',
+      colorPalette: { accent: '#fff' },
+    }),
+  },
+}));
 
 const effects = ['rain_boost'];
 
