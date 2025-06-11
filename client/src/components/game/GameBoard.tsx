@@ -288,6 +288,8 @@ export default function GameBoard() {
           onClick={() => handleNPCClick("npc1")}
           icon={gameState.npc1.icon}
           color={gameState.npc1.color}
+          isAnimating={Boolean(gameState.npc1.animation)}
+          animationType={gameState.npc1.animation || undefined}
         />
       </div>
 
@@ -301,6 +303,8 @@ export default function GameBoard() {
           onClick={() => handleNPCClick("npc2")}
           icon={gameState.npc2.icon}
           color={gameState.npc2.color}
+          isAnimating={Boolean(gameState.npc2.animation)}
+          animationType={gameState.npc2.animation || undefined}
         />
       </div>
 

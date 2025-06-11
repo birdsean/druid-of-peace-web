@@ -24,6 +24,7 @@ export interface NPC {
   position: "left" | "right";
   stats: NPCStats;
   actions: string[];
+  animation?: string | null;
 }
 
 export interface PC {

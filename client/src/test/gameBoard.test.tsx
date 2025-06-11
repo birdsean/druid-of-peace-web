@@ -37,6 +37,7 @@ const npcTemplate = {
     maxAwareness: 100,
   },
   actions: [],
+  animation: null,
 };
 
 const energyCrystal = {

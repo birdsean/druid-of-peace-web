@@ -30,6 +30,7 @@ const defaultNPC: NPC = {
   position: "left",
   stats: defaultStats,
   actions: [],
+  animation: null,
 };
 
 const defaultDruidStats = {
@@ -50,6 +51,7 @@ const initialGameState: GameState = {
     position: "left",
     stats: defaultStats,
     actions: ["slash", "guard"],
+    animation: null,
   },
   npc2: {
     id: "npc2",
@@ -69,6 +71,7 @@ const initialGameState: GameState = {
       maxAwareness: 100,
     },
     actions: ["arrow_shot", "dodge"],
+    animation: null,
   },
   druid: {
     id: "druid",

@@ -10,6 +10,7 @@ const actionsData: NPCActionsData = {
       name: 'Attack',
       description: '',
       icon: 'A',
+      animation: 'attack',
       effects: {},
       requirements: { minWillToFight: 30 },
       weight: 60
@@ -19,6 +20,7 @@ const actionsData: NPCActionsData = {
       name: 'Defend',
       description: '',
       icon: 'D',
+      animation: 'defend',
       effects: {},
       requirements: { maxWillToFight: 70 },
       weight: 30
@@ -28,6 +30,7 @@ const actionsData: NPCActionsData = {
       name: 'Investigate',
       description: '',
       icon: 'I',
+      animation: 'hit',
       effects: {},
       requirements: { minAwareness: 20 },
       weight: 40
@@ -50,6 +53,7 @@ describe('actionLoader', () => {
     const result = await loadNPCActions();
     expect(global.fetch).toHaveBeenCalledWith('/data/characters/actions.json');
     expect(result).toEqual(actionsData);
+    expect(result?.npcActions.attack.animation).toBe('attack');
   });
 
   it('loadNPCActions returns null on error', async () => {
@@ -68,6 +72,7 @@ describe('actionLoader', () => {
 
     const result = await getActionById('defend');
     expect(result).toEqual(actionsData.npcActions.defend);
+    expect(result?.animation).toBe('defend');
   });
 
   it('getActionById returns undefined when not found', async () => {
