@@ -9,7 +9,11 @@ export interface GameContext {
   setPendingAbility: (ability: string | null) => void;
   // Clears the pending ability after execution or cancellation.
   clearPendingAbility: () => void;
-  usePeaceAbility: (targetId: "npc1" | "npc2") => void;
+  /**
+   * Generic ability invocation. The game board doesn't need to know
+   * about every individual ability function.
+   */
+  useAbility: (key: string, targetId: "npc1" | "npc2") => void;
   triggerGameOver: (title: string, message: string, icon: string) => void;
 }
 

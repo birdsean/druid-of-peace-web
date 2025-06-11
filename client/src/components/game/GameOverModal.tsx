@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLocation } from "wouter";
 import { getGlobalMapState } from "@/lib/mapState";
+import { globalHistoryManager } from "@/lib/historySystem";
 
 interface GameOverModalProps {
   visible: boolean;
@@ -21,6 +22,12 @@ export default function GameOverModal({ visible, title, message, icon, onRestart
     
     // Reset the game state first
     onRestart();
+
+    let result: 'success' | 'failure' | 'fled' = 'failure';
+    if (isSuccess) result = 'success';
+    else if (isFlee) result = 'fled';
+
+    globalHistoryManager.completeEncounter(result);
     
     // Resolve the encounter with the appropriate result
     const mapState = getGlobalMapState();

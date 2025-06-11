@@ -47,6 +47,20 @@ export class TurnManager {
     }
 
     const npcId = currentTurn;
+    const npc = currentState[npcId];
+
+    if (npc.immobilized && npc.immobilized > 0) {
+      this.addLogEntry(`${npc.name} is restrained by vines and cannot act!`);
+      this.setGameState((prev) => {
+        const newState = { ...prev };
+        const n = newState[npcId];
+        n.immobilized = (n.immobilized || 1) - 1;
+        return this.advanceTurn(newState);
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      return;
+    }
+
     const roll = await this.rollDiceWithAnimation();
     const action = executeNPCAction(roll);
 

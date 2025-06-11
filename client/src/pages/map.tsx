@@ -11,9 +11,12 @@ import ForestZone from "@/components/map/ForestZone";
 import TurnCounter from "@/components/map/TurnCounter";
 import MapDebugPanel from "@/components/map/MapDebugPanel";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
-import { globalTimeManager, type TimePhase, getTimeBasedGradient } from "@/lib/timeSystem";
+import { globalTimeManager, type TimePhase, getTimeBasedGradient, getTimeBasedEnvironmentalEffect } from "@/lib/timeSystem";
 import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
+import PlayerActionPanel from "@/components/game/PlayerActionPanel";
+import type { PCAbility } from "@/lib/characterLoader";
+import { globalHistoryManager } from "@/lib/historySystem";
 
 
 export default function Map() {
@@ -23,6 +26,15 @@ export default function Map() {
   const [showDebugPanel, setShowDebugPanel] = useState(true);
   const [environmentalEffects, setEnvironmentalEffects] = useState<Record<string, EnvironmentalEffect>>({});
   const weatherState = useWeatherState();
+
+  // Temporary player action state for map interactions
+  const [actionPoints, setActionPoints] = useState(3);
+  const maxActionPoints = 3;
+  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
+  const placeholderAbilities: PCAbility[] = [
+    { key: 'camp', name: 'Make Camp', description: 'Rest and recover', icon: '⛺', cost: 1 },
+    { key: 'pray', name: 'Pray', description: 'Seek guidance', icon: '🙏', cost: 1 },
+  ];
   const {
     zones,
     currentZone,
@@ -105,6 +117,21 @@ export default function Map() {
     if (zone.hasEncounter) {
       const weatherEffect = globalWeatherManager.getActiveEnvironmentalEffect();
       startEncounter(zoneId, weatherEffect);
+
+      const timeEffect = getTimeBasedEnvironmentalEffect(currentTimePhase);
+      const envEffects = [timeEffect.id];
+      if (zone.environmentEffect) {
+        envEffects.push(zone.environmentEffect);
+      }
+      globalHistoryManager.startEncounter(
+        zoneId,
+        zone.name,
+        turnCounter,
+        envEffects,
+        weatherEffect || undefined,
+        currentTimePhase
+      );
+
       logEncounterStart(turnCounter, zoneId, zone.name);
       // Store the encounter zone in global state
       setGlobalMapState({
@@ -114,7 +141,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter, actionPoints, spendActionPoint]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter, actionPoints, spendActionPoint, currentTimePhase]);
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
@@ -191,6 +218,24 @@ export default function Map() {
     setLocation('/skills');
   }, [setLocation]);
 
+  const handleAbilityUse = useCallback((abilityKey: string) => {
+    if (actionPoints <= 0) return;
+    setActionPoints(ap => Math.max(ap - 1, 0));
+    console.log('Used ability', abilityKey);
+  }, [actionPoints]);
+
+  const handleEndTurn = useCallback(() => {
+    setActionPoints(maxActionPoints);
+  }, []);
+
+  const handleToggleCombatLog = useCallback(() => {
+    setCombatLogMode(prev => prev === 'hidden' ? 'small' : prev === 'small' ? 'large' : 'hidden');
+  }, []);
+
+  const handleCancelAction = useCallback(() => {
+    /* no-op for now */
+  }, []);
+
   return (
     <div className={`relative w-screen h-screen ${getTimeBasedGradient(currentTimePhase)} overflow-hidden`}>
       {IS_DEBUG && (
@@ -236,19 +281,6 @@ export default function Map() {
         ))}
       </div>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-30 bg-black bg-opacity-80 rounded-lg p-4 text-white font-mono text-sm">
-        <h3 className="font-bold mb-2">Heat Levels:</h3>
-        <div className="space-y-1">
-          <div className="text-blue-300">0-10: None</div>
-          <div className="text-cyan-300">11-30: Cold</div>
-          <div className="text-green-300">31-50: Cool</div>
-          <div className="text-yellow-300">51-70: Warm</div>
-          <div className="text-orange-300">71-90: Hot</div>
-          <div className="text-red-300">91-100: Critical</div>
-        </div>
-      </div>
-
       {/* Bottom Panel - Right Side */}
       <div className="absolute bottom-0 right-0 z-30">
         <div className="p-4">
@@ -282,6 +314,20 @@ export default function Map() {
           </div>
         </div>
       </div>
+
+      {/* Player Action Panel */}
+      <PlayerActionPanel
+        actionPoints={actionPoints}
+        maxActionPoints={maxActionPoints}
+        targetingMode={false}
+        abilities={placeholderAbilities}
+        onAbilityUse={handleAbilityUse}
+        onEndTurn={handleEndTurn}
+        onToggleCombatLog={handleToggleCombatLog}
+        combatLogMode={combatLogMode}
+        isPlayerTurn={true}
+        onCancelAction={handleCancelAction}
+      />
 
       {/* Narrative Screen Overlay */}
       {narrativeScript && (

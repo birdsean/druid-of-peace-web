@@ -24,6 +24,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      immobilized: 0,
     },
     npc2: {
       id: 'npc2',
@@ -43,6 +44,7 @@ function createBaseState(currentTurn: 'npc1' | 'npc2' | 'druid', turnCounter = 1
         maxAwareness: 100,
       },
       actions: [],
+      immobilized: 0,
     },
     druid: {
       id: 'druid',
@@ -167,6 +169,37 @@ describe('TurnManager', () => {
 
     vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+
+  it('skips turn when NPC is snared', async () => {
+    vi.useFakeTimers();
+
+    const setGameState = vi.fn();
+    const addLogEntry = vi.fn();
+    const manager = new TurnManager(
+      setGameState,
+      vi.fn(),
+      addLogEntry,
+      vi.fn().mockReturnValue(false),
+    );
+
+    const base = createBaseState('npc1', 1);
+    (base as any).npc1.immobilized = 1;
+
+    const promise = manager.executeTurn(base);
+    await vi.runAllTimersAsync();
+    await promise;
+
+    expect(addLogEntry).toHaveBeenCalledWith(
+      expect.stringContaining('restrained'),
+    );
+
+    expect(setGameState).toHaveBeenCalledTimes(1);
+    const updated = (setGameState.mock.calls[0][0] as (s: GameState) => GameState)(base);
+    expect(updated.currentTurn).toBe('npc2');
+    expect((updated as any).npc1.immobilized).toBe(0);
+
+    vi.useRealTimers();
   });
 });
 
