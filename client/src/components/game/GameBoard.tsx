@@ -104,7 +104,7 @@ export default function GameBoard() {
       weatherEffect ? [timeEffect.id, weatherEffect] : [timeEffect.id],
     );
 
-    const unsubscribe = globalTimeManager.subscribe((newTimeState) => {
+    const unsubscribe = globalTimeManager.subscribe(newTimeState => {
       setCurrentTimePhase(newTimeState.currentPhase);
       applyPhaseColorPalette(newTimeState.currentPhase);
 
@@ -169,7 +169,7 @@ export default function GameBoard() {
 
   // Debug functions
   const toggleAutoTurn = () => {
-    setDebugState((prev) => {
+    setDebugState(prev => {
       const newAutoTurn = !prev.autoTurn;
       setAutoTurnEnabled(newAutoTurn);
       return { ...prev, autoTurn: newAutoTurn };
@@ -230,7 +230,7 @@ export default function GameBoard() {
     <div
       className={cn(
         "relative w-screen h-screen bg-gradient-to-b from-sky-400 via-green-300 to-green-600 overflow-hidden",
-        gameState.targetingMode && "cursor-crosshair"
+        gameState.targetingMode && "cursor-crosshair",
       )}
     >
       {/* Background Gradient */}
@@ -270,11 +270,13 @@ export default function GameBoard() {
         name={gameState.npc1.name}
         npc={gameState.npc1.stats}
         position="left"
+        immobilized={gameState.npc1.immobilized}
       />
       <NPCStatsDisplay
         name={gameState.npc2.name}
         npc={gameState.npc2.stats}
         position="right"
+        immobilized={gameState.npc2.immobilized}
       />
 
       {/* NPC Characters */}
@@ -288,6 +290,7 @@ export default function GameBoard() {
           onClick={() => handleNPCClick("npc1")}
           icon={gameState.npc1.icon}
           color={gameState.npc1.color}
+          immobilized={gameState.npc1.immobilized}
           isAnimating={Boolean(gameState.npc1.animation)}
           animationType={gameState.npc1.animation || undefined}
         />
@@ -303,6 +306,7 @@ export default function GameBoard() {
           onClick={() => handleNPCClick("npc2")}
           icon={gameState.npc2.icon}
           color={gameState.npc2.color}
+          immobilized={gameState.npc2.immobilized}
           isAnimating={Boolean(gameState.npc2.animation)}
           animationType={gameState.npc2.animation || undefined}
         />

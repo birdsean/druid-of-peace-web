@@ -57,13 +57,16 @@ export class TurnManager {
 
     if (npc.immobilized && npc.immobilized > 0) {
       this.addLogEntry(`${npc.name} is restrained by vines and cannot act!`);
-      this.setGameState((prev) => {
+      this.setGameState(prev => {
         const newState = { ...prev };
         const n = newState[npcId];
         n.immobilized = (n.immobilized || 1) - 1;
-        return this.advanceTurn(newState);
+        return newState;
       });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      this.setGameState(prev => this.advanceTurn(prev));
       return;
     }
 
@@ -72,7 +75,7 @@ export class TurnManager {
     const actionConfig = await getActionById(action.type);
 
     // Update game state with NPC action
-    this.setGameState((prev) => {
+    this.setGameState(prev => {
       const newState = { ...prev };
       const npc = newState[npcId];
       const targetId = npcId === "npc1" ? "npc2" : "npc1";
@@ -139,7 +142,7 @@ export class TurnManager {
     });
 
     // Wait for action animation
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Clear animations and advance turn
     this.setGameState((prev) => {
@@ -156,7 +159,7 @@ export class TurnManager {
   }
 
   async rollDiceWithAnimation(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.setDiceState({
         visible: true,
         rolling: true,
@@ -166,7 +169,7 @@ export class TurnManager {
 
       setTimeout(() => {
         const result = rollDice(1, 6);
-        this.setDiceState((prev) => ({
+        this.setDiceState(prev => ({
           ...prev,
           rolling: false,
           result,
@@ -174,7 +177,7 @@ export class TurnManager {
         }));
 
         setTimeout(() => {
-          this.setDiceState((prev) => ({ ...prev, visible: false }));
+          this.setDiceState(prev => ({ ...prev, visible: false }));
           resolve(result);
         }, 1000);
       }, 1000);
@@ -202,7 +205,7 @@ export class TurnManager {
   }
 
   manualAdvanceTurn(): void {
-    this.setGameState((prev) => {
+    this.setGameState(prev => {
       if (!this.checkGameEnd(prev)) {
         return this.advanceTurn(prev);
       }
@@ -236,7 +239,7 @@ export class TurnManager {
       const actionConfig = await getActionById(action.type);
 
       // Update game state with forced NPC action
-      this.setGameState((prev) => {
+      this.setGameState(prev => {
         const newState = { ...prev };
         const npc = newState[npcId];
         const targetId = npcId === "npc1" ? "npc2" : "npc1";
@@ -280,7 +283,7 @@ export class TurnManager {
 
       // Advance turn after action
       setTimeout(() => {
-        this.setGameState((prev) => this.advanceTurn(prev));
+        this.setGameState(prev => this.advanceTurn(prev));
       }, 1500);
     } finally {
       this.isExecuting = false;
