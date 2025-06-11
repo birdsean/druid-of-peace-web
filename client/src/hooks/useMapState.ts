@@ -202,6 +202,7 @@ export function useMapState() {
             zoneId: zone.id,
             zoneName: zone.name
           });
+
           globalMapEventManager.addEvent(event);
         }
 
