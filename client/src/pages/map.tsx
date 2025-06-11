@@ -11,9 +11,10 @@ import ForestZone from "@/components/map/ForestZone";
 import TurnCounter from "@/components/map/TurnCounter";
 import MapDebugPanel from "@/components/map/MapDebugPanel";
 import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environmentLoader";
-import { globalTimeManager, type TimePhase, getTimeBasedGradient } from "@/lib/timeSystem";
+import { globalTimeManager, type TimePhase, getTimeBasedGradient, getTimeBasedEnvironmentalEffect } from "@/lib/timeSystem";
 import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
+import { globalHistoryManager } from "@/lib/historySystem";
 
 
 export default function Map() {
@@ -96,6 +97,21 @@ export default function Map() {
     if (zone.hasEncounter) {
       const weatherEffect = globalWeatherManager.getActiveEnvironmentalEffect();
       startEncounter(zoneId, weatherEffect);
+
+      const timeEffect = getTimeBasedEnvironmentalEffect(currentTimePhase);
+      const envEffects = [timeEffect.id];
+      if (zone.environmentEffect) {
+        envEffects.push(zone.environmentEffect);
+      }
+      globalHistoryManager.startEncounter(
+        zoneId,
+        zone.name,
+        turnCounter,
+        envEffects,
+        weatherEffect || undefined,
+        currentTimePhase
+      );
+
       logEncounterStart(turnCounter, zoneId, zone.name);
       // Store the encounter zone in global state
       setGlobalMapState({
@@ -105,7 +121,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter, currentTimePhase]);
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
