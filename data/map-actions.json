@@ -1,0 +1,9 @@
+[
+  {
+    "key": "travel",
+    "name": "Travel",
+    "description": "Move to a nearby zone using action points",
+    "icon": "🧭",
+    "cost": 1
+  }
+]

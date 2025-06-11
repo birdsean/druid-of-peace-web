@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { loadLocationData } from "../lib/locationLoader";
+import { loadMapActions, type MapAction } from "@/lib/mapActionLoader";
 import { globalTimeManager, type TimePhase, applyPhaseColorPalette } from "@/lib/timeSystem";
 import { globalMapEventManager } from "@/lib/MapEventManager";
 import { createMapEvent } from "@/lib/events";
@@ -22,6 +23,7 @@ interface MapState {
   activeEncounterZone: string | null;
   activeWeatherEffect: string | null;
   currentTimePhase: TimePhase;
+  mapActions: MapAction[];
 }
 
 const defaultZones: Zone[] = [];
@@ -32,7 +34,8 @@ const initialMapState: MapState = {
   turnCounter: 1,
   activeEncounterZone: null,
   activeWeatherEffect: null,
-  currentTimePhase: 'day1' as TimePhase
+  currentTimePhase: 'day1' as TimePhase,
+  mapActions: []
 };
 
 function rollDice(min = 1, max = 6): number {
@@ -65,6 +68,22 @@ export function useMapState() {
       }
     };
     loadZones();
+  }, []);
+
+  // Load map actions on initialization
+  useEffect(() => {
+    const loadActions = async () => {
+      try {
+        const actions = await loadMapActions();
+        setMapState(prev => ({
+          ...prev,
+          mapActions: actions
+        }));
+      } catch (error) {
+        console.error('Failed to load map actions:', error);
+      }
+    };
+    loadActions();
   }, []);
 
   // Initialize time system and sync with map state
@@ -239,6 +258,7 @@ export function useMapState() {
     activeEncounterZone: mapState.activeEncounterZone,
     activeWeatherEffect: mapState.activeWeatherEffect,
     currentTimePhase: mapState.currentTimePhase,
+    mapActions: mapState.mapActions,
     setCurrentZone,
     startEncounter,
     resolveEncounter,
