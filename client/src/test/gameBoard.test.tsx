@@ -67,6 +67,8 @@ beforeEach(() => {
   (loadPCData as any).mockResolvedValue(pcData);
 
   const setTargetingMode = vi.fn();
+  const setPendingAbility = vi.fn();
+  const clearPendingAbility = vi.fn();
   const applyItemEffects = vi.fn();
   const gameState = {
     currentTurn: 'druid' as const,
@@ -87,6 +89,9 @@ beforeEach(() => {
     endTurn: vi.fn(),
     restartGame: vi.fn(),
     setTargetingMode,
+    pendingAbility: null,
+    setPendingAbility,
+    clearPendingAbility,
     combatLogMode: 'hidden',
     toggleCombatLog: vi.fn(),
     triggerGameOver: vi.fn(),
@@ -112,8 +117,28 @@ describe('GameBoard component', () => {
     const btn = screen.getByTitle(/Peace Aura/i);
     fireEvent.click(btn);
 
-    const { setTargetingMode } = (useGameState as any).mock.results[0].value;
+    const { setTargetingMode, setPendingAbility } = (useGameState as any).mock.results[0].value;
     expect(setTargetingMode).toHaveBeenCalledWith(true);
+    expect(setPendingAbility).toHaveBeenCalledWith('peaceAura');
+  });
+
+  it('executes Peace Aura on selected NPC', async () => {
+    const { rerender } = setup();
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
+    const btn = screen.getByTitle(/Peace Aura/i);
+    fireEvent.click(btn);
+
+    // simulate state update after ability start
+    const state = (useGameState as any).mock.results[0].value;
+    state.pendingAbility = 'peaceAura';
+    rerender(<GameBoard />);
+
+    const npcIcon = screen.getAllByText(npcTemplate.icon)[0];
+    fireEvent.click(npcIcon);
+
+    expect(state.usePeaceAbility).toHaveBeenCalledWith('npc1');
+    expect(state.clearPendingAbility).toHaveBeenCalled();
+    expect(state.setTargetingMode).toHaveBeenCalledWith(false);
   });
 
   it('uses item and applies effects', async () => {

@@ -10,6 +10,8 @@ import InventoryScreen from "@/components/inventory/InventoryScreen";
 import ActionPanel from "./ActionPanel";
 import StatusBar from "./StatusBar";
 import DebugPanel from "./DebugPanel";
+import abilities from "@/abilities";
+import { GameContext } from "@/abilities/types";
 import {
   loadNPCData,
   loadPCData,
@@ -32,10 +34,13 @@ import {
 export default function GameBoard() {
   const {
     gameState,
+    pendingAbility,
     usePeaceAbility,
     endTurn,
     restartGame,
     setTargetingMode,
+    setPendingAbility,
+    clearPendingAbility,
     diceState,
     combatLogMode,
     toggleCombatLog,
@@ -44,6 +49,15 @@ export default function GameBoard() {
     setAutoTurnEnabled,
     applyItemEffects,
   } = useGameState();
+
+  const abilityCtx: GameContext = {
+    gameState,
+    setTargetingMode,
+    setPendingAbility,
+    clearPendingAbility,
+    usePeaceAbility,
+    triggerGameOver,
+  };
 
   // Load character data
   const [npcData, setNpcData] = useState<NPCCharacterData[]>([]);
@@ -115,15 +129,12 @@ export default function GameBoard() {
     };
   }, [restartGame]);
 
+  // When an ability has been started and is waiting for a target,
+  // `pendingAbility` contains its key. Clicking an NPC should then
+  // execute that ability on the chosen target.
   const handleNPCClick = (npcId: "npc1" | "npc2") => {
-    if (gameState.targetingMode && gameState.currentTurn === "druid") {
-      usePeaceAbility(npcId);
-    }
-  };
-
-  const handlePeaceAbilityClick = () => {
-    if (gameState.currentTurn === "druid" && !gameState.targetingMode) {
-      setTargetingMode(true);
+    if (pendingAbility) {
+      abilities[pendingAbility]?.execute?.(abilityCtx, npcId);
     }
   };
 
@@ -134,24 +145,14 @@ export default function GameBoard() {
   };
 
   const handleAbilityUse = (abilityKey: string) => {
-    if (abilityKey === "peaceAura") {
-      handlePeaceAbilityClick();
-    } else if (abilityKey === "flee") {
-      handleFleeAbility();
+    const ability = abilities[abilityKey];
+    if (ability?.start) {
+      ability.start(abilityCtx);
     }
   };
 
   const handleFleeAbility = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to flee? This will count as a loss and the conflict will remain unresolved.",
-    );
-    if (confirmed) {
-      triggerGameOver(
-        "FLED ENCOUNTER",
-        "The druid escaped, but the conflict remains unresolved...",
-        "🏃",
-      );
-    }
+    abilities.flee.start?.(abilityCtx);
   };
 
   // Debug functions
