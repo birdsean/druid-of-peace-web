@@ -57,7 +57,9 @@ export default function NPCCharacter({
         className={cn(
           "w-24 h-32 rounded-lg flex items-center justify-center transition-all duration-200",
           color,
-          targetingMode ? "cursor-crosshair hover:scale-105 hover:brightness-110" : "hover:brightness-110",
+          targetingMode
+            ? "cursor-crosshair hover:scale-105 hover:brightness-110 ring-4 ring-yellow-400 animate-pulse"
+            : "hover:brightness-110",
           getAnimationClass()
         )}
         onClick={onClick}

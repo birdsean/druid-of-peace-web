@@ -8,6 +8,7 @@ import GameOverModal from "./GameOverModal";
 import CombatLog from "./CombatLog";
 import InventoryScreen from "@/components/inventory/InventoryScreen";
 import PlayerUtilsPanel from "./PlayerUtilsPanel";
+import { cn } from "@/lib/utils";
 import TimePhaseEffectsDisplay from "./TimePhaseEffectsDisplay";
 import DebugPanel from "./DebugPanel";
 import abilities from "@/abilities";
@@ -213,10 +214,39 @@ export default function GameBoard() {
     );
   }
 
+  const handleCancelTargeting = () => {
+    clearPendingAbility();
+    setPendingItem(null);
+    setTargetingMode(false);
+  };
+
   return (
-    <div className="relative w-screen h-screen bg-gradient-to-b from-sky-400 via-green-300 to-green-600 overflow-hidden">
+    <div
+      className={cn(
+        "relative w-screen h-screen bg-gradient-to-b from-sky-400 via-green-300 to-green-600 overflow-hidden",
+        gameState.targetingMode && "cursor-crosshair"
+      )}
+    >
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-emerald-800 to-amber-900" />
+
+      {gameState.targetingMode && (
+        <>
+          {/* Dim background overlay */}
+          <div className="absolute inset-0 bg-black opacity-50 pointer-events-none z-10" />
+          {/* Targeting banner */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 px-4 py-2 bg-yellow-700 bg-opacity-90 text-white font-mono rounded shadow-lg animate-pulse">
+            TARGETING MODE – Select a foe
+          </div>
+          {/* Cancel button */}
+          <button
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-40 bg-red-600 hover:bg-red-700 text-white font-mono px-4 py-2 rounded"
+            onClick={handleCancelTargeting}
+          >
+            Cancel
+          </button>
+        </>
+      )}
 
       {/* Turn Indicator */}
       <TurnIndicator
