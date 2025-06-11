@@ -132,8 +132,8 @@ export class HistoryManager {
     // Check Wind Whisperer skill
     if (!this.history.skillsUnlocked.includes('wind_whisperer')) {
       const hasUsedPeaceAura = encounter.actions.some(action => action.type === 'peace_aura');
-      const hasForestWind = encounter.environmentalEffects.includes('forest_wind') || 
-                           encounter.actions.some(action => action.environmentalEffects?.includes('forest_wind'));
+      const hasForestWind = encounter.environmentalEffects.includes('strong_wind') ||
+                           encounter.actions.some(action => action.environmentalEffects?.includes('strong_wind'));
 
       if (hasUsedPeaceAura && hasForestWind) {
         this.history.skillsUnlocked.push('wind_whisperer');

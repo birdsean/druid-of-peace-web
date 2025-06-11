@@ -139,9 +139,22 @@ describe('History System', () => {
     it('should not claim already claimed skills', () => {
       debugUnlockSkill(globalHistoryManager, 'test-skill-id');
       globalHistoryManager.claimSkill('test-skill-id');
-      
+
       const secondClaim = globalHistoryManager.claimSkill('test-skill-id');
       expect(secondClaim).toBe(false);
+    });
+
+    it('unlocks Wind Whisperer when Peaceful Aura is used with strong wind', () => {
+      globalHistoryManager.startEncounter('windy-zone', 'Windy Zone', 1, ['strong_wind'], undefined, 'dawn');
+      globalHistoryManager.addPlayerAction({ type: 'peace_aura', target: 'npc1', roll: 5 });
+
+      const unlocked = globalHistoryManager.completeEncounter('success');
+
+      expect(unlocked).toContain('wind_whisperer');
+
+      const history = globalHistoryManager.getHistory();
+      expect(history.skillsUnlocked).toContain('wind_whisperer');
+      expect(history.pendingSkills).toContain('wind_whisperer');
     });
   });
 
