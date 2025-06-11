@@ -202,8 +202,7 @@ export function useMapState() {
 
       return {
         ...prev,
-        zones: newZones,
-        turnCounter: prev.turnCounter + 1
+        zones: newZones
       };
     });
   }, []);
