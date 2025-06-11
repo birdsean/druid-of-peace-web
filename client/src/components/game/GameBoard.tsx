@@ -28,6 +28,7 @@ import {
 import {
   getEnvironmentalEffectById,
 } from "@/lib/environmentLoader";
+import { getGlobalMapState } from "@/lib/mapState";
 
 export default function GameBoard() {
   const {
@@ -82,19 +83,26 @@ export default function GameBoard() {
     // Apply color palette for current time phase
     applyPhaseColorPalette(timeState.currentPhase);
 
-    // Add time-based environmental effect
+    const mapState = getGlobalMapState();
+    const weatherEffect = mapState.activeWeatherEffect || null;
+
+    // Add time-based environmental effect along with weather effect if present
     const timeEffect = getTimeBasedEnvironmentalEffect(timeState.currentPhase);
-    setActiveEnvironmentalEffects([timeEffect.id]);
+    setActiveEnvironmentalEffects(
+      weatherEffect ? [timeEffect.id, weatherEffect] : [timeEffect.id]
+    );
 
     const unsubscribe = globalTimeManager.subscribe((newTimeState) => {
       setCurrentTimePhase(newTimeState.currentPhase);
       applyPhaseColorPalette(newTimeState.currentPhase);
 
-      // Update time-based environmental effect
+      // Update time-based environmental effect while keeping weather effect
       const newTimeEffect = getTimeBasedEnvironmentalEffect(
         newTimeState.currentPhase,
       );
-      setActiveEnvironmentalEffects([newTimeEffect.id]);
+      setActiveEnvironmentalEffects(
+        weatherEffect ? [newTimeEffect.id, weatherEffect] : [newTimeEffect.id]
+      );
     });
 
     return unsubscribe;

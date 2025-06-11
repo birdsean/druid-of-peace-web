@@ -18,6 +18,7 @@ interface MapState {
   currentZone: string;
   turnCounter: number;
   activeEncounterZone: string | null;
+  activeWeatherEffect: string | null;
   currentTimePhase: TimePhase;
 }
 
@@ -28,6 +29,7 @@ const initialMapState: MapState = {
   currentZone: "grove",
   turnCounter: 1,
   activeEncounterZone: null,
+  activeWeatherEffect: null,
   currentTimePhase: 'day1' as TimePhase
 };
 
@@ -95,10 +97,11 @@ export function useMapState() {
     }));
   }, []);
 
-  const startEncounter = useCallback((zoneId: string) => {
+  const startEncounter = useCallback((zoneId: string, weatherEffect: string | null) => {
     setMapState(prev => ({
       ...prev,
-      activeEncounterZone: zoneId
+      activeEncounterZone: zoneId,
+      activeWeatherEffect: weatherEffect
     }));
   }, []);
 
@@ -228,6 +231,7 @@ export function useMapState() {
     currentZone: mapState.currentZone,
     turnCounter: mapState.turnCounter,
     activeEncounterZone: mapState.activeEncounterZone,
+    activeWeatherEffect: mapState.activeWeatherEffect,
     currentTimePhase: mapState.currentTimePhase,
     setCurrentZone,
     startEncounter,

@@ -22,4 +22,13 @@ describe('mapState', () => {
     expect(getCurrentEncounterZone()).toBe('zone2');
     expect(getGlobalMapState().currentEncounterZone).toBe('zone2');
   });
+
+  it('stores and retrieves activeWeatherEffect', async () => {
+    const mod = await import('../lib/mapState');
+    const { setGlobalMapState, getActiveWeatherEffect, setActiveWeatherEffect } = mod;
+    setGlobalMapState({ resolveEncounter: vi.fn(), activeWeatherEffect: 'rain' });
+    expect(getActiveWeatherEffect()).toBe('rain');
+    setActiveWeatherEffect('mist');
+    expect(getActiveWeatherEffect()).toBe('mist');
+  });
 });

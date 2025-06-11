@@ -2,11 +2,13 @@
 let globalMapState: {
   resolveEncounter?: (zoneId: string, success: boolean) => void;
   currentEncounterZone?: string;
+  activeWeatherEffect?: string | null;
 } = {};
 
-export function setGlobalMapState(state: { 
+export function setGlobalMapState(state: {
   resolveEncounter: (zoneId: string, success: boolean) => void;
   currentEncounterZone?: string;
+  activeWeatherEffect?: string | null;
 }) {
   globalMapState = state;
 }
@@ -21,4 +23,12 @@ export function setCurrentEncounterZone(zoneId: string) {
 
 export function getCurrentEncounterZone(): string | undefined {
   return globalMapState.currentEncounterZone;
+}
+
+export function setActiveWeatherEffect(effect: string | null) {
+  globalMapState.activeWeatherEffect = effect;
+}
+
+export function getActiveWeatherEffect(): string | null | undefined {
+  return globalMapState.activeWeatherEffect;
 }
