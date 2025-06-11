@@ -16,6 +16,7 @@ import {
   Mountain,
   History,
   Target,
+  X,
 } from "lucide-react";
 import { IS_DEBUG } from "@/lib/debug";
 import HistoryDebugModal from "@/components/HistoryDebugModal";
@@ -75,6 +76,17 @@ export default function Skills() {
     });
     return unsubscribe;
   }, []);
+
+  // Allow exiting to the map with the Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setLocation("/map");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setLocation]);
 
   const handleLearnSkill = useCallback((skillId: string) => {
     globalSkillManager.learnSkill(skillId);
@@ -147,6 +159,17 @@ export default function Skills() {
         onTreeSelect={setSelectedTree}
         skillTrees={skillTrees}
       />
+
+      {/* Exit Button */}
+      <div className="absolute top-4 right-4 z-30">
+        <Button
+          onClick={() => setLocation("/map")}
+          className="bg-red-600 hover:bg-red-700 border-2 border-red-400 text-white"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Exit to Map
+        </Button>
+      </div>
 
       {/* Tree Title */}
       {currentTree && (
