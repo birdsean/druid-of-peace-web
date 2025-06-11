@@ -24,6 +24,8 @@ export interface NPC {
   position: "left" | "right";
   stats: NPCStats;
   actions: string[];
+  /** Number of turns the NPC is immobilized and must skip actions */
+  immobilized?: number;
 }
 
 export interface PC {
