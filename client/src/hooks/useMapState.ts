@@ -22,6 +22,8 @@ interface MapState {
   activeEncounterZone: string | null;
   activeWeatherEffect: string | null;
   currentTimePhase: TimePhase;
+  actionPoints: number;
+  maxActionPoints: number;
 }
 
 const defaultZones: Zone[] = [];
@@ -32,7 +34,9 @@ const initialMapState: MapState = {
   turnCounter: 1,
   activeEncounterZone: null,
   activeWeatherEffect: null,
-  currentTimePhase: 'day1' as TimePhase
+  currentTimePhase: 'day1' as TimePhase,
+  actionPoints: 1,
+  maxActionPoints: 1
 };
 
 function rollDice(min = 1, max = 6): number {
@@ -99,6 +103,20 @@ export function useMapState() {
     }));
   }, []);
 
+  const spendActionPoint = useCallback((amount: number = 1) => {
+    setMapState(prev => ({
+      ...prev,
+      actionPoints: Math.max(0, prev.actionPoints - amount)
+    }));
+  }, []);
+
+  const restoreActionPoints = useCallback((amount: number = 1) => {
+    setMapState(prev => ({
+      ...prev,
+      actionPoints: Math.min(prev.maxActionPoints, prev.actionPoints + amount)
+    }));
+  }, []);
+
   const startEncounter = useCallback((zoneId: string, weatherEffect: string | null) => {
     setMapState(prev => ({
       ...prev,
@@ -141,7 +159,7 @@ export function useMapState() {
   const nextTurn = useCallback(() => {
     // Advance time phase first
     globalTimeManager.advancePhase();
-    
+
     setMapState(prev => {
       const newZones = prev.zones.map(zone => {
         // Skip if zone already has encounter
@@ -209,7 +227,8 @@ export function useMapState() {
 
       return {
         ...prev,
-        zones: newZones
+        zones: newZones,
+        actionPoints: prev.maxActionPoints
       };
     });
   }, []);
@@ -239,7 +258,11 @@ export function useMapState() {
     activeEncounterZone: mapState.activeEncounterZone,
     activeWeatherEffect: mapState.activeWeatherEffect,
     currentTimePhase: mapState.currentTimePhase,
+    actionPoints: mapState.actionPoints,
+    maxActionPoints: mapState.maxActionPoints,
     setCurrentZone,
+    spendActionPoint,
+    restoreActionPoints,
     startEncounter,
     resolveEncounter,
     nextTurn,

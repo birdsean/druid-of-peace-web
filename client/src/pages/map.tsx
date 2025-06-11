@@ -30,7 +30,11 @@ export default function Map() {
     activeEncounterZone,
     activeWeatherEffect,
     currentTimePhase,
+    actionPoints,
+    maxActionPoints,
     setCurrentZone,
+    spendActionPoint,
+    restoreActionPoints,
     nextTurn,
     startEncounter,
     resolveEncounter
@@ -86,12 +90,15 @@ export default function Map() {
       return;
     }
 
+    if (actionPoints <= 0) return;
+
     if (currentZone === zoneId) return; // Re-clicking current zone does nothing
     
     const zone = zones.find(z => z.id === zoneId);
     if (!zone) return;
 
     setCurrentZone(zoneId);
+    spendActionPoint();
     logZoneChange(turnCounter, zoneId, zone.name);
     
     // If zone has active encounter, launch battle
@@ -107,7 +114,7 @@ export default function Map() {
       });
       setLocation('/game');
     }
-  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter]);
+  }, [currentZone, zones, setCurrentZone, startEncounter, setLocation, resolveEncounter, resolutionMode, logZoneChange, logEncounterStart, turnCounter, actionPoints, spendActionPoint]);
 
   const handleNextTurn = useCallback(() => {
     const newTurn = turnCounter + 1;
