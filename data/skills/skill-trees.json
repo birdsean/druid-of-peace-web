@@ -40,7 +40,7 @@
           },
           "unlockRequirements": {
             "mustUseAbility": "peace_aura",
-            "environmentalEffect": "forest_wind",
+            "environmentalEffect": "strong_wind",
             "description": "Use Peaceful Aura while forest wind environmental effect is active"
           }
         },
