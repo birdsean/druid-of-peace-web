@@ -28,6 +28,7 @@ export default function Map() {
     currentZone,
     turnCounter,
     activeEncounterZone,
+    activeWeatherEffect,
     currentTimePhase,
     setCurrentZone,
     nextTurn,
@@ -67,11 +68,12 @@ export default function Map() {
 
   // Set global map state for encounter resolution
   useEffect(() => {
-    setGlobalMapState({ 
+    setGlobalMapState({
       resolveEncounter,
-      currentEncounterZone: activeEncounterZone || undefined
+      currentEncounterZone: activeEncounterZone || undefined,
+      activeWeatherEffect
     });
-  }, [resolveEncounter, activeEncounterZone]);
+  }, [resolveEncounter, activeEncounterZone, activeWeatherEffect]);
 
   const handleZoneClick = useCallback((zoneId: string) => {
     // Handle debug resolution modes
@@ -92,12 +94,14 @@ export default function Map() {
     
     // If zone has active encounter, launch battle
     if (zone.hasEncounter) {
-      startEncounter(zoneId);
+      const weatherEffect = globalWeatherManager.getActiveEnvironmentalEffect();
+      startEncounter(zoneId, weatherEffect);
       logEncounterStart(turnCounter, zoneId, zone.name);
       // Store the encounter zone in global state
-      setGlobalMapState({ 
+      setGlobalMapState({
         resolveEncounter,
-        currentEncounterZone: zoneId
+        currentEncounterZone: zoneId,
+        activeWeatherEffect: weatherEffect
       });
       setLocation('/game');
     }
