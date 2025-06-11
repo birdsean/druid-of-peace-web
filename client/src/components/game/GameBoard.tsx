@@ -21,15 +21,12 @@ import {
 import { useInventory } from "@/hooks/useInventory";
 import { getItemById } from "@/lib/inventory";
 
-import { IS_DEBUG, initialDebugState, DebugState } from "@/lib/debug";
+import { initialDebugState, DebugState } from "@/lib/debug";
 import {
   globalTimeManager,
   applyPhaseColorPalette,
   getTimeBasedEnvironmentalEffect,
 } from "@/lib/timeSystem";
-import {
-  getEnvironmentalEffectById,
-} from "@/lib/environmentLoader";
 import { getGlobalMapState } from "@/lib/mapState";
 
 export default function GameBoard() {
@@ -103,7 +100,7 @@ export default function GameBoard() {
     // Add time-based environmental effect along with weather effect if present
     const timeEffect = getTimeBasedEnvironmentalEffect(timeState.currentPhase);
     setActiveEnvironmentalEffects(
-      weatherEffect ? [timeEffect.id, weatherEffect] : [timeEffect.id]
+      weatherEffect ? [timeEffect.id, weatherEffect] : [timeEffect.id],
     );
 
     const unsubscribe = globalTimeManager.subscribe((newTimeState) => {
@@ -115,7 +112,7 @@ export default function GameBoard() {
         newTimeState.currentPhase,
       );
       setActiveEnvironmentalEffects(
-        weatherEffect ? [newTimeEffect.id, weatherEffect] : [newTimeEffect.id]
+        weatherEffect ? [newTimeEffect.id, weatherEffect] : [newTimeEffect.id],
       );
     });
 
@@ -192,7 +189,6 @@ export default function GameBoard() {
     setShowInventoryModal(false);
   };
 
-  const hasActionPoints = gameState.druid.stats.actionPoints > 0;
   const canUseActions =
     gameState.currentTurn === "druid" && !gameState.targetingMode;
 
@@ -255,8 +251,16 @@ export default function GameBoard() {
       </div>
 
       {/* Character Stats at Top */}
-      <NPCStatsDisplay name={gameState.npc1.name} npc={gameState.npc1.stats} position="left" />
-      <NPCStatsDisplay name={gameState.npc2.name} npc={gameState.npc2.stats} position="right" />
+      <NPCStatsDisplay
+        name={gameState.npc1.name}
+        npc={gameState.npc1.stats}
+        position="left"
+      />
+      <NPCStatsDisplay
+        name={gameState.npc2.name}
+        npc={gameState.npc2.stats}
+        position="right"
+      />
 
       {/* NPC Characters */}
       <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
