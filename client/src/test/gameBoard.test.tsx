@@ -16,6 +16,7 @@ vi.mock('@/lib/characterLoader', () => ({
 import { useGameState } from '@/hooks/useGameState';
 import { useInventory } from '@/hooks/useInventory';
 import { loadNPCData, loadPCData } from '@/lib/characterLoader';
+import { setGlobalMapState } from '@/lib/mapState';
 import GameBoard from '@/components/game/GameBoard';
 
 const npcTemplate = {
@@ -60,6 +61,7 @@ const pcData = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  setGlobalMapState({ resolveEncounter: vi.fn(), currentEncounterZone: 'zone1', activeWeatherEffect: 'rain_boost' });
   (loadNPCData as any).mockResolvedValue([
     { ...npcTemplate, id: 'npc1' },
     { ...npcTemplate, id: 'npc2' },
@@ -128,6 +130,12 @@ describe('GameBoard component', () => {
 
     expect(useItem).toHaveBeenCalledWith('energy_crystal');
     expect(applyItemEffects).toHaveBeenCalledWith(energyCrystal.effects, energyCrystal.name);
+  });
+
+  it('displays active weather effect from map state', async () => {
+    setup();
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading character data/i));
+    expect(screen.getByText(/RAIN_BOOST/i)).toBeInTheDocument();
   });
 });
 
