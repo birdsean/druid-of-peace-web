@@ -14,6 +14,8 @@ import { loadEnvironmentalEffects, EnvironmentalEffect } from "@/lib/environment
 import { globalTimeManager, type TimePhase, getTimeBasedGradient, getTimeBasedEnvironmentalEffect } from "@/lib/timeSystem";
 import { globalWeatherManager, useWeatherState } from "@/lib/weatherSystem";
 import { useMapEvents } from "@/hooks/useMapEvents";
+import PlayerActionPanel from "@/components/game/PlayerActionPanel";
+import type { PCAbility } from "@/lib/characterLoader";
 import { globalHistoryManager } from "@/lib/historySystem";
 
 
@@ -24,6 +26,15 @@ export default function Map() {
   const [showDebugPanel, setShowDebugPanel] = useState(true);
   const [environmentalEffects, setEnvironmentalEffects] = useState<Record<string, EnvironmentalEffect>>({});
   const weatherState = useWeatherState();
+
+  // Temporary player action state for map interactions
+  const [actionPoints, setActionPoints] = useState(3);
+  const maxActionPoints = 3;
+  const [combatLogMode, setCombatLogMode] = useState<'hidden' | 'small' | 'large'>('hidden');
+  const placeholderAbilities: PCAbility[] = [
+    { key: 'camp', name: 'Make Camp', description: 'Rest and recover', icon: '⛺', cost: 1 },
+    { key: 'pray', name: 'Pray', description: 'Seek guidance', icon: '🙏', cost: 1 },
+  ];
   const {
     zones,
     currentZone,
@@ -200,6 +211,24 @@ export default function Map() {
     setLocation('/skills');
   }, [setLocation]);
 
+  const handleAbilityUse = useCallback((abilityKey: string) => {
+    if (actionPoints <= 0) return;
+    setActionPoints(ap => Math.max(ap - 1, 0));
+    console.log('Used ability', abilityKey);
+  }, [actionPoints]);
+
+  const handleEndTurn = useCallback(() => {
+    setActionPoints(maxActionPoints);
+  }, []);
+
+  const handleToggleCombatLog = useCallback(() => {
+    setCombatLogMode(prev => prev === 'hidden' ? 'small' : prev === 'small' ? 'large' : 'hidden');
+  }, []);
+
+  const handleCancelAction = useCallback(() => {
+    /* no-op for now */
+  }, []);
+
   return (
     <div className={`relative w-screen h-screen ${getTimeBasedGradient(currentTimePhase)} overflow-hidden`}>
       {IS_DEBUG && (
@@ -278,6 +307,20 @@ export default function Map() {
           </div>
         </div>
       </div>
+
+      {/* Player Action Panel */}
+      <PlayerActionPanel
+        actionPoints={actionPoints}
+        maxActionPoints={maxActionPoints}
+        targetingMode={false}
+        abilities={placeholderAbilities}
+        onAbilityUse={handleAbilityUse}
+        onEndTurn={handleEndTurn}
+        onToggleCombatLog={handleToggleCombatLog}
+        combatLogMode={combatLogMode}
+        isPlayerTurn={true}
+        onCancelAction={handleCancelAction}
+      />
 
       {/* Narrative Screen Overlay */}
       {narrativeScript && (
